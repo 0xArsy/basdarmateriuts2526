@@ -120,16 +120,19 @@
           <h2 class="text-xl font-bold text-white tracking-tight">Pemodelan ER (Dasar)</h2>
         </div>
         <ul class="text-sm">
-          <li><strong class="text-white">Entitas vs Atribut:</strong> Object nyata (Entity). Tipe Atribut: <em>Simple</em>, <em>Composite</em> (Pecahan), <em>Multi-valued</em> (Opsi banyak), <em>Derived</em> (Bisa diturunkan).</li>
-          <li><strong class="text-white">Keys:</strong> Pembeda unik, simbolnya label bergaris bawah.</li>
-          <li><strong class="text-white">Relasi (Kardinalitas):</strong> 1:1, 1:N, M:N (ManyToMany).</li>
+          <li><strong class="text-white">Entitas & Atribut:</strong> Objek (Entity). Tipe Atribut: <em>Simple</em>, <em>Composite</em> (Pecahan), <em>Multi-valued</em> (Opsi banyak), <em>Derived</em> (Kalkulasi).</li>
+          <li><strong class="text-white">Keys:</strong> Pembeda unik, simbolnya atribut bergaris bawah.</li>
+          <li><strong class="text-white text-emerald-400">⭐ Derajat Relasi:</strong> 
+            <em>Unary/Rekursif</em> (Entitas relasi ke dirinya sendiri, <strong>wajib beri Role Name</strong>), 
+            <em>Binary</em> (1:1, 1:N, M:N), <em>Ternary</em> (3 Entitas tergabung).
+          </li>
           <li><strong class="text-white">Participation:</strong>
             <ul class="ml-4 mt-1 opacity-90 text-[13px]">
-              <li>- <em>Total/Existence:</em> Wajib (Garis lurus DUA/Ganda).</li>
-              <li>- <em>Partial:</em> Boleh tidak ikut (Garis lurus SATU).</li>
+              <li>- <em>Total/Existence:</em> Wajib (Garis ganda).</li>
+              <li>- <em>Partial:</em> Boleh tidak ikut (Garis tunggal).</li>
             </ul>
           </li>
-          <li><strong class="text-white">Weak Entity:</strong> Ketergantungan ke <em>Owner</em>, gak punya Key murni (pakai Partial Key - garis putus/titik2).</li>
+          <li><strong class="text-white">Weak Entity:</strong> Ketergantungan ke <em>Owner</em> via <em>Identifying Rel</em> (BelahKetupat Ganda). Pakai <strong>Partial Key</strong> (Garis putus-putus).</li>
         </ul>
       </div>
 
@@ -186,15 +189,18 @@
           <h2 class="text-xl font-bold text-white tracking-tight">Pemetaan Skema ke Tabel</h2>
         </div>
         <ul class="text-sm">
-          <li><strong class="text-white">Langkah Cepat Algoritma Map-nya:</strong>
+          <li><strong class="text-white">Langkah Cepat Algoritma ER:</strong>
             <ul class="ml-4 mt-1 opacity-90 text-[13px] space-y-1">
-              <li>1. <em>Regular Entity:</em> Jadiin 1 Tabel. Atribut -> kol.</li>
-              <li>2. <em>Weak Entity:</em> Jadiin Tabel, tambahkan PK parent (sbg FK), PK Weak gabungan PK+PartialKey_nya.</li>
-              <li>3. <em>Mapping 1:1:</em> Sisipkan FK dari ujung entity A ke entity B (yg <em>Total Participation</em> prioritasnya sbg penyerap).</li>
-              <li>4. <em>Mapping 1:N:</em> Beri FK di sisi Entity banyak (N) yang nunjuk ke Entity Satu (1).</li>
-              <li>5. <em>Mapping M:N:</em> <strong>WAJIB Buat tabel Baru</strong> penengah (Junction/Cross Referencce). Isinya PK tabel A & PK tabel B. Keduanya jadi PK (Junction).</li>
-              <li>6. <em>Multivalue Attr:</em> <strong>Buat Tabel Cuma Spesialis Multivalue ini</strong> + Bawa FK Induknya.</li>
+              <li>1. <em>Regular:</em> Tabel tunggal. <em>Weak:</em> PK=PK Parent + PartialKey.</li>
+              <li>2. <em>Map 1:1:</em> Sisipkan FK di sisi <em>Total Participation</em>.</li>
+              <li>3. <em>Map 1:N:</em> Beri FK di sisi Entity banyak (N).</li>
+              <li>4. <em class="text-emerald-400 font-bold">Map M:N (WAJIB Ada Junction!):</em> Buat tabel penengah, isinya FK dari entity A & B, lalu gabungkan sebagai Composite PK.</li>
+              <li>5. <em class="text-emerald-400 font-bold">Map Multivalued:</em> Buat Tabel Khusus berisi (Nilai Itunya + FK Parent). Keduanya jadi gabungan PK.</li>
+              <li>6. <em class="text-emerald-400 font-bold">Map Rekursif (Unary 1:N):</em> Tambahkan 1 Atribut FK di tabel itu sendiri yg menunjuk PK-nya (mis: <code>Super_ssn</code> menunjuk <code>Ssn</code>).</li>
             </ul>
+          </li>
+          <li class="mt-2"><strong class="text-white text-emerald-400">⭐ Map EER (Penting!):</strong> 
+            <span class="opacity-90 text-[13px]"><br>Bila <em>Disjoint</em> (d): 1 Tabel induk dgn tipe khusus (<strong>Discriminator Col</strong>). <br>Bila <em>Overlap</em> (o): 1 Tabel induk dgn banyak kolom <strong>Boolean Flag</strong> (IsTypeA, IsTypeB).</span>
           </li>
         </ul>
       </div>
@@ -221,16 +227,15 @@
       <div class="card">
         <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
           <span class="badge badge-cyan">BAB 8</span>
-          <h2 class="text-xl font-bold text-white tracking-tight">Kueri Dasar SQL (DML SFW)</h2>
+          <h2 class="text-xl font-bold text-white tracking-tight">Kueri Dasar & Agregat SQL</h2>
         </div>
-        <ul class="text-sm">
-          <li><strong class="text-white">S-F-W Block:</strong> <code>SELECT</code> (Ambil kolom apa?), <code>FROM</code> (Dari table-table apa?), <code>WHERE</code> (Filter Row dengan kondisi?).</li>
-          <li><strong class="text-white">Join Kondisi Langsung:</strong> Kalau join 2 tabel, pasti butuh aliasnya disambung <code>WHERE E.Dno = D.Dnumber</code>.</li>
-          <li><strong class="text-white">String / Pura-pura Tahu:</strong> <code>LIKE</code> menggunakan <code>%</code> (Apa aja hurufnya), <code>_</code> (Persis satu huruf apa aja). Cth: <code>Name LIKE 'Jo%'</code></li>
-          <li><strong class="text-white">Arithmetic & Sort:</strong> 
-            <br>- Operasi Set Relasi (Union Kompatibel): <code>UNION</code>, <code>EXCEPT</code>, <code>INTERSECT</code>.
-            <br>- Terakhir untuk urut Ascend/Descend: <code>ORDER BY col1 DESC</code> 
-          </li>
+        <ul class="text-sm space-y-[6px]">
+          <li><strong class="text-white">Dasar Join & String:</strong> <code>WHERE E.Dno = D.Dnumber</code> dan <code>LIKE '%A_'</code>.</li>
+          <li><strong class="text-white text-emerald-400">⭐ Subqueries/Nested:</strong> Pakai klausa <code>IN</code>, <code>ANY</code>, <code>ALL</code>, atau <code>EXISTS</code> untuk menghubungkan kueri utama dngn kueri sarang.</li>
+          <li><strong class="text-white text-emerald-400">🔥 Agregat (Pasti Keluar!):</strong> <code>MAX()</code>, <code>MIN()</code>, <code>AVG()</code>, <code>SUM()</code>, <code>COUNT()</code>.</li>
+          <li><strong class="text-white text-emerald-400">🔥 GROUP BY:</strong> Memilah tabel untuk diagregasi per-grup (cth: Rata2 Gaji Tiap Dept). <br><em class="text-[12px] font-mono text-cyan-200 bg-cyan-900/40 p-1 rounded">Syarat: Atribut mandiri di SELECT wajib ada di GROUP BY!</em></li>
+          <li><strong class="text-white text-emerald-400">🔥 HAVING:</strong> WHERE-nya para Agregat! Digunakan untuk memfilter <strong>hasil grup</strong>. <br><em class="text-[12px] text-slate-400">Cth: <code>HAVING COUNT(*) > 2</code>. Urutan baca: WHERE -> Group By -> HAVING.</em></li>
+          <li><strong class="text-white">Set Ops:</strong> <code>UNION</code>, <code>EXCEPT</code>, <code>INTERSECT</code> (Wajib <em>Kompatibel</em>).</li>
         </ul>
       </div>
       
