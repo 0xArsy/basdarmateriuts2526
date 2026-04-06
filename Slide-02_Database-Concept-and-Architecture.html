@@ -311,20 +311,20 @@
 <!-- HERO -->
 <div class="relative max-w-5xl mx-auto px-4 pt-14 pb-10">
   <div class="absolute top-8 right-0 w-72 h-72 rounded-full opacity-5 blur-3xl" style="background:radial-gradient(circle, #22d3ee, transparent)"></div>
-  <p class="section-label mb-3">Basis Data — Week 2</p>
+  <p class="section-label mb-3">Basis Data — Minggu 2</p>
   <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4" style="letter-spacing:-.02em">
     Database Concept<br><span class="text-cyan-400">&amp; Architecture</span>
   </h1>
   <p class="text-slate-400 max-w-xl text-base leading-relaxed">
-    A complete interactive breakdown of data models, schema architecture, DBMS components, and system designs — from theory to practice.
+    Pembahasan interaktif komprehensif mengenai Data Model, Arsitektur Schema, Komponen DBMS, dan desain sistem — dari teori ke praktik.
   </p>
   <!-- Quick nav pills -->
   <div class="flex flex-wrap gap-2 mt-7">
     <a href="#data-models" class="badge badge-cyan">1. Data Models</a>
     <a href="#schema" class="badge badge-green">2. Schema</a>
-    <a href="#dbms-components" class="badge badge-amber">3. DBMS Components</a>
-    <a href="#dbms-architecture" class="badge badge-cyan">4. DBMS Architecture</a>
-    <a href="#practice" class="badge badge-green">5. Practice Quiz</a>
+    <a href="#dbms-components" class="badge badge-amber">3. Komponen DBMS</a>
+    <a href="#dbms-architecture" class="badge badge-cyan">4. Arsitektur DBMS</a>
+    <a href="#practice" class="badge badge-green">5. Latihan Soal</a>
   </div>
 </div>
 
@@ -347,63 +347,63 @@
     <!-- Key Term callouts -->
     <div class="grid md:grid-cols-2 gap-4 mb-8">
       <div class="callout-key">
-        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">ISTILAH KUNCI</p>
         <p class="font-semibold mb-1">Data Model</p>
-        <p class="text-sm text-slate-400">A set of concepts describing the <strong class="text-slate-200">structure</strong> of a database and the <strong class="text-slate-200">constraints</strong> it must obey. Think of it as the blueprint language for a database.</p>
+        <p class="text-sm text-slate-400">Seperangkat konsep yang mendeskripsikan <strong class="text-slate-200">struktur</strong> database dan <strong class="text-slate-200">constraints (batasan)</strong> yang harus dipatuhinya. Anggap saja sebagai panduan dasar atau cetak biru untuk database.</p>
       </div>
       <div class="callout-key">
-        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">ISTILAH KUNCI</p>
         <p class="font-semibold mb-1">Data Model Operation</p>
-        <p class="text-sm text-slate-400">Operations for specifying database <strong class="text-slate-200">retrievals</strong> and <strong class="text-slate-200">updates</strong>. Can be basic (built-in) or user-defined.</p>
+        <p class="text-sm text-slate-400">Operasi untuk menentukan <strong class="text-slate-200">pengambilan (retrieval)</strong> dan <strong class="text-slate-200">pembaruan (update)</strong> pada database. Bisa berupa fitur bawaan (basic) atau definisi pengguna.</p>
       </div>
     </div>
 
     <!-- Categories -->
-    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i> Categories of Data Models</h3>
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i> Kategori Data Model</h3>
     <div class="grid md:grid-cols-3 gap-4 mb-8">
       <div class="card p-5">
         <div class="flex items-center gap-2 mb-3">
-          <span class="badge badge-cyan">High-Level</span>
+          <span class="badge badge-cyan">Tingkat Tinggi (High-Level)</span>
         </div>
         <p class="font-semibold mb-2 text-cyan-400">Conceptual / Semantic</p>
-        <p class="text-sm text-slate-400 mb-3">Close to how <em>humans</em> perceive data. Uses entities, attributes, and relationships.</p>
-        <p class="text-xs mono text-slate-500">Example: Entity-Relationship (ER) Model</p>
+        <p class="text-sm text-slate-400 mb-3">Dekat dengan bagaimana <em>manusia</em> mempersepsikan data. Menggunakan format Entitas (Entities), Atribut (Attributes), dan Relasi (Relationships).</p>
+        <p class="text-xs mono text-slate-500">Contoh: Entity-Relationship (ER) Model</p>
       </div>
       <div class="card p-5">
         <div class="flex items-center gap-2 mb-3">
-          <span class="badge badge-amber">Mid-Level</span>
+          <span class="badge badge-amber">Tingkat Menengah (Mid-Level)</span>
         </div>
         <p class="font-semibold mb-2 text-amber-400">Implementation / Representational</p>
-        <p class="text-sm text-slate-400 mb-3">Balances user views with computer storage details.</p>
-        <p class="text-xs mono text-slate-500">Examples: Relational, Network, Hierarchical</p>
+        <p class="text-sm text-slate-400 mb-3">Menyeimbangkan antara sudut pandang pengguna dengan detail penyimpanan komputer.</p>
+        <p class="text-xs mono text-slate-500">Contoh: Relational, Network, Hierarchical</p>
       </div>
       <div class="card p-5">
         <div class="flex items-center gap-2 mb-3">
-          <span class="badge badge-green">Low-Level</span>
+          <span class="badge badge-green">Tingkat Rendah (Low-Level)</span>
         </div>
         <p class="font-semibold mb-2 text-green-400">Physical / Internal</p>
-        <p class="text-sm text-slate-400 mb-3">Describes how data is <em>physically stored</em> in the computer.</p>
-        <p class="text-xs mono text-slate-500">Examples: Tree structures, Graphs, B+-trees</p>
+        <p class="text-sm text-slate-400 mb-3">Mendeskripsikan bagaimana data <em>disimpan secara fisik</em> di dalam komputer.</p>
+        <p class="text-xs mono text-slate-500">Contoh: Struktur Tree (Pohon), Grafik, B+-trees</p>
       </div>
     </div>
 
     <!-- Pitfall -->
     <div class="callout-pitfall mb-8">
-      <p class="text-xs font-bold text-red-400 mono mb-2">⚠ COMMON PITFALL</p>
-      <p class="text-sm text-slate-300">Students often confuse the <strong class="text-red-400">ER Model</strong> (conceptual — for design) with the <strong class="text-red-400">Relational Model</strong> (implementation — for actual database). ER diagrams are the <em>design tool</em>; relational tables are the <em>implementation</em>.</p>
+      <p class="text-xs font-bold text-red-400 mono mb-2">⚠ KESALAHAN UMUM</p>
+      <p class="text-sm text-slate-300">Mahasiswa sering kebingungan dan tertukar antara <strong class="text-red-400">ER Model</strong> (konseptual — untuk merancang) dengan <strong class="text-red-400">Relational Model</strong> (implementasi — untuk database sesungguhnya). ER Diagrams adalah <em>alat desain</em>; tabel relasional adalah <em>implementasinya</em>.</p>
     </div>
 
     <!-- History Timeline -->
-    <h3 class="text-lg font-bold mb-5 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-cyan-400"></i> History of Data Models</h3>
+    <h3 class="text-lg font-bold mb-5 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-cyan-400"></i> Sejarah Data Model</h3>
     <div class="card p-6 space-y-6">
       <div class="timeline-item">
         <div class="timeline-dot"></div>
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="text-sm font-bold text-cyan-300">1964–65 — Network Model</span>
-            <span class="badge badge-cyan">Graphs</span>
+            <span class="badge badge-cyan">Grafik (Graphs)</span>
           </div>
-          <p class="text-sm text-slate-400">Implemented by Honeywell (IDS System). Adopted by CODASYL 1971. Data stored as interconnected graphs. Used in IDMS, DMS 1100, IMAGE.</p>
+          <p class="text-sm text-slate-400">Diimplementasikan oleh Honeywell (IDS System). Diadopsi oleh CODASYL 1971. Data disimpan sebagai grafik yang saling terkoneksi. Digunakan di IDMS, DMS 1100, IMAGE.</p>
         </div>
       </div>
       <div class="timeline-item">
@@ -411,9 +411,9 @@
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="text-sm font-bold text-cyan-300">~1965 — Hierarchical Model</span>
-            <span class="badge badge-green">Trees</span>
+            <span class="badge badge-green">Pohon (Trees)</span>
           </div>
-          <p class="text-sm text-slate-400">IBM + North American Rockwell. Led to IMS family. Data structured as hierarchical trees — parent/child relationships only.</p>
+          <p class="text-sm text-slate-400">IBM + North American Rockwell. Mengembangkan grup IMS. Data disusun dalam hierarki pohon (tree) — dan hanya memiliki sebatas relasi antara orang tua / anak (parent/child relationships).</p>
         </div>
       </div>
       <div class="timeline-item">
@@ -421,9 +421,9 @@
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="text-sm font-bold text-cyan-300">1970 — Relational Model</span>
-            <span class="badge badge-green">Tables</span>
+            <span class="badge badge-green">Tabel (Tables)</span>
           </div>
-          <p class="text-sm text-slate-400">Proposed by E.F. Codd (IBM). First commercial system 1981-82. Now dominant — Oracle, DB2, SQL Server, PostgreSQL.</p>
+          <p class="text-sm text-slate-400">Diusulkan oleh E.F. Codd (IBM). Sistem komersil pertamanya sekitar 1981-82. Dan kini sangat mendominasi dunia programming — Oracle, DB2, SQL Server, PostgreSQL.</p>
         </div>
       </div>
       <div class="timeline-item">
@@ -431,37 +431,37 @@
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="text-sm font-bold text-cyan-300">1980s–90s — Object-Oriented Model</span>
-            <span class="badge badge-amber">Objects</span>
+            <span class="badge badge-amber">Objek (Objects)</span>
           </div>
-          <p class="text-sm text-slate-400">Persistent O-O languages: C++ (OBJECTSTORE), Smalltalk (GEMSTONE). Also O2, ORION (ITASCA), IRIS.</p>
+          <p class="text-sm text-slate-400">Dipelopori program persistent OOP bahasa seperti: C++ (OBJECTSTORE), Smalltalk (GEMSTONE). Dan juga produk O2, ORION (ITASCA), IRIS.</p>
         </div>
       </div>
       <div class="timeline-item">
         <div class="timeline-dot" style="border-color:#a78bfa"></div>
         <div>
           <div class="flex items-center gap-2 mb-1">
-            <span class="text-sm font-bold text-cyan-300">Recent — Object-Relational Model</span>
+            <span class="text-sm font-bold text-cyan-300">Baru-baru Ini — Object-Relational Model</span>
             <span class="badge" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.25)">Hybrid</span>
           </div>
-          <p class="text-sm text-slate-400">Started with Informix Universal Server. Exemplified in Oracle 10g, DB2, SQL Server. Combines OOP concepts with relational tables.</p>
+          <p class="text-sm text-slate-400">Dimulai dengan Informix Universal Server. Dicontohkan pada keberhasilan tipe di Oracle 10g, DB2, SQL Server. Menyatukan konsep tabel relasi bersama skema OOP.</p>
         </div>
       </div>
     </div>
 
     <!-- Relational Model Deep Dive -->
-    <h3 class="text-lg font-bold mt-8 mb-4 flex items-center gap-2"><i data-lucide="table-2" class="w-4 h-4 text-cyan-400"></i> Relational Model — Key Concepts</h3>
+    <h3 class="text-lg font-bold mt-8 mb-4 flex items-center gap-2"><i data-lucide="table-2" class="w-4 h-4 text-cyan-400"></i> Relational Model — Konsep Utama</h3>
     <div class="grid md:grid-cols-2 gap-4 mb-6">
       <div class="card p-5 space-y-3">
-        <p class="font-semibold text-cyan-400">Relation = Table of Values</p>
+        <p class="font-semibold text-cyan-400">Relasi (Relation) = Tabel Nilai</p>
         <div class="space-y-2 text-sm text-slate-400">
-          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>A <strong class="text-slate-200">Relation</strong> is a mathematical concept based on <em>sets</em></span></div>
-          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>A relation can be thought of as a <strong class="text-slate-200">set of rows (tuples)</strong></span></div>
-          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>Each column is called an <strong class="text-slate-200">Attribute</strong></span></div>
-          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>Each row can be given a unique <strong class="text-slate-200">identifier (key)</strong></span></div>
+          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>Sebuah <strong class="text-slate-200">Relation (relasi)</strong> adalah konsep matematis didasarkan pada <em>sets / kumpulan nilai</em></span></div>
+          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>Sebuah relasi dapat dianggap sebagai suatu <strong class="text-slate-200">perhimpunan data per baris / kesatuan barisan (tuples)</strong></span></div>
+          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>Setiap kolomnya dijabarkan sebagai <strong class="text-slate-200">Atribut (Attribute)</strong></span></div>
+          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>Setiap baris (row) dapat memuat tanda identifikasi / unique <strong class="text-slate-200">identifier (key)</strong></span></div>
         </div>
       </div>
       <div class="card p-5">
-        <p class="font-semibold text-green-400 mb-3">Example: STUDENT Table</p>
+        <p class="font-semibold text-green-400 mb-3">Contoh: Tabel STUDENT</p>
         <div class="overflow-x-auto">
           <table class="w-full text-xs mono">
             <thead>
@@ -478,15 +478,15 @@
             </tbody>
           </table>
         </div>
-        <p class="text-xs text-slate-500 mt-3">← Each row is a <em>tuple</em>; each column is an <em>attribute</em>.</p>
+        <p class="text-xs text-slate-500 mt-3">← Setiap barisnya adalah sebuah <em>tuple</em>; dan setiap kolom adalah <em>attribute</em>.</p>
       </div>
     </div>
 
     <!-- ER Model -->
     <div class="callout-tip">
       <p class="text-xs font-bold text-amber-400 mono mb-2">💡 ENTITY-RELATIONSHIP (ER) MODEL</p>
-      <p class="text-sm text-slate-300 mb-2">Proposed by P. Chen (1976). A <strong class="text-amber-300">conceptual modeling</strong> tool for database requirements. Basic building blocks: <strong class="text-amber-300">Entities</strong> (real-world objects) and <strong class="text-amber-300">Relationships</strong> (associations between entities). Well-suited for relational database development.</p>
-      <p class="text-xs text-slate-500 mono">Note: ER model did NOT originally include inheritance.</p>
+      <p class="text-sm text-slate-300 mb-2">Diusulkan oleh P. Chen di tahun (1976). Merupakan alat <strong class="text-amber-300">modeling konseptual</strong> untuk menentukan hal-hal wajib pada requirements dari sebuah database. Punya dasar yang sangat berdasar: <strong class="text-amber-300">Entities (Entitas)</strong> (obyek kehidupan nyata) serta adanya <strong class="text-amber-300">Relationships (Relasi)</strong> (koneksi bersamanya antar Entitas). Sangat baik untuk membantu pemetaan awal pembuatan Relational database.</p>
+      <p class="text-xs text-slate-500 mono">Catatan: Model ER aslinya TIDAK memakai / menyisipkan unsur *inheritance* dahulu kala.</p>
     </div>
   </section>
 
@@ -508,38 +508,38 @@
     <!-- Schema terms -->
     <div class="grid md:grid-cols-2 gap-4 mb-8">
       <div class="callout-key">
-        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">ISTILAH KUNCI</p>
         <p class="font-semibold mb-1">Database Schema</p>
-        <p class="text-sm text-slate-400">The <strong class="text-slate-200">description</strong> of a database — its structure and constraints. Also called the database <em>intension</em>. Changes <em>infrequently</em>.</p>
+        <p class="text-sm text-slate-400"><strong class="text-slate-200">Deskripsi</strong> dari suatu database — yakni melingkupi struktur dan aturannya. Bisa disebut juga sebagai database <em>intension</em>. Berubah <em>sangat jarang (infrequently)</em>.</p>
       </div>
       <div class="callout-key">
-        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">ISTILAH KUNCI</p>
         <p class="font-semibold mb-1">Database State / Snapshot</p>
-        <p class="text-sm text-slate-400">The <strong class="text-slate-200">actual data</strong> stored at a particular moment. Also called <em>extension</em>. Changes every time data is updated.</p>
+        <p class="text-sm text-slate-400"><strong class="text-slate-200">Data sesungguhnya</strong> yang terekam pada satu momen waktu tertentu. Disebut juga <em>extension</em>. Berubah terus menerus setiap data tersebut di-update.</p>
       </div>
       <div class="callout-key">
-        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">ISTILAH KUNCI</p>
         <p class="font-semibold mb-1">Schema Diagram</p>
-        <p class="text-sm text-slate-400">A diagrammatic display of some aspects of a database schema — shows table names and attributes without actual data.</p>
+        <p class="text-sm text-slate-400">Suatu tampilan berupa diagram pada beberapa bagian/aspek database schema — menampilkan nama dari tabel dan berbagai atribut tanpa kehadiran data aslinya.</p>
       </div>
       <div class="callout-pitfall">
-        <p class="text-xs font-bold text-red-400 mono mb-2">⚠ PITFALL</p>
-        <p class="font-semibold mb-1">Schema vs State Confusion</p>
-        <p class="text-sm text-slate-400">Schema = <em>blueprint</em> (stable, rarely changes). State = <em>actual data</em> (changes constantly). Don't confuse structure with content!</p>
+        <p class="text-xs font-bold text-red-400 mono mb-2">⚠ KESALAHAN UMUM</p>
+        <p class="font-semibold mb-1">Terbalik antara Schema vs State</p>
+        <p class="text-sm text-slate-400">Schema = <em>cetak biru</em> (stabil, jarang berubah). State = <em>data sesungguhnya</em> (berubah-ubah secara konstan). Jangan samakan struktur dengan isinya!</p>
       </div>
     </div>
 
     <!-- Three-Schema Architecture -->
     <h3 class="text-lg font-bold mb-5 flex items-center gap-2"><i data-lucide="server" class="w-4 h-4 text-green-400"></i> Three-Schema Architecture</h3>
-    <p class="text-sm text-slate-400 mb-6">Proposed to support <strong class="text-slate-200">program-data independence</strong> and <strong class="text-slate-200">multiple views</strong> of data. Defines three distinct levels of abstraction:</p>
+    <p class="text-sm text-slate-400 mb-6">Dibuat untuk tujuan mendukung prinsip <strong class="text-slate-200">program-data independence</strong> (kemandirian) dan adanya <strong class="text-slate-200">multiple views (banyak view/sudut pandang)</strong> pada perincian data. Memiliki tiga tingkatan layer/abstraksi:</p>
 
     <!-- Interactive schema diagram -->
     <div class="card p-6 mb-6">
       <!-- Tabs -->
       <div class="flex gap-2 mb-6 flex-wrap">
         <button class="tab-btn active" onclick="switchTab('schema', 'diagram', this)">Visual Diagram</button>
-        <button class="tab-btn" onclick="switchTab('schema', 'explain', this)">Detailed Explanation</button>
-        <button class="tab-btn" onclick="switchTab('schema', 'example', this)">Unified Example</button>
+        <button class="tab-btn" onclick="switchTab('schema', 'explain', this)">Penjelasan Detail</button>
+        <button class="tab-btn" onclick="switchTab('schema', 'example', this)">Contoh Kesatuan</button>
       </div>
 
       <!-- Diagram tab -->
@@ -565,7 +565,7 @@
           <div class="w-full max-w-xs">
             <div class="schema-box text-center py-4" style="border-color:rgba(74,222,128,.4)">
               <p class="text-xs mono text-green-400">CONCEPTUAL SCHEMA</p>
-              <p class="text-xs text-slate-500 mt-1">Logical structure & constraints</p>
+              <p class="text-xs text-slate-500 mt-1">Struktur logis & constraints</p>
             </div>
             <p class="text-xs text-center text-slate-600 mt-1">↕ conceptual/internal mapping</p>
           </div>
@@ -574,7 +574,7 @@
           <div class="w-full max-w-xs">
             <div class="schema-box text-center py-4" style="border-color:rgba(245,158,11,.4)">
               <p class="text-xs mono text-amber-400">INTERNAL SCHEMA</p>
-              <p class="text-xs text-slate-500 mt-1">Physical storage structures</p>
+              <p class="text-xs text-slate-500 mt-1">Struktur penyimpanan fisik</p>
             </div>
             <p class="text-xs text-center text-slate-600 mt-1">↓</p>
           </div>
@@ -597,8 +597,8 @@
               <span class="text-2xl font-black text-slate-700 mono">1</span>
               <div>
                 <p class="font-semibold text-amber-400 mb-1">Internal Schema (Physical Level)</p>
-                <p class="text-sm text-slate-400">Describes <strong class="text-slate-200">how data is physically stored</strong> — file structures, indexes, access paths. Uses a physical data model (B+-trees, hash indexes, block sizes).</p>
-                <pre class="mt-3 text-xs"><span class="cm">-- Example Internal Schema elements:</span>
+                <p class="text-sm text-slate-400">Menjabarkan <strong class="text-slate-200">bagaimana data secara fisik tersimpan</strong> — bentuk/struktur file-nya, susunan indeks data, cara / perlintasan untuk melakukan access paths. Lebih mengedepankan model data secara fisik (kumpulan B+-trees, rupa hash indexes, block sizes dll).</p>
+                <pre class="mt-3 text-xs"><span class="cm">-- Contoh elemen Internal Schema:</span>
 <span class="kw">Cluster Index</span> <span class="op">on</span> SSN;
 <span class="kw">B+-tree</span> <span class="op">on</span> Age;
 <span class="val">Block size</span> = <span class="str">100</span>;</pre>
@@ -610,8 +610,8 @@
               <span class="text-2xl font-black text-slate-700 mono">2</span>
               <div>
                 <p class="font-semibold text-green-400 mb-1">Conceptual Schema (Logical Level)</p>
-                <p class="text-sm text-slate-400">Describes the <strong class="text-slate-200">entire database structure and constraints</strong> for all users. Hides physical storage details. Focuses on <em>what</em> data means.</p>
-                <pre class="mt-3 text-xs"><span class="cm">-- Example Conceptual Schema:</span>
+                <p class="text-sm text-slate-400">Memberikan deskripsi <strong class="text-slate-200">keseluruhan atas struktur rules pada database beserta constraint-nya (batasannya)</strong> yang digunakan terhadap semua grup pengguna. Tidak menyebutkan rincian physical data (penyimpanan file fisik). Mengutamakan bagaimana pendefinisian akan arti suatu data.</p>
+                <pre class="mt-3 text-xs"><span class="cm">-- Contoh Conceptual Schema:</span>
 EMPLOYEE(<span class="fn">SSN</span>, <span class="fn">EN</span>, <span class="fn">DNO</span>, <span class="fn">SALARY</span>, <span class="fn">EXP_YEAR</span>, <span class="fn">BDATE</span>)
 CUSTOMER(<span class="fn">Name</span>, <span class="fn">Addr</span>, <span class="fn">Sex</span>, <span class="fn">Age</span>)</pre>
               </div>
@@ -622,8 +622,8 @@ CUSTOMER(<span class="fn">Name</span>, <span class="fn">Addr</span>, <span class
               <span class="text-2xl font-black text-slate-700 mono">3</span>
               <div>
                 <p class="font-semibold text-cyan-400 mb-1">External Schema (View Level)</p>
-                <p class="text-sm text-slate-400">Describes <strong class="text-slate-200">user-specific views</strong> derived from the conceptual schema. Different user groups see different subsets.</p>
-                <pre class="mt-3 text-xs"><span class="cm">-- Derive a user view from conceptual:</span>
+                <p class="text-sm text-slate-400">Mendeskripsikan rancangan skema turunan (dari Conceptual Schema) <strong class="text-slate-200">sebagai user views</strong> berdasarkan kelompoknya. Kelompok user yang dibedakan otomatis akan menyajikan sub-data (subset) dengan penampilannya yang tidak seragam pula (beda user, beda view).</p>
+                <pre class="mt-3 text-xs"><span class="cm">-- Turunan user view dari Conceptual database kita:</span>
 <span class="kw">CREATE</span> MALE_CUSTOMER(<span class="fn">Name</span>, <span class="fn">Addr</span>)
   <span class="kw">AS VIEW OF</span> CUSTOMER(<span class="fn">Name</span>, <span class="fn">Addr</span>, <span class="fn">Sex</span>, <span class="fn">Age</span>)
   <span class="kw">WHERE</span> Sex = <span class="str">'M'</span>;</pre>
@@ -635,16 +635,16 @@ CUSTOMER(<span class="fn">Name</span>, <span class="fn">Addr</span>, <span class
 
       <!-- Example tab -->
       <div id="schema-example" class="tab-content">
-        <p class="text-sm text-slate-400 mb-4">Query: <em>"List employees with more than 5 years experience"</em></p>
-        <pre><span class="cm">-- External Schema (what users query):</span>
+        <p class="text-sm text-slate-400 mb-4">Mencari: <em>"Ayo buatkan daftar list dari para data employee yang pengalamannya lebih dari 5 tahun"</em></p>
+        <pre><span class="cm">-- External Schema (apa yang diquery pengguna):</span>
 <span class="kw">SELECT</span> e.ENAME, e.DEPT, e.EXP
 <span class="kw">FROM</span>   EMP e
 <span class="kw">WHERE</span>  e.EXP <span class="op">></span> <span class="val">5</span>;
 
-<span class="cm">-- This view is derived from the Conceptual Schema:</span>
+<span class="cm">-- Dari mana asal "EMP view" ini?, ini diderivasi dari Conceptual Schema:</span>
 EMPLOYEE(<span class="fn">SSN</span>, <span class="fn">EN</span>, <span class="fn">DNO</span>, <span class="fn">SALARY</span>, <span class="fn">EXP_YEAR</span>, <span class="fn">BDATE</span>)
 
-<span class="cm">-- Which sits on the Internal Schema:</span>
+<span class="cm">-- Dan yang mana ini pun bertumpu pada konfigurasi permesinan (Internal Schema):</span>
 <span class="kw">Cluster Index</span> <span class="op">on</span> SSN;
 <span class="kw">B+-tree indexes</span> <span class="op">on</span> DNO, EXP_YEAR, STARTDATE;</pre>
       </div>
@@ -655,26 +655,26 @@ EMPLOYEE(<span class="fn">SSN</span>, <span class="fn">EN</span>, <span class="f
     <div class="grid md:grid-cols-2 gap-4">
       <div class="card p-5">
         <p class="font-semibold text-green-400 mb-2">Logical Data Independence</p>
-        <p class="text-sm text-slate-400 mb-3">Ability to change the <strong class="text-slate-200">conceptual schema</strong> without affecting external schemas or application programs.</p>
+        <p class="text-sm text-slate-400 mb-3">Kemampuan untuk memodifikasi <strong class="text-slate-200">Conceptual Schema</strong> tanpa berdampak/merusak/mengubah skema views dari User Interface yang dirancang oleh programs yang dijalankan di External Schema.</p>
         <div class="text-xs mono text-slate-500 bg-slate-900 rounded p-3">
-          External schemas unchanged<br>
-          ← — — — <span class="text-green-400">LOGICAL boundary</span> — — —<br>
-          Conceptual schema can change
+          External schemas tidak berubah<br>
+          ← — — — <span class="text-green-400">Batasan LOGIS (LOGICAL boundary)</span> — — —<br>
+          Conceptual schema bisa dimodifikasi/diubah
         </div>
       </div>
       <div class="card p-5">
         <p class="font-semibold text-amber-400 mb-2">Physical Data Independence</p>
-        <p class="text-sm text-slate-400 mb-3">Ability to change the <strong class="text-slate-200">internal schema</strong> without affecting the conceptual schema.</p>
+        <p class="text-sm text-slate-400 mb-3">Kemampuan yang disematkan untuk bisa menyesuaikan atau mengganti elemen dari <strong class="text-slate-200">Internal schema</strong> tanpa memutus/berefek buruk pada struktur Conceptual Schema.</p>
         <div class="text-xs mono text-slate-500 bg-slate-900 rounded p-3">
-          Conceptual schema unchanged<br>
-          ← — — <span class="text-amber-400">PHYSICAL boundary</span> — — —<br>
-          Internal schema can change
+          Conceptual schema tidak terpengaruh / tak akan berubah<br>
+          ← — — <span class="text-amber-400">Batasan FISIK (PHYSICAL boundary)</span> — — —<br>
+          Internal schema boleh diedit dan dimodifikasi
         </div>
       </div>
     </div>
     <div class="callout-tip mt-4">
-      <p class="text-xs font-bold text-amber-400 mono mb-2">💡 MENTAL MODEL</p>
-      <p class="text-sm text-slate-300">Think of it like a building: the <strong class="text-amber-300">External schema</strong> = what tenants see (rooms/offices), <strong class="text-amber-300">Conceptual schema</strong> = the architectural floor plan, <strong class="text-amber-300">Internal schema</strong> = the electrical wiring and plumbing. Changing the plumbing doesn't change the floor plan or what tenants see.</p>
+      <p class="text-xs font-bold text-amber-400 mono mb-2">💡 MODEL MENTAL</p>
+      <p class="text-sm text-slate-300">Bayangkan layaknya satu bangunan: <strong class="text-amber-300">External schema</strong> = apa yang bisa disaksikan oleh sang penghuni kamar/penyewa, <strong class="text-amber-300">Conceptual schema</strong> = Arsitek plan pada pembuatan gedung tersebut tersebut, <strong class="text-amber-300">Internal schema</strong> = Instalasi pengkabelan / kelistrikannya dan aliran air/logistik. Jika kita hanya ingin mengganti aliran kabelnya, kita kan tak perlu harus membongkar plan blueprint sang arsitek apalagi harus merenovasi hingga penghuni terganggu kan.</p>
     </div>
   </section>
 
@@ -689,32 +689,32 @@ EMPLOYEE(<span class="fn">SSN</span>, <span class="fn">EN</span>, <span class="f
       </div>
       <div>
         <p class="section-label" style="color:var(--accent3)">Section 03</p>
-        <h2 class="text-2xl font-bold">DBMS Components</h2>
+        <h2 class="text-2xl font-bold">Komponen DBMS</h2>
       </div>
     </div>
 
     <!-- Languages -->
-    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="code-2" class="w-4 h-4 text-amber-400"></i> DBMS Languages</h3>
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="code-2" class="w-4 h-4 text-amber-400"></i> Bahasa di dalam DBMS</h3>
     <div class="grid md:grid-cols-2 gap-4 mb-8">
       <div class="card p-5">
         <div class="flex items-center gap-2 mb-3">
           <span class="badge badge-cyan">DDL</span>
           <span class="text-sm font-semibold">Data Definition Language</span>
         </div>
-        <p class="text-sm text-slate-400 mb-4">Used to <strong class="text-slate-200">define the schema</strong> — structure and constraints. Used by DBA and database designers.</p>
+        <p class="text-sm text-slate-400 mb-4">Digunakan untuk <strong class="text-slate-200">mendefinisikan schema</strong> — perihal struktur tabel dan constraints keseluruhannya. Lebih sering diakses oleh DBA dan database designers.</p>
         <div class="flex gap-2 flex-wrap">
           <span class="badge badge-green">CREATE</span>
           <span class="badge badge-amber">ALTER</span>
           <span class="badge" style="background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.25)">DROP</span>
         </div>
-        <p class="text-xs text-slate-500 mt-3 mono">Also: SDL (Storage Def Language) for internal schema; VDL (View Def Language) for external schemas.</p>
+        <p class="text-xs text-slate-500 mt-3 mono">Tambahan: SDL (Storage Def Language) dipakai untuk internal schema; VDL (View Def Language) untuk external schemas.</p>
       </div>
       <div class="card p-5">
         <div class="flex items-center gap-2 mb-3">
           <span class="badge badge-amber">DML</span>
           <span class="text-sm font-semibold">Data Manipulation Language</span>
         </div>
-        <p class="text-sm text-slate-400 mb-4">Used to <strong class="text-slate-200">retrieve and update</strong> data. Can be embedded in host languages (COBOL, C) or used standalone.</p>
+        <p class="text-sm text-slate-400 mb-4">Bahasa untuk <strong class="text-slate-200">menarik (retrieve) dan memperbarui (update)</strong> data. Bisa jadi tersemat (embedded) di bahasa inti seperti (COBOL, C) atau bahkan dijalankan secara independen (standalone).</p>
         <div class="flex gap-2 flex-wrap">
           <span class="badge badge-green">SELECT</span>
           <span class="badge badge-cyan">INSERT</span>
@@ -728,99 +728,99 @@ EMPLOYEE(<span class="fn">SSN</span>, <span class="fn">EN</span>, <span class="f
     <div class="grid md:grid-cols-2 gap-4 mb-8">
       <div class="callout-key">
         <p class="text-xs font-bold text-cyan-400 mono mb-2">HIGH-LEVEL DML (Non-procedural)</p>
-        <p class="text-sm text-slate-400">Specifies <em>what</em> data to retrieve, not <em>how</em>. Set-oriented. Also called <strong class="text-slate-200">declarative</strong> language. Example: <strong class="text-cyan-400">SQL</strong>.</p>
+        <p class="text-sm text-slate-400">Menyebutkan <em>apa ("what")</em> data yang mau diambil, tapi tidak pusing menjabarkan <em>bagaimana ("how")</em>-nya. Berorientasi himpunan set data. Biasa juga disebut bahasa <strong class="text-slate-200">declarative</strong>. Contoh: <strong class="text-cyan-400">SQL</strong>.</p>
       </div>
       <div class="callout-key">
         <p class="text-xs font-bold text-cyan-400 mono mb-2">LOW-LEVEL DML (Procedural)</p>
-        <p class="text-sm text-slate-400">Record-at-a-time. Specifies <em>how</em> to retrieve data. Must be embedded in a programming language.</p>
+        <p class="text-sm text-slate-400">Mengeksekusi record/catatan satu-per-satu. Menspesifikasikan secara urut <em>bagaimana (how)</em> untuk mendapatkan / me-retrieve data. Harus di-embed dalam program bahasa secara utuh.</p>
       </div>
     </div>
 
     <!-- Interfaces -->
-    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="monitor" class="w-4 h-4 text-amber-400"></i> DBMS Interfaces</h3>
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="monitor" class="w-4 h-4 text-amber-400"></i> Antarmuka DBMS (Interfaces)</h3>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
       <div class="card p-4 text-center">
         <i data-lucide="menu" class="w-5 h-5 mx-auto mb-2 text-cyan-400"></i>
-        <p class="text-sm font-semibold">Menu-based</p>
-        <p class="text-xs text-slate-500">Web browsing dropdowns</p>
+        <p class="text-sm font-semibold">Berbasis Menu (Menu)</p>
+        <p class="text-xs text-slate-500">Mencari item via dropdown di web</p>
       </div>
       <div class="card p-4 text-center">
         <i data-lucide="file-input" class="w-5 h-5 mx-auto mb-2 text-green-400"></i>
-        <p class="text-sm font-semibold">Forms-based</p>
-        <p class="text-xs text-slate-500">For naïve users</p>
+        <p class="text-sm font-semibold">Data Forms (Form)</p>
+        <p class="text-xs text-slate-500">Sederhana dan user-friendly</p>
       </div>
       <div class="card p-4 text-center">
         <i data-lucide="mouse-pointer-click" class="w-5 h-5 mx-auto mb-2 text-amber-400"></i>
-        <p class="text-sm font-semibold">Graphics-based</p>
-        <p class="text-xs text-slate-500">Point & click, drag & drop</p>
+        <p class="text-sm font-semibold">Berbasis Grafis (GUI)</p>
+        <p class="text-xs text-slate-500">Lebih banyak navigasi klik, drag & drop</p>
       </div>
       <div class="card p-4 text-center">
         <i data-lucide="message-square" class="w-5 h-5 mx-auto mb-2 text-purple-400"></i>
         <p class="text-sm font-semibold">Natural Language</p>
-        <p class="text-xs text-slate-500">Written English queries</p>
+        <p class="text-xs text-slate-500">Diketik dalam bahasa keseharian manusia</p>
       </div>
       <div class="card p-4 text-center">
         <i data-lucide="mic" class="w-5 h-5 mx-auto mb-2 text-red-400"></i>
-        <p class="text-sm font-semibold">Speech</p>
-        <p class="text-xs text-slate-500">Voice input/output</p>
+        <p class="text-sm font-semibold">Percakapan (Speech/Voice)</p>
+        <p class="text-xs text-slate-500">Input masuk pakai suara</p>
       </div>
       <div class="card p-4 text-center">
         <i data-lucide="settings" class="w-5 h-5 mx-auto mb-2 text-slate-400"></i>
-        <p class="text-sm font-semibold">DBA Interface</p>
-        <p class="text-xs text-slate-500">Account management</p>
+        <p class="text-sm font-semibold">Antarmuka Milik DBA</p>
+        <p class="text-xs text-slate-500">Fitur perizinan/manajemen akun</p>
       </div>
     </div>
 
     <!-- Main DBMS Modules -->
-    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="puzzle" class="w-4 h-4 text-amber-400"></i> Main DBMS Modules</h3>
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="puzzle" class="w-4 h-4 text-amber-400"></i> Modul Inti dari DBMS</h3>
     <div class="card p-6 mb-4">
       <div class="grid md:grid-cols-2 gap-4 text-sm">
         <div class="space-y-3">
           <div class="flex gap-3 items-start">
             <div class="w-6 h-6 rounded bg-cyan-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="code" class="w-3 h-3 text-cyan-400"></i></div>
-            <div><p class="font-medium">DDL Compiler</p><p class="text-xs text-slate-500">Processes DDL statements; updates the system catalog.</p></div>
+            <div><p class="font-medium">DDL Compiler</p><p class="text-xs text-slate-500">Memproses statements/baris DDL; serta membarui file sistem katalog.</p></div>
           </div>
           <div class="flex gap-3 items-start">
             <div class="w-6 h-6 rounded bg-green-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="terminal" class="w-3 h-3 text-green-400"></i></div>
-            <div><p class="font-medium">DML Compiler</p><p class="text-xs text-slate-500">Compiles DML statements embedded in host programs.</p></div>
+            <div><p class="font-medium">DML Compiler</p><p class="text-xs text-slate-500">Meng-*compile*/menerjemahkan bahasa perintah DML yang ada di suatu program asal.</p></div>
           </div>
           <div class="flex gap-3 items-start">
             <div class="w-6 h-6 rounded bg-amber-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="search" class="w-3 h-3 text-amber-400"></i></div>
-            <div><p class="font-medium">Query Compiler</p><p class="text-xs text-slate-500">Handles ad-hoc (interactive) queries from casual users.</p></div>
+            <div><p class="font-medium">Query Compiler</p><p class="text-xs text-slate-500">Bertindak untuk menanggapi pengiriman format instruksi Queries dadakan (ad-hoc) interaktif dari sebagian orang/user kasual.</p></div>
           </div>
         </div>
         <div class="space-y-3">
           <div class="flex gap-3 items-start">
             <div class="w-6 h-6 rounded bg-purple-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="zap" class="w-3 h-3 text-purple-400"></i></div>
-            <div><p class="font-medium">Run-time Database Processor</p><p class="text-xs text-slate-500">Executes privileged commands and compiled transactions.</p></div>
+            <div><p class="font-medium">Run-time Database Processor</p><p class="text-xs text-slate-500">Mengeksekusi transactions (transaksi database lengkap) dan penjalanan query level tertinggi yang privilesenya besar.</p></div>
           </div>
           <div class="flex gap-3 items-start">
             <div class="w-6 h-6 rounded bg-red-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="hard-drive" class="w-3 h-3 text-red-400"></i></div>
-            <div><p class="font-medium">Stored Data Manager</p><p class="text-xs text-slate-500">Controls access to DBMS information on disk.</p></div>
+            <div><p class="font-medium">Stored Data Manager</p><p class="text-xs text-slate-500">Mengawasi izin/Akses terhadap info riwayat operasi DBMS di disk memori terpasang.</p></div>
           </div>
           <div class="flex gap-3 items-start">
             <div class="w-6 h-6 rounded bg-slate-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="shield-check" class="w-3 h-3 text-slate-400"></i></div>
-            <div><p class="font-medium">Concurrency/Backup/Recovery</p><p class="text-xs text-slate-500">Ensures ACID properties and fault tolerance.</p></div>
+            <div><p class="font-medium">Concurrency/Backup/Recovery</p><p class="text-xs text-slate-500">Berfungsi melindungi aspek properti ACID demi pencegahan data saling tindih atau bila mati listrik.</p></div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Logic Walkthrough: Query Processing Flow -->
-    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="workflow" class="w-4 h-4 text-amber-400"></i> Algorithm: How a Query is Processed</h3>
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="workflow" class="w-4 h-4 text-amber-400"></i> Algoritma: Bagaimana Sebuah Query Diproses</h3>
     <div class="card p-6">
       <div class="flex items-center justify-between mb-4">
-        <p class="text-sm text-slate-400">Step-by-step walkthrough of query processing in a DBMS:</p>
+        <p class="text-sm text-slate-400">Langkah demi langkah mengenai alur pemrosesan query di dalam DBMS:</p>
         <span id="walk-counter" class="text-xs mono text-slate-500">Step 1 / 5</span>
       </div>
 
       <!-- Steps -->
       <div id="walk-step-1" class="walk-step active">
         <div class="callout-key mb-3">
-          <p class="text-xs mono text-cyan-400 mb-1">STEP 1 — User Submits Query</p>
-          <p class="text-sm text-slate-300">A casual user types an interactive query, OR an application program contains embedded DML commands.</p>
+          <p class="text-xs mono text-cyan-400 mb-1">LANGKAH 1 — User Mensubmit Query</p>
+          <p class="text-sm text-slate-300">Pengguna awam/kasual menulis sebuah string query, ATAU sebuah software program memicu command DML yang dituliskannya.</p>
         </div>
-        <pre><span class="cm">-- User types this interactive query:</span>
+        <pre><span class="cm">-- User mengetik interaktif query berikut:</span>
 <span class="kw">SELECT</span> e.ENAME, e.EXP
 <span class="kw">FROM</span>   EMP e
 <span class="kw">WHERE</span>  e.EXP <span class="op">></span> <span class="val">5</span>;</pre>
@@ -828,44 +828,44 @@ EMPLOYEE(<span class="fn">SSN</span>, <span class="fn">EN</span>, <span class="f
 
       <div id="walk-step-2" class="walk-step">
         <div class="callout-key mb-3">
-          <p class="text-xs mono text-cyan-400 mb-1">STEP 2 — Query / DML Compiler</p>
-          <p class="text-sm text-slate-300">The <strong class="text-slate-200">Query Compiler</strong> parses the SQL, checks against the <strong class="text-slate-200">System Catalog/Data Dictionary</strong> to verify table/column existence and user permissions.</p>
+          <p class="text-xs mono text-cyan-400 mb-1">LANGKAH 2 — Masuk Modul Compiler DML / Query</p>
+          <p class="text-sm text-slate-300"><strong class="text-slate-200">Query Compiler</strong> memilah dan memilah penulisan string (parsing) lalu memadankannya terhadap <strong class="text-slate-200">Kumpulan Sistem Katalog Data/Dictionary</strong> untuk mencocokkan eksistensi table maupun porsi kekuasaan level otorisasi akses (permissions).</p>
         </div>
-        <pre><span class="cm">-- Compiler checks System Catalog:</span>
-<span class="cm">-- Does table "EMP" exist? ✓</span>
-<span class="cm">-- Does column "EXP" exist? ✓</span>
-<span class="cm">-- Does user have SELECT permission? ✓</span>
-<span class="cm">-- Generates query execution plan...</span></pre>
+        <pre><span class="cm">-- Compiler mencocokkan pada kamus sistem:</span>
+<span class="cm">-- Apakah letak table bernama "EMP" ada? ✓</span>
+<span class="cm">-- Apakah column "EXP" ada isinya? ✓</span>
+<span class="cm">-- Adakah sang user ini diizinkan nge-SELECT data ini? ✓</span>
+<span class="cm">-- Lanjut membangun *execution plan*...</span></pre>
       </div>
 
       <div id="walk-step-3" class="walk-step">
         <div class="callout-key mb-3">
-          <p class="text-xs mono text-cyan-400 mb-1">STEP 3 — Run-time Database Processor</p>
-          <p class="text-sm text-slate-300">The compiled query is passed to the <strong class="text-slate-200">Runtime DB Processor</strong> for execution. It coordinates with the Stored Data Manager.</p>
+          <p class="text-xs mono text-cyan-400 mb-1">LANGKAH 3 — Dieksekusi Run-time Database Processor</p>
+          <p class="text-sm text-slate-300">Terjemahan kuerasi compiler ini dialihkan kepada <strong class="text-slate-200">Runtime DB Processor</strong> buat diproses sedetailnya bekerja-sama dengan modul Stored Data Manager dari sistem.</p>
         </div>
-        <pre><span class="cm">-- Runtime processor receives optimized plan:</span>
-<span class="cm">-- Plan: Use B+-tree index on EXP column</span>
-<span class="cm">-- Scan index for EXP > 5</span>
-<span class="cm">-- Retrieve matching tuples...</span></pre>
+        <pre><span class="cm">-- Processor pada Runtime menyusun rancang urut/plan yang optimum:</span>
+<span class="cm">-- Rencana/Plan: Fokus pakai kolom EXP di index schema tree B+</span>
+<span class="cm">-- Lacak di direktori index buat record yang angkanya EXP > 5</span>
+<span class="cm">-- Tarik kecocokan relasi barisannya (tuples)...</span></pre>
       </div>
 
       <div id="walk-step-4" class="walk-step">
         <div class="callout-key mb-3">
-          <p class="text-xs mono text-cyan-400 mb-1">STEP 4 — Stored Data Manager</p>
-          <p class="text-sm text-slate-300">The <strong class="text-slate-200">Stored Data Manager</strong> accesses the physical database via OS I/O operations, using the Internal Schema's index structures.</p>
+          <p class="text-xs mono text-cyan-400 mb-1">LANGKAH 4 — Dioper ke Stored Data Manager</p>
+          <p class="text-sm text-slate-300"><strong class="text-slate-200">Stored Data Manager</strong> menembak akses internal di penyimpanan fisikal DB ini lewat komando aksi program I/O kepada Operating System, memanfaatkan Index pada Internal Schema-nya.</p>
         </div>
-        <pre><span class="cm">-- Stored Data Manager executes disk I/O:</span>
-<span class="cm">-- Read index blocks from disk</span>
-<span class="cm">-- Fetch data pages for matching records</span>
-<span class="cm">-- Buffer management (cache hot pages)</span></pre>
+        <pre><span class="cm">-- Stored Data Manager menembus memori disk fisiknya:</span>
+<span class="cm">-- Lakukan Read blocks atas letak memori Index-nya</span>
+<span class="cm">-- Panggil bagian file pages atas record (pages) yang diminta itu</span>
+<span class="cm">-- Masukkan ke buffer / RAM sesaat sebelum dicap</span></pre>
       </div>
 
       <div id="walk-step-5" class="walk-step">
         <div class="callout-key mb-3">
-          <p class="text-xs mono text-cyan-400 mb-1">STEP 5 — Results Returned</p>
-          <p class="text-sm text-slate-300">Retrieved tuples are formatted according to the <strong class="text-slate-200">External Schema</strong> (user's view) and returned as the query result.</p>
+          <p class="text-xs mono text-cyan-400 mb-1">LANGKAH 5 — Meretur dan Mencetak Output</p>
+          <p class="text-sm text-slate-300">Relasi tuples/barisan berhasil digenggam dan dihadapkan selaras dengan pandangan permohonan <strong class="text-slate-200">External Schema</strong> dari user. Hasil Query tercetak di hadapannya.</p>
         </div>
-        <pre><span class="cm">-- Result returned to user:</span>
+        <pre><span class="cm">-- Hasil diserahkan pada sang penyuruh:</span>
 <span class="val">ENAME</span>   | <span class="val">EXP</span>
 --------|-----
 Alice   | <span class="str">7</span>
@@ -876,7 +876,7 @@ Charlie | <span class="str">6</span></pre>
       <!-- Walkthrough controls -->
       <div class="flex items-center gap-3 mt-5">
         <button onclick="walkPrev()" id="walk-prev" class="reveal-btn" disabled>
-          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Prev
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Mundur
         </button>
         <div class="flex gap-1.5">
           <div id="w-dot-1" class="w-2 h-2 rounded-full bg-cyan-400"></div>
@@ -886,7 +886,7 @@ Charlie | <span class="str">6</span></pre>
           <div id="w-dot-5" class="w-2 h-2 rounded-full bg-slate-600"></div>
         </div>
         <button onclick="walkNext()" id="walk-next" class="reveal-btn">
-          Next <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          Lanjut <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </button>
       </div>
     </div>
@@ -903,7 +903,7 @@ Charlie | <span class="str">6</span></pre>
       </div>
       <div>
         <p class="section-label">Section 04</p>
-        <h2 class="text-2xl font-bold">DBMS Architecture</h2>
+        <h2 class="text-2xl font-bold">Arsitektur DBMS</h2>
       </div>
     </div>
 
@@ -914,11 +914,11 @@ Charlie | <span class="str">6</span></pre>
           <i data-lucide="server" class="w-4 h-4 text-slate-400"></i>
           <p class="font-semibold">Centralized DBMS</p>
         </div>
-        <p class="text-sm text-slate-400 mb-3">Everything in a <strong class="text-slate-200">single system</strong> — DBMS software, hardware, applications, and user interfaces all combined.</p>
+        <p class="text-sm text-slate-400 mb-3">Segalanya menumpung dan disatukan di dalam <strong class="text-slate-200">satu wadah memori (single system)</strong> — hardware-nya, software DBMS-nya, beserta aplikasinya ditangani menjadi satu.</p>
         <div class="text-xs mono bg-slate-900 rounded p-3 text-slate-500">
           [PC / Mainframe]<br>
           └── DBMS<br>
-          └── App Programs<br>
+          └── Program App<br>
           └── UI Software
         </div>
       </div>
@@ -929,7 +929,7 @@ Charlie | <span class="str">6</span></pre>
           <i data-lucide="split-square-horizontal" class="w-4 h-4 text-cyan-400"></i>
           <p class="font-semibold text-cyan-400">2-Tier Client-Server</p>
         </div>
-        <p class="text-sm text-slate-400 mb-3">Client runs UI and application. Server runs the DBMS. Connected via <strong class="text-slate-200">ODBC</strong> (Open DB Connectivity) API.</p>
+        <p class="text-sm text-slate-400 mb-3">Pihak Client sekedar mengeksekusi UI dan sedikit program logic. Lalu di sisi Server berjalanlah program DBMS-nya utuh. Dibantu jembatan (API) bernama <strong class="text-slate-200">ODBC</strong> (Open DB Connectivity).</p>
         <div class="text-xs mono bg-slate-900 rounded p-3 text-slate-500">
           [Client]<br>
           └── UI + App logic<br>
@@ -944,48 +944,48 @@ Charlie | <span class="str">6</span></pre>
           <i data-lucide="layers" class="w-4 h-4 text-green-400"></i>
           <p class="font-semibold text-green-400">3-Tier Client-Server</p>
         </div>
-        <p class="text-sm text-slate-400 mb-3">Most common for <strong class="text-slate-200">web applications</strong>. Intermediate <em>Application Server</em> stores business logic between client and DB.</p>
+        <p class="text-sm text-slate-400 mb-3">Arsitektur paling populer seiring dengan model <strong class="text-slate-200">web modern</strong>. Munculnya titik tambahan <em>Application Server</em> di tengah menjadi penghubung/penyimpan otak dari alur bisnis pada webnya.</p>
         <div class="text-xs mono bg-slate-900 rounded p-3 text-slate-500">
-          [Client] GUI/Web<br>
+          [Client] Tampilan Web/GUI<br>
           ── HTTP ──<br>
-          [App Server] Logic<br>
-          ── SQL ──<br>
-          [DBMS Server]
+          [App Server] Logic bisnis<br>
+          ── Jaringan SQL ──<br>
+          [Lumbung Data/ DBMS Server]
         </div>
       </div>
     </div>
 
     <div class="callout-tip mb-8">
-      <p class="text-xs font-bold text-amber-400 mono mb-2">💡 THREE-TIER SECURITY FEATURE</p>
-      <p class="text-sm text-slate-300">The three-tier architecture adds security by <strong class="text-amber-300">encrypting data at the server</strong> before transmission and <strong class="text-amber-300">decrypting at the client</strong>. The app server acts as a firewall between users and the raw database.</p>
+      <p class="text-xs font-bold text-amber-400 mono mb-2">💡 FUNGSI LAIN DARI 3-TIER: PERLINDUNGAN (SECURITY)</p>
+      <p class="text-sm text-slate-300">Model Tiga tingkatan (3-tier) ini menyumbang peningkatan pada sisi sekuritas servernya. Terjadi sebuah kewajiban <strong class="text-amber-300">data encryption</strong> sebelum pengiriman dari server dan <strong class="text-amber-300">decrypt di titik/perangkat client penggunanya</strong> berlahan-lahan. Application Server seolah-olah ditugaskan membenteng selayaknya <i>firewall</i> yang menghalangi pengguna (user) untuk langsung 'bertemu'/menyentuh isi dalam raw dataset/database terdalam.</p>
     </div>
 
     <!-- DB Classification table -->
-    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-cyan-400"></i> Database Classification</h3>
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-cyan-400"></i> Klasifikasi/Pembagian Database</h3>
     <div class="card overflow-hidden">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-slate-800">
-            <th class="text-left p-4 text-cyan-400 font-semibold mono text-xs">CRITERION</th>
-            <th class="text-left p-4 text-cyan-400 font-semibold mono text-xs">TYPES</th>
+            <th class="text-left p-4 text-cyan-400 font-semibold mono text-xs">KRITERIA</th>
+            <th class="text-left p-4 text-cyan-400 font-semibold mono text-xs">TIPE</th>
           </tr>
         </thead>
         <tbody class="text-slate-400">
           <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
-            <td class="p-4 font-medium text-slate-300">Data Model</td>
-            <td class="p-4">Relational (Oracle, DB2), Object-OO (ObjectStore), Network (DBTG), Hierarchical (IMS)</td>
+            <td class="p-4 font-medium text-slate-300">Penamaan Data Model-nya</td>
+            <td class="p-4">Relational (Oracle, DB2), Object-OO (ObjectStore), Network/grafikal (DBTG), Hierarchical/Pohon (IMS)</td>
           </tr>
           <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
-            <td class="p-4 font-medium text-slate-300">Number of Users</td>
-            <td class="p-4">Single-user (PCs), Multi-user (enterprise)</td>
+            <td class="p-4 font-medium text-slate-300">Pecahan Jumlah Users</td>
+            <td class="p-4">Single-user (untuk tataran pemakaian level individu/PCs saja), Multi-user (dipakai di enterprise level)</td>
           </tr>
           <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
-            <td class="p-4 font-medium text-slate-300">Number of Sites</td>
-            <td class="p-4">Centralized, Distributed (R*), Federated (homogeneous/heterogeneous)</td>
+            <td class="p-4 font-medium text-slate-300">Struktur/Jumlah Sites Server</td>
+            <td class="p-4">Centralized (Satu tempat), Distributed (Terdistribusi silang R*), Federated (Digabung tapi beda asal vendor: homogeneous/heterogeneous)</td>
           </tr>
           <tr class="hover:bg-slate-800/50 transition-colors">
-            <td class="p-4 font-medium text-slate-300">Access Methods</td>
-            <td class="p-4">General purpose DBMS, Special purpose DBMS</td>
+            <td class="p-4 font-medium text-slate-300">Sistem Akses Metode</td>
+            <td class="p-4">General purpose DBMS (Biasa umum/luas dipakai), Special purpose DBMS (Punya ceruk tujuan penciptaan aplikasi yang sangat sempit/eksotis ditangani DBMSnya)</td>
           </tr>
         </tbody>
       </table>
@@ -998,221 +998,134 @@ Charlie | <span class="str">6</span></pre>
        ============================ -->
   <section id="practice">
     <div class="flex items-center gap-3 mb-6">
-      <div class="w-8 h-8 rounded-lg bg-green-400/10 border border-green-400/20 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="brain" class="w-4 h-4 text-green-400"></i>
+      <div class="w-8 h-8 rounded-lg bg-indigo-400/10 border border-indigo-400/20 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="check-circle" class="w-4 h-4 text-indigo-400"></i>
       </div>
       <div>
-        <p class="section-label" style="color:var(--accent2)">Section 05</p>
-        <h2 class="text-2xl font-bold">Interactive Practice Suite</h2>
+        <p class="section-label" style="color:#818cf8">Section 05</p>
+        <h2 class="text-2xl font-bold">Ujian Latihan (Practice Quiz)</h2>
       </div>
     </div>
-
-    <!-- Score tracker -->
-    <div class="card p-4 mb-6 flex items-center justify-between flex-wrap gap-3">
-      <div class="flex items-center gap-3">
-        <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i>
-        <span class="text-sm text-slate-400">Score: <span id="score-display" class="text-white font-bold">0</span> / <span id="total-display">5</span></span>
-      </div>
-      <div class="flex-1 min-w-32 max-w-48">
-        <div id="quiz-progress-bar">
-          <div id="quiz-progress-fill"></div>
+    
+    <div class="card p-6" id="quiz-container">
+      <div class="flex justify-between items-center mb-6 border-b border-slate-700/50 pb-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-300">Uji Pengetahuan Konsep Basis Data</p>
+          <p class="text-xs text-slate-500 mt-1">Selesaikan seluruh 4 soal untuk membuka pembahasan tuntas.</p>
+        </div>
+        <div class="quiz-score text-xs mono text-indigo-400 bg-indigo-400/10 px-3 py-1.5 rounded-full border border-indigo-400/20">
+          Skor: <span id="score-display">0/4</span>
         </div>
       </div>
-      <button onclick="resetQuiz()" class="reveal-btn text-xs">
-        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Reset
+
+      <!-- Question 1 -->
+      <div class="quiz-q" id="q1">
+        <p class="text-sm font-bold mb-4 flex items-start gap-2">
+          <span class="text-indigo-400 mono">Q1.</span>
+          Manakah dari Data Model berikut yang dianggap sebagai High-Level (konseptual)?
+        </p>
+        <div class="space-y-2 mb-4">
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(1, 'A', this)">
+            A) Relational Model
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(1, 'B', this)">
+            B) Entity-Relationship (ER) Model
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(1, 'C', this)">
+            C) B+-Tree Index Model
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(1, 'D', this)">
+            D) Hierarchical Model
+          </button>
+        </div>
+        <div id="fb-1" class="hidden p-3 rounded-lg text-sm"></div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="quiz-q hidden" id="q2">
+        <p class="text-sm font-bold mb-4 flex items-start gap-2">
+          <span class="text-indigo-400 mono">Q2.</span>
+          Berdasarkan Three-Schema Architecture, siapakah yang bertanggung jawab men-cover struktur penyimpanan *fisik*?
+        </p>
+        <div class="space-y-2 mb-4">
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(2, 'A', this)">
+            A) External Schema
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(2, 'B', this)">
+            B) Conceptual Schema
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(2, 'C', this)">
+            C) Logical Schema
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(2, 'D', this)">
+            D) Internal Schema
+          </button>
+        </div>
+        <div id="fb-2" class="hidden p-3 rounded-lg text-sm"></div>
+      </div>
+
+      <!-- Question 3 -->
+      <div class="quiz-q hidden" id="q3">
+        <p class="text-sm font-bold mb-4 flex items-start gap-2">
+          <span class="text-indigo-400 mono">Q3.</span>
+          Perintah SQL semacam CREATE atau DROP diklasifikasikan ke bahasa yang mana?
+        </p>
+        <div class="space-y-2 mb-4">
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(3, 'A', this)">
+            A) DML (Data Manipulation Language)
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(3, 'B', this)">
+            B) DDL (Data Definition Language)
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(3, 'C', this)">
+            C) DCL (Data Control Language)
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(3, 'D', this)">
+            D) VDL (View Definition Language)
+          </button>
+        </div>
+        <div id="fb-3" class="hidden p-3 rounded-lg text-sm"></div>
+      </div>
+
+      <!-- Question 4 -->
+      <div class="quiz-q hidden" id="q4">
+        <p class="text-sm font-bold mb-4 flex items-start gap-2">
+          <span class="text-indigo-400 mono">Q4.</span>
+          Bagaimana cara kerja Physical Data Independence?
+        </p>
+        <div class="space-y-2 mb-4">
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(4, 'A', this)">
+            A) Membuat file penyimpanan pada mesin tak lagi butuh disk space
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(4, 'B', this)">
+            B) Memisahkan jaringan client interface dengan arsitektur server
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(4, 'C', this)">
+            C) Membebaskan kemampuan modifikasi Internal Schema *tanpa mengubah* Conceptual Schema
+          </button>
+          <button class="quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300" onclick="checkAnswer(4, 'D', this)">
+            D) Memperbolehkan update/modifikasi format Conceptual Schema tanpa mempengaruhi susunan External view users
+          </button>
+        </div>
+        <div id="fb-4" class="hidden p-3 rounded-lg text-sm"></div>
+      </div>
+
+      <button id="next-q-btn" class="hidden mt-6 bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-sm transition-colors font-medium border border-slate-600 block w-full" onclick="nextQuestion()">
+        Pertanyaan Selanjutnya →
       </button>
+
+      <!-- Completion State -->
+      <div id="quiz-complete" class="hidden text-center py-6">
+        <div class="w-16 h-16 rounded-full bg-green-400/20 flex items-center justify-center mx-auto mb-4 border border-green-400/30">
+          <i data-lucide="award" class="w-8 h-8 text-green-400"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Quiz Selesai!</h3>
+        <p class="text-slate-400 text-sm mb-6">Anda telah menyelesaikan keseluruhan uji coba materi minggu ke-2.</p>
+        <button class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 px-6 py-2.5 rounded-lg text-sm font-bold transition-colors" onclick="resetQuiz()">
+          Coba Lagi Quiz-nya
+        </button>
+      </div>
     </div>
-
-    <!-- Questions -->
-    <div class="space-y-6" id="quiz-container">
-
-      <!-- Q1 -->
-      <div class="card p-6" id="q1">
-        <div class="flex items-start gap-3 mb-5">
-          <span class="badge badge-cyan mono flex-shrink-0">Q1</span>
-          <div>
-            <p class="font-semibold mb-1">Which category of data model is closest to how <em>users perceive</em> data and uses concepts like entities and relationships?</p>
-            <p class="text-xs text-slate-500">Select the best answer.</p>
-          </div>
-        </div>
-        <div class="space-y-2 mb-4" id="q1-options">
-          <button class="quiz-option" onclick="checkAnswer(1,'a','b')">A. Physical (Low-Level) Data Model</button>
-          <button class="quiz-option" onclick="checkAnswer(1,'b','b')">B. Conceptual (High-Level) Data Model</button>
-          <button class="quiz-option" onclick="checkAnswer(1,'c','b')">C. Implementation Data Model</button>
-          <button class="quiz-option" onclick="checkAnswer(1,'d','b')">D. Relational Data Model</button>
-        </div>
-        <div id="q1-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! Conceptual models like ER are designed to be human-friendly — close to how people think about real-world data.</div>
-        <div id="q1-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Not quite. Physical models deal with storage; Implementation models bridge the two. The answer is <strong>B — Conceptual</strong>.</div>
-        <div class="flex justify-end mt-3">
-          <button class="reveal-btn" onclick="toggleExplanation('q1-exp')">
-            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
-          </button>
-        </div>
-        <div id="q1-exp" class="explanation">
-          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
-          <p class="text-slate-300 mb-2">The slide explicitly defines three categories: <strong>Conceptual</strong> (high-level, semantic), <strong>Physical</strong> (low-level, internal), and <strong>Implementation</strong> (representational).</p>
-          <p class="text-slate-400 mb-2">The key phrase in the question is <em>"closest to how users perceive data"</em> — this is the definition of a <strong class="text-cyan-300">Conceptual / Semantic model</strong>. The ER model is the prime example.</p>
-          <p class="text-slate-500 text-xs mono">Note: Relational model (D) is actually an Implementation/Representational model, not conceptual.</p>
-        </div>
-      </div>
-
-      <!-- Q2 -->
-      <div class="card p-6" id="q2">
-        <div class="flex items-start gap-3 mb-5">
-          <span class="badge badge-cyan mono flex-shrink-0">Q2</span>
-          <div>
-            <p class="font-semibold mb-1">In the Three-Schema Architecture, which schema is responsible for describing <em>physical storage structures and access paths</em>?</p>
-            <p class="text-xs text-slate-500">Select the best answer.</p>
-          </div>
-        </div>
-        <div class="space-y-2 mb-4" id="q2-options">
-          <button class="quiz-option" onclick="checkAnswer(2,'a','a')">A. Internal Schema</button>
-          <button class="quiz-option" onclick="checkAnswer(2,'b','a')">B. Conceptual Schema</button>
-          <button class="quiz-option" onclick="checkAnswer(2,'c','a')">C. External Schema</button>
-          <button class="quiz-option" onclick="checkAnswer(2,'d','a')">D. Schema Diagram</button>
-        </div>
-        <div id="q2-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! The Internal Schema deals with physical reality — B+-trees, indexes, block sizes.</div>
-        <div id="q2-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Incorrect. The answer is <strong>A — Internal Schema</strong>. Conceptual = logical structure; External = user views.</div>
-        <div class="flex justify-end mt-3">
-          <button class="reveal-btn" onclick="toggleExplanation('q2-exp')">
-            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
-          </button>
-        </div>
-        <div id="q2-exp" class="explanation">
-          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
-          <p class="text-slate-300 mb-2">Remember the three levels with this mental model:</p>
-          <ul class="text-slate-400 text-sm space-y-1 mb-3 ml-4">
-            <li>• <strong class="text-cyan-300">External</strong> = what users see (customized views)</li>
-            <li>• <strong class="text-green-300">Conceptual</strong> = what data means (logical structure)</li>
-            <li>• <strong class="text-amber-300">Internal</strong> = how data is stored (physical reality)</li>
-          </ul>
-          <p class="text-slate-400">The question mentions "physical storage structures and access paths" → that's the <strong class="text-amber-300">Internal Schema</strong>. Examples include B+-tree indexes, cluster indexes, and block sizes.</p>
-        </div>
-      </div>
-
-      <!-- Q3 -->
-      <div class="card p-6" id="q3">
-        <div class="flex items-start gap-3 mb-5">
-          <span class="badge badge-cyan mono flex-shrink-0">Q3</span>
-          <div>
-            <p class="font-semibold mb-1">What type of data independence allows you to change the <em>internal schema</em> without affecting the conceptual schema?</p>
-            <p class="text-xs text-slate-500">Select the best answer.</p>
-          </div>
-        </div>
-        <div class="space-y-2 mb-4" id="q3-options">
-          <button class="quiz-option" onclick="checkAnswer(3,'a','b')">A. Logical Data Independence</button>
-          <button class="quiz-option" onclick="checkAnswer(3,'b','b')">B. Physical Data Independence</button>
-          <button class="quiz-option" onclick="checkAnswer(3,'c','b')">C. Program-Data Independence</button>
-          <button class="quiz-option" onclick="checkAnswer(3,'d','b')">D. Schema Transparency</button>
-        </div>
-        <div id="q3-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! Physical Data Independence means changes to how data is stored don't ripple up to the logical level.</div>
-        <div id="q3-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Incorrect. Logical independence = changing conceptual without affecting external. The answer is <strong>B — Physical Data Independence</strong>.</div>
-        <div class="flex justify-end mt-3">
-          <button class="reveal-btn" onclick="toggleExplanation('q3-exp')">
-            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
-          </button>
-        </div>
-        <div id="q3-exp" class="explanation">
-          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
-          <p class="text-slate-300 mb-3">There are two types of data independence. Use the following memory trick:</p>
-          <div class="grid grid-cols-2 gap-3 text-sm mb-3">
-            <div class="bg-slate-900 rounded p-3">
-              <p class="text-amber-300 font-semibold mb-1">Physical</p>
-              <p class="text-slate-400">Internal → Conceptual<br>Change storage, not logic</p>
-            </div>
-            <div class="bg-slate-900 rounded p-3">
-              <p class="text-green-300 font-semibold mb-1">Logical</p>
-              <p class="text-slate-400">Conceptual → External<br>Change logic, not views</p>
-            </div>
-          </div>
-          <p class="text-slate-400 text-sm">The question says "change internal schema without affecting conceptual" — that's <strong>Physical Data Independence</strong> (boundary is between internal and conceptual levels).</p>
-        </div>
-      </div>
-
-      <!-- Q4 -->
-      <div class="card p-6" id="q4">
-        <div class="flex items-start gap-3 mb-5">
-          <span class="badge badge-cyan mono flex-shrink-0">Q4</span>
-          <div>
-            <p class="font-semibold mb-1">A web application has three layers: (1) a browser client with a GUI, (2) an application server running business logic, and (3) a database server. Which DBMS architecture does this represent?</p>
-            <p class="text-xs text-slate-500">Select the best answer.</p>
-          </div>
-        </div>
-        <div class="space-y-2 mb-4" id="q4-options">
-          <button class="quiz-option" onclick="checkAnswer(4,'a','c')">A. Centralized Architecture</button>
-          <button class="quiz-option" onclick="checkAnswer(4,'b','c')">B. Two-Tier Client-Server Architecture</button>
-          <button class="quiz-option" onclick="checkAnswer(4,'c','c')">C. Three-Tier Client-Server Architecture</button>
-          <button class="quiz-option" onclick="checkAnswer(4,'d','c')">D. Federated DBMS Architecture</button>
-        </div>
-        <div id="q4-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! Three layers (client / app server / DB server) = Three-Tier architecture — the standard for modern web apps.</div>
-        <div id="q4-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Incorrect. Three distinct layers with a middle application server = <strong>C — Three-Tier Client-Server</strong>.</div>
-        <div class="flex justify-end mt-3">
-          <button class="reveal-btn" onclick="toggleExplanation('q4-exp')">
-            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
-          </button>
-        </div>
-        <div id="q4-exp" class="explanation">
-          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
-          <p class="text-slate-300 mb-3">Count the distinct layers in the scenario:</p>
-          <ul class="text-slate-400 text-sm space-y-1 mb-3 ml-4">
-            <li>• Layer 1: Browser/Client with GUI ← client tier</li>
-            <li>• Layer 2: Application Server with business logic ← middle tier</li>
-            <li>• Layer 3: Database Server ← data tier</li>
-          </ul>
-          <p class="text-slate-400 text-sm">3 layers = Three-Tier architecture. The key differentiator from two-tier is the <strong class="text-cyan-300">intermediate Application Server</strong> that holds business rules. This also adds security through encryption between tiers.</p>
-        </div>
-      </div>
-
-      <!-- Q5 -->
-      <div class="card p-6" id="q5">
-        <div class="flex items-start gap-3 mb-5">
-          <span class="badge badge-cyan mono flex-shrink-0">Q5</span>
-          <div>
-            <p class="font-semibold mb-1">A database designer adds a new column <code class="text-cyan-400 bg-slate-800 px-1 rounded text-xs">BirthDate</code> to the EMPLOYEE conceptual schema. The external schemas used by HR and Payroll applications should remain unchanged. What concept enables this?</p>
-            <p class="text-xs text-slate-500">Select the best answer.</p>
-          </div>
-        </div>
-        <div class="space-y-2 mb-4" id="q5-options">
-          <button class="quiz-option" onclick="checkAnswer(5,'a','a')">A. Logical Data Independence</button>
-          <button class="quiz-option" onclick="checkAnswer(5,'b','a')">B. Physical Data Independence</button>
-          <button class="quiz-option" onclick="checkAnswer(5,'c','a')">C. Three-Tier Architecture</button>
-          <button class="quiz-option" onclick="checkAnswer(5,'d','a')">D. External-Conceptual Mapping</button>
-        </div>
-        <div id="q5-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! Logical Data Independence means conceptual schema changes don't force external schema or application changes.</div>
-        <div id="q5-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Not quite. <strong>A — Logical Data Independence</strong> is the ability to change the conceptual schema without affecting external schemas. (D is a mechanism, not the independence property itself.)</div>
-        <div class="flex justify-end mt-3">
-          <button class="reveal-btn" onclick="toggleExplanation('q5-exp')">
-            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
-          </button>
-        </div>
-        <div id="q5-exp" class="explanation">
-          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
-          <p class="text-slate-300 mb-3">The scenario says: <em>conceptual schema changes</em> (add BirthDate column), but <em>external schemas stay unchanged</em>. This is precisely the definition of <strong class="text-green-300">Logical Data Independence</strong>.</p>
-          <p class="text-slate-400 mb-3 text-sm">Why not D? External-Conceptual Mapping is the <em>mechanism</em> that enables this (the DBMS updates only the mappings, not the schemas themselves), but the <em>property</em> being described is Logical Data Independence.</p>
-          <div class="bg-slate-900 rounded p-3 text-xs mono text-slate-500">
-            External HR view  ← unchanged<br>
-            External Pay view ← unchanged<br>
-            — — — Logical boundary — — —<br>
-            Conceptual: EMPLOYEE + BirthDate  ← changed<br>
-            — — — Physical boundary — — —<br>
-            Internal schema  ← also updates
-          </div>
-        </div>
-      </div>
-
-    </div><!-- end quiz-container -->
-
-    <!-- Score summary -->
-    <div id="quiz-summary" class="card p-6 mt-6 text-center hidden">
-      <i data-lucide="award" class="w-10 h-10 mx-auto mb-3 text-amber-400"></i>
-      <p class="text-xl font-bold mb-1">Quiz Complete!</p>
-      <p class="text-slate-400 mb-4">You scored <span id="final-score" class="text-white font-bold text-2xl"></span> out of 5</p>
-      <p id="score-message" class="text-sm text-slate-400 mb-5"></p>
-      <button onclick="resetQuiz()" class="reveal-btn mx-auto">
-        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Try Again
-      </button>
-    </div>
-
   </section>
 
 </div>
@@ -1220,8 +1133,8 @@ Charlie | <span class="str">6</span></pre>
 <!-- FOOTER -->
 <footer class="border-t border-slate-800 mt-12 py-8">
   <div class="max-w-5xl mx-auto px-4 text-center">
-    <p class="text-xs mono text-slate-600">CSGE602070 — Basis Data · Week 2 · Database Concept and Architecture</p>
-    <p class="text-xs text-slate-700 mt-1">Based on Elmasri/Navathe "Database Systems" 6th Ed. · Universitas Indonesia</p>
+    <p class="text-xs mono text-slate-600">CSGE602070 — Basis Data · Minggu 2 · Database Concept and Architecture</p>
+    <p class="text-xs text-slate-700 mt-1">Berdasarkan Elmasri/Navathe "Database Systems" 6th Ed. · Universitas Indonesia</p>
   </div>
 </footer>
 
@@ -1272,92 +1185,91 @@ Charlie | <span class="str">6</span></pre>
     if (walkStep > 1) { walkStep--; updateWalkthrough(); }
   }
 
-  // ============ QUIZ ============
+  // ==========================================
+  // QUIZ LOGIC
+  // ==========================================
+  const quizData = {
+    1: { answer: 'B', exp: "Benar! ER Model adalah model secara konseptual. Sedangkan Relational. Network, Hierarchical digolongkan perwakilan (Implementation); B+-tree itu fisikal." },
+    2: { answer: 'D', exp: "Ya! Internal schema menjabarkan susunan physical storage, misalnya pemetaan index disk atau hashes." },
+    3: { answer: 'B', exp: "Tepat Sekali! CREATE dan DROP difungsikan dipakai sebagai Data Definition Language (DDL)." },
+    4: { answer: 'C', exp: "Korrekt! Kemandirian fisik data atau Physical Data Independence mendefinisikan agar admin membebaskan pengubahan rupa Internal schema namun tanpa merusak aturan Conceptual-nya." }
+  };
+
+  let currentQ = 1;
   let score = 0;
-  let answered = new Set();
+  let answered = { 1: false, 2: false, 3: false, 4: false };
 
-  function checkAnswer(qNum, selected, correct) {
-    if (answered.has(qNum)) return;
-    answered.add(qNum);
+  function checkAnswer(qNum, selected, btnData) {
+    if (answered[qNum]) return; // Stop double answer
+    answered[qNum] = true;
 
-    const opts = document.querySelectorAll(`#q${qNum}-options .quiz-option`);
-    const letters = ['a','b','c','d'];
+    const data = quizData[qNum];
+    const fbDiv = document.getElementById(`fb-${qNum}`);
+    const btns = btnData.parentElement.querySelectorAll('button');
 
-    opts.forEach((btn, i) => {
-      btn.disabled = true;
-      const letter = letters[i];
-      if (letter === correct) {
-        btn.classList.add('correct');
-      } else if (letter === selected && selected !== correct) {
-        btn.classList.add('wrong');
-      } else {
-        btn.classList.add('dimmed');
+    // Highlight correct & wrong
+    btns.forEach(btn => {
+      btn.style.pointerEvents = 'none';
+      if (btn.innerText.trim().startsWith(data.answer)) {
+        btn.classList.add('bg-green-500/10', 'border-green-500', 'text-green-300');
+        btn.classList.remove('border-slate-700', 'hover:border-indigo-400/50', 'hover:bg-slate-800/50', 'text-slate-300');
       }
     });
 
-    const isCorrect = selected === correct;
-    if (isCorrect) {
+    if (selected === data.answer) {
       score++;
-      document.getElementById(`q${qNum}-feedback-correct`).style.display = 'flex';
-      document.getElementById(`q${qNum}-feedback-correct`).style.alignItems = 'center';
+      document.getElementById('score-display').innerText = `${score}/4`;
+      fbDiv.innerHTML = `<span class="font-bold text-green-400">✓ Tepat!</span> ${data.exp}`;
+      fbDiv.classList.add('bg-green-500/10', 'border', 'border-green-500/30', 'text-green-200');
     } else {
-      document.getElementById(`q${qNum}-feedback-wrong`).style.display = 'flex';
-      document.getElementById(`q${qNum}-feedback-wrong`).style.alignItems = 'center';
+      btnData.classList.add('bg-red-500/10', 'border-red-500', 'text-red-300');
+      btnData.classList.remove('border-slate-700', 'text-slate-300');
+      fbDiv.innerHTML = `<span class="font-bold text-red-400">✗ Salah.</span> Jawaban yang benar adalah ${data.answer}. ${data.exp}`;
+      fbDiv.classList.add('bg-red-500/10', 'border', 'border-red-500/30', 'text-red-200');
     }
 
-    // Update score display
-    document.getElementById('score-display').textContent = score;
-    const pct = (answered.size / 5) * 100;
-    document.getElementById('quiz-progress-fill').style.width = pct + '%';
+    fbDiv.classList.remove('hidden');
 
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-
-    // Show summary if all answered
-    if (answered.size === 5) {
+    if (currentQ < 4) {
+      document.getElementById('next-q-btn').classList.remove('hidden');
+    } else {
       setTimeout(() => {
-        const summary = document.getElementById('quiz-summary');
-        summary.classList.remove('hidden');
-        document.getElementById('final-score').textContent = score;
-        const msgs = [
-          "Keep reviewing the material! 📖",
-          "Getting there — focus on schema architecture! 💪",
-          "Good effort! Review data independence concepts. 🔍",
-          "Nice work! A few more reviews and you'll nail it! ⭐",
-          "Excellent! You've mastered this material! 🏆",
-        ];
-        document.getElementById('score-message').textContent = msgs[score] || msgs[4];
-        summary.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-      }, 600);
+        document.getElementById(`q${currentQ}`).classList.add('hidden');
+        document.getElementById('quiz-complete').classList.remove('hidden');
+      }, 1500);
     }
   }
 
-  function toggleExplanation(id) {
-    const el = document.getElementById(id);
-    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  function nextQuestion() {
+    document.getElementById(`q${currentQ}`).classList.add('hidden');
+    document.getElementById('next-q-btn').classList.add('hidden');
+    currentQ++;
+    document.getElementById(`q${currentQ}`).classList.remove('hidden');
   }
 
   function resetQuiz() {
+    currentQ = 1;
     score = 0;
-    answered = new Set();
-    document.getElementById('score-display').textContent = '0';
-    document.getElementById('quiz-progress-fill').style.width = '0%';
-    document.getElementById('quiz-summary').classList.add('hidden');
+    answered = { 1: false, 2: false, 3: false, 4: false };
+    document.getElementById('score-display').innerText = `0/4`;
+    document.getElementById('quiz-complete').classList.add('hidden');
+    document.getElementById('q1').classList.remove('hidden');
 
-    for (let q = 1; q <= 5; q++) {
-      // Re-enable options
-      document.querySelectorAll(`#q${q}-options .quiz-option`).forEach(btn => {
-        btn.disabled = false;
-        btn.classList.remove('correct', 'wrong', 'dimmed');
-      });
-      // Hide feedback
-      const fc = document.getElementById(`q${q}-feedback-correct`);
-      const fw = document.getElementById(`q${q}-feedback-wrong`);
-      if (fc) fc.style.display = 'none';
-      if (fw) fw.style.display = 'none';
-      // Hide explanations
-      const exp = document.getElementById(`q${q}-exp`);
-      if (exp) exp.style.display = 'none';
+    for (let i = 1; i <= 4; i++) {
+      const qDiv = document.getElementById(`q${i}`);
+      const fbDiv = document.getElementById(`fb-${i}`);
+      if (fbDiv) {
+        fbDiv.classList.add('hidden');
+        fbDiv.className = 'hidden p-3 rounded-lg text-sm';
+      }
+
+      if (qDiv) {
+        const btns = qDiv.querySelectorAll('button.quiz-opt');
+        btns.forEach(btn => {
+          btn.style.pointerEvents = 'auto';
+          btn.className = 'quiz-opt w-full text-left p-3 rounded-lg border border-slate-700 hover:border-indigo-400/50 hover:bg-slate-800/50 text-sm transition-colors text-slate-300';
+        });
+      }
     }
   }
 

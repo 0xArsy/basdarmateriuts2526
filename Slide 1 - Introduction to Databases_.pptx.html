@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Introduction to Databases – Interactive Learning</title>
+<title>Pengantar Basis Data – Interaktif</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -121,20 +121,20 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
       </div>
       <span class="hero-label">CSF2600700 &middot; Basis Data &middot; Universitas Indonesia</span>
     </div>
-    <h1>Introduction to Databases</h1>
-    <p>Interactive learning page &mdash; conceptual deep dive, logic visualization &amp; practice suite.</p>
+    <h1>Pengantar Database</h1>
+    <p>Halaman pembelajaran interaktif &mdash; penyelaman konsep, visualisasi logika &amp; paket latihan.</p>
     <div class="hero-meta">
       <span>
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        5 Topics
+        5 Topik
       </span>
       <span>
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        Logic Walkthrough
+        Walkthrough Logika
       </span>
       <span>
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        5 Practice Questions
+        5 Latihan Soal
       </span>
     </div>
   </div>
@@ -146,55 +146,55 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
 <section>
   <div class="section-header">
     <div class="section-num blue">1</div>
-    <h2>Conceptual Deep Dive</h2>
+    <h2>Penyelaman Konsep Database</h2>
   </div>
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('def',this)">Definition</button>
-    <button class="tab-btn" onclick="showTab('props',this)">Properties</button>
+    <button class="tab-btn active" onclick="showTab('def',this)">Definisi</button>
+    <button class="tab-btn" onclick="showTab('props',this)">Properti</button>
     <button class="tab-btn" onclick="showTab('dbms',this)">DBMS</button>
-    <button class="tab-btn" onclick="showTab('actors',this)">Actors</button>
-    <button class="tab-btn" onclick="showTab('when',this)">When to Use</button>
+    <button class="tab-btn" onclick="showTab('actors',this)">Aktor</button>
+    <button class="tab-btn" onclick="showTab('when',this)">Kapan Digunakan</button>
   </div>
 
   <!-- TAB: Definition -->
   <div id="tab-def" class="tab-content active">
     <div class="glass" style="margin-bottom:14px">
-      <h3 style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">What is a Database?</h3>
-      <p style="font-size:13px;color:#cbd5e1;line-height:1.7">A database is a <strong>collection of related data</strong> &mdash; known facts that can be recorded and that have implicit meaning. Think of it as a structured digital filing cabinet where every piece of information is interconnected and purposeful.</p>
+      <h3 style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">Apa itu Database?</h3>
+      <p style="font-size:13px;color:#cbd5e1;line-height:1.7">Database adalah <strong>kumpulan data yang saling berhubungan (related data)</strong> &mdash; fakta-fakta yang diketahui yang dapat dicatat dan memiliki makna implisit. Anggap saja sebagai lemari arsip digital terstruktur di mana setiap bagian informasi saling terhubung dan memiliki tujuan tertentu.</p>
     </div>
     <div class="callout-box blue" style="margin-bottom:14px">
-      <div class="callout-label blue">Key Terms</div>
+      <div class="callout-label blue">Istilah Kunci</div>
       <div class="grid2" style="gap:12px">
-        <div class="callout-body"><strong style="color:#fff">Database</strong><br/>An organised collection of interrelated data built for a specific purpose.</div>
-        <div class="callout-body"><strong style="color:#fff">Meta-data</strong><br/>Data about data &mdash; the schema stored in the catalog (column names, data types, constraints).</div>
-        <div class="callout-body"><strong style="color:#fff">Query</strong><br/>A request to retrieve specific data without modifying it.</div>
-        <div class="callout-body"><strong style="color:#fff">Transaction</strong><br/>A read/write operation executed as an atomic unit.</div>
+        <div class="callout-body"><strong style="color:#fff">Database</strong><br/>Kumpulan data yang saling berhubungan yang diorganisasikan, dibangun untuk tujuan tertentu.</div>
+        <div class="callout-body"><strong style="color:#fff">Meta-data</strong><br/>Data mengenai data &mdash; schema yang disimpan dalam katalog (nama kolom, tipe data, dll).</div>
+        <div class="callout-body"><strong style="color:#fff">Query</strong><br/>Permintaan untuk mengambil data spesifik tanpa mengubahnya.</div>
+        <div class="callout-body"><strong style="color:#fff">Transaction</strong><br/>Operasi read/write yang dieksekusi sebagai satu kesatuan utuh (atomic).</div>
       </div>
     </div>
     <div class="callout-box red" style="margin-bottom:14px">
-      <div class="callout-label red">Common Pitfall</div>
-      <p class="callout-body">Not every collection of files is a database! A folder of random spreadsheets lacks the three essential properties: <em>miniworld representation</em>, <em>logical coherence</em>, and <em>specific purpose</em>. Simply storing data &ne; having a database.</p>
+      <div class="callout-label red">Kesalahan Umum (Pitfall)</div>
+      <p class="callout-body">Tidak semua kumpulan file adalah database! Sebuah folder berisi spreadsheet acak tidak memiliki tiga properti esensial: <em>representasi miniworld</em>, <em>keterpaduan logis (logical coherence)</em>, dan <em>tujuan spesifik</em>. Sekadar menyimpan data &ne; memiliki database.</p>
     </div>
     <div class="callout-box green" style="margin-bottom:20px">
-      <div class="callout-label green">Mental Model</div>
-      <p class="callout-body">Think of a university student record system. The &ldquo;miniworld&rdquo; is the university. The data (names, courses, grades) is logically coherent and built specifically to manage academic records &mdash; not just dumped in files.</p>
+      <div class="callout-label green">Model Mental</div>
+      <p class="callout-body">Bayangkan sebuah sistem catatan mahasiswa di universitas. "Miniworld"-nya adalah universitas tersebut. Data (nama, mata kuliah, nilai) secara logis koheren dan dibangun khusus untuk mengelola catatan akademik &mdash; bukan hanya dibuang begitu saja ke dalam file.</p>
     </div>
     <div class="glass">
-      <h3 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:16px">Database System Architecture</h3>
+      <h3 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:16px">Arsitektur Database System</h3>
       <div class="arch">
-        <div class="arch-box" style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.25);color:#93c5fd">Users / Programmers</div>
+        <div class="arch-box" style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.25);color:#93c5fd">Pengguna (Users / Programmers)</div>
         <div class="arch-arrow">&darr;</div>
-        <div class="arch-box" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#cbd5e1">Application Programs / Queries</div>
+        <div class="arch-box" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#cbd5e1">Program Aplikasi / Queries</div>
         <div class="arch-arrow">&darr;</div>
         <div style="width:100%;max-width:360px;border:1px solid rgba(192,132,252,0.3);border-radius:12px;overflow:hidden">
-          <div style="background:rgba(192,132,252,0.12);color:#c084fc;font-size:11px;font-weight:600;padding:7px 14px;text-transform:uppercase;letter-spacing:.07em">DBMS Software</div>
-          <div style="border-top:1px solid rgba(255,255,255,0.06);padding:9px 16px;text-align:center;font-size:13px;color:var(--muted)">Software to Process Queries / Programs</div>
-          <div style="border-top:1px solid rgba(255,255,255,0.06);padding:9px 16px;text-align:center;font-size:13px;color:var(--muted)">Software to Access Stored Data</div>
+          <div style="background:rgba(192,132,252,0.12);color:#c084fc;font-size:11px;font-weight:600;padding:7px 14px;text-transform:uppercase;letter-spacing:.07em">Software DBMS</div>
+          <div style="border-top:1px solid rgba(255,255,255,0.06);padding:9px 16px;text-align:center;font-size:13px;color:var(--muted)">Software untuk Memproses Queries / Program</div>
+          <div style="border-top:1px solid rgba(255,255,255,0.06);padding:9px 16px;text-align:center;font-size:13px;color:var(--muted)">Software untuk Mengakses Data yang Disimpan</div>
         </div>
         <div class="arch-arrow">&darr;</div>
         <div class="arch-split">
-          <div class="arch-box" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);color:#fcd34d;font-size:12px">Stored DB Definition (Meta-Data)</div>
-          <div class="arch-box" style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#86efac;font-size:12px">Stored Database</div>
+          <div class="arch-box" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);color:#fcd34d;font-size:12px">Definisi DB (Meta-Data) Tersimpan</div>
+          <div class="arch-box" style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#86efac;font-size:12px">Database Tersimpan</div>
         </div>
       </div>
     </div>
@@ -206,34 +206,34 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
       <div class="glass">
         <div style="width:32px;height:32px;border-radius:8px;background:rgba(45,212,191,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px"><svg style="width:16px;height:16px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
         <h4 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:6px">Miniworld (UoD)</h4>
-        <p style="font-size:12px;color:var(--muted);line-height:1.6">Represents some aspect of the real world. Changes in the miniworld are reflected in the database.</p>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">Merepresentasikan suatu aspek di dunia nyata. Perubahan yang terjadi pada miniworld tercermin dalam database.</p>
       </div>
       <div class="glass">
         <div style="width:32px;height:32px;border-radius:8px;background:rgba(96,165,250,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px"><svg style="width:16px;height:16px;stroke:var(--blue)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
-        <h4 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:6px">Logically Coherent</h4>
-        <p style="font-size:12px;color:var(--muted);line-height:1.6">Data has inherent meaning and relationships &mdash; not a random assortment of information.</p>
+        <h4 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:6px">Keterpaduan Logis (Logically Coherent)</h4>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">Data memiliki makna dan relasi inheren &mdash; bukan sekumpulan informasi acak.</p>
       </div>
       <div class="glass">
         <div style="width:32px;height:32px;border-radius:8px;background:rgba(192,132,252,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px"><svg style="width:16px;height:16px;stroke:var(--purple)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
-        <h4 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:6px">Specific Purpose</h4>
-        <p style="font-size:12px;color:var(--muted);line-height:1.6">Built for an intended user group and preconceived applications &mdash; not created by accident.</p>
+        <h4 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:6px">Tujuan Spesifik</h4>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">Dibangun untuk kelompok pengguna yang dimaksudkan dan aplikasi yang telah dirancang sebelumnya &mdash; tidak dibuat secara kebetulan.</p>
       </div>
     </div>
     <div class="callout-box blue" style="margin-bottom:14px">
-      <div class="callout-label blue">Key Term: Universe of Discourse (UoD)</div>
-      <p class="callout-body">The portion of the real world your database models. A library database&rsquo;s UoD includes books, members, loans &mdash; but <em>not</em> the weather outside. Anything outside the UoD should not appear in your schema.</p>
+      <div class="callout-label blue">Istilah Kunci: Universe of Discourse (UoD)</div>
+      <p class="callout-body">Bagian dari dunia nyata yang dimodelkan oleh database Anda. UoD database perpustakaan mencakup buku, anggota, peminjaman &mdash; tapi <em>bukan</em> cuaca di luar. Apa pun di luar UoD tidak boleh muncul dalam schema Anda.</p>
     </div>
     <div class="callout-box red">
-      <div class="callout-label red">Common Pitfall</div>
-      <p class="callout-body">Confusing <strong style="color:#fff">data</strong> with <strong style="color:#fff">information</strong>. Data are raw facts. Information is processed, contextualised data. A database stores data; queries transform it into information.</p>
+      <div class="callout-label red">Kesalahan Umum (Pitfall)</div>
+      <p class="callout-body">Membingungkan antara <strong style="color:#fff">data</strong> dengan <strong style="color:#fff">informasi</strong>. Data adalah fakta mentah. Informasi adalah data yang telah diproses dan diberi konteks. Database menyimpan data; query mengubahnya menjadi informasi.</p>
     </div>
   </div>
 
   <!-- TAB: DBMS -->
   <div id="tab-dbms" class="tab-content">
     <div class="glass" style="margin-bottom:14px">
-      <h3 style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">What is a DBMS?</h3>
-      <p style="font-size:13px;color:#cbd5e1;line-height:1.7">A <strong>Database Management System</strong> is a collection of programs that enables users to create and maintain a database. It acts as an intermediary between users/apps and the actual stored data.</p>
+      <h3 style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">Apa itu DBMS?</h3>
+      <p style="font-size:13px;color:#cbd5e1;line-height:1.7"><strong>Database Management System</strong> adalah kumpulan program yang memungkinkan pengguna untuk membuat dan memelihara database. Bertindak sebagai perantara antara user/aplikasi dengan data tersimpan yang sebenarnya.</p>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
       <div class="chip" style="text-align:center">PostgreSQL</div><div class="chip" style="text-align:center">MySQL</div><div class="chip" style="text-align:center">MongoDB</div>
@@ -241,41 +241,41 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
       <div class="chip" style="text-align:center">Oracle</div><div class="chip" style="text-align:center">Cassandra</div><div class="chip" style="text-align:center">Elasticsearch</div>
     </div>
     <div class="callout-box green" style="margin-bottom:14px">
-      <div class="callout-label green">Mental Model</div>
-      <p class="callout-body">A DBMS is like a <strong style="color:#fff">library management system</strong>. Books = data. Catalog = meta-data. Librarian = DBMS &mdash; enforcing rules on who borrows what, when, and how many at once.</p>
+      <div class="callout-label green">Model Mental</div>
+      <p class="callout-body">DBMS ibarat <strong style="color:#fff">sistem manajemen perpustakaan</strong>. Buku = data. Katalog = meta-data. Pustakawan = DBMS &mdash; menegakkan aturan siapa yang meminjam apa, kapan, dan berapa banyak sekaligus.</p>
     </div>
     <div class="callout-box blue">
-      <div class="callout-label blue">DBMS Key Functions</div>
+      <div class="callout-label blue">Fungsi Kunci DBMS</div>
       <div class="callout-body" style="display:flex;flex-direction:column;gap:6px">
-        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Define:</strong> Specify data types, structures, constraints</div>
-        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Construct:</strong> Store data on a storage medium</div>
-        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Manipulate:</strong> Query, update, generate reports</div>
-        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Share:</strong> Allow multiple users/apps simultaneously</div>
+        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Define (Mendefinisikan):</strong> Menentukan tipe data, struktur, constraints</div>
+        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Construct (Membangun):</strong> Menyimpan data ke medium penyimpanan</div>
+        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Manipulate (Memanipulasi):</strong> Query, update, menghasilkan reports</div>
+        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Share (Berbagi):</strong> Mengizinkan akses untuk berbagai pengguna/aplikasi secara bersamaan</div>
       </div>
     </div>
   </div>
 
   <!-- TAB: Actors -->
   <div id="tab-actors" class="tab-content">
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Two distinct groups interact with a database system: those <em>on the scene</em> (who use it) and those <em>behind the scene</em> (who build and maintain it).</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Ada dua kelompok yang berinteraksi dengan database system: mereka yang berada di lokasi (<em>Actors on the scene</em>) dan mereka yang bekerja di balik layar (<em>Workers behind the scene</em>).</p>
     <div class="grid2">
       <div>
-        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--hint);font-weight:500;margin-bottom:12px">Actors on the Scene</p>
-        <div class="actor-card"><div class="actor-name" style="color:var(--blue)">Database Administrator (DBA)</div><div class="actor-desc">Authorises access, monitors use, acquires hardware/software resources.</div></div>
-        <div class="actor-card"><div class="actor-name" style="color:var(--purple)">Database Designers</div><div class="actor-desc">Identify data to store; choose structures to represent it.</div></div>
-        <div class="actor-card"><div class="actor-name" style="color:var(--green)">End Users</div><div class="actor-desc">Naive / Casual / Sophisticated / Standalone &mdash; people who query and update data day-to-day.</div></div>
-        <div class="actor-card"><div class="actor-name" style="color:var(--amber)">System Analysts &amp; App Programmers</div><div class="actor-desc">Determine requirements and implement programs against the DBMS.</div></div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--hint);font-weight:500;margin-bottom:12px">Actors on the Scene (Aktor yang menggunakan database)</p>
+        <div class="actor-card"><div class="actor-name" style="color:var(--blue)">Database Administrator (DBA)</div><div class="actor-desc">Memberikan otorisasi akses, memonitor penggunaan, dan mengurus resource software/hardware.</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--purple)">Database Designers</div><div class="actor-desc">Mengidentifikasi data yang akan disimpan; memilih struktur yang tepat untuk merepresentasikannya.</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--green)">End Users (Pengguna Akhir)</div><div class="actor-desc">Naive / Casual / Sophisticated / Standalone &mdash; mereka yang melakukan query atau update pada data sehari-hari.</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--amber)">System Analysts &amp; App Programmers</div><div class="actor-desc">Menentukan requirement dan mengimplementasikan program yang akan digunakan ke DBMS.</div></div>
       </div>
       <div>
-        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--hint);font-weight:500;margin-bottom:12px">Workers Behind the Scene</p>
-        <div class="actor-card"><div class="actor-name" style="color:var(--teal)">DBMS Designers &amp; Implementers</div><div class="actor-desc">Design and build the DBMS software itself (e.g., the team that built PostgreSQL).</div></div>
-        <div class="actor-card"><div class="actor-name" style="color:var(--pink)">Tools Developers</div><div class="actor-desc">Create optional tools for DB design, performance monitoring, import/export.</div></div>
-        <div class="actor-card"><div class="actor-name" style="color:var(--orange)">Operators &amp; Maintenance</div><div class="actor-desc">Run and maintain the hardware/software environment for the database system.</div></div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--hint);font-weight:500;margin-bottom:12px">Workers Behind the Scene (Pekerja di Balik Layar)</p>
+        <div class="actor-card"><div class="actor-name" style="color:var(--teal)">DBMS Designers &amp; Implementers</div><div class="actor-desc">Mendesain dan membuat software DBMS itu sendiri (contoh: tim yang membuat PostgreSQL).</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--pink)">Tools Developers</div><div class="actor-desc">Membuat tools opsional untuk desain DB, pemantauan performa, atau import/export data.</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--orange)">Operators &amp; Maintenance</div><div class="actor-desc">Menjalankan dan merawat lingkungan hardware/software tempat database system berjalan.</div></div>
       </div>
     </div>
     <div class="callout-box blue" style="margin-top:14px">
-      <div class="callout-label blue">Key Distinction</div>
-      <p class="callout-body">Actors <em>use</em> the database. Workers <em>build and maintain</em> the infrastructure. A DBA sits on the boundary &mdash; they use DBMS tools to manage the system on behalf of users.</p>
+      <div class="callout-label blue">Perbedaan Kunci</div>
+      <p class="callout-body">Actors <em>menggunakan</em> database. Workers <em>membangun dan merawat</em> infrastrukturnya. DBA berada di perbatasan &mdash; mereka menggunakan tools DBMS untuk mengelola sistem bagi kepentingan user.</p>
     </div>
   </div>
 
@@ -285,28 +285,28 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
       <div class="when-card green">
         <div class="when-card-title" style="color:var(--green)">
           <svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--green)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          USE a Database
+          GUNAKAN Database
         </div>
-        <ul class="when-list"><li>Large business data needing frequent updates</li><li>Homogeneous records at scale</li><li>Long-term data relevance</li><li>Multi-user simultaneous access</li></ul>
+        <ul class="when-list"><li>Data bisnis besar yang butuh sering di-update</li><li>Catatan data yang sifatnya mirip/homogen dalam skala besar</li><li>Data harus tersimpan / relevan dalam jangka waktu lama</li><li>Butuh akses secara bersamaan (multi-user)</li></ul>
       </div>
       <div class="when-card amber">
         <div class="when-card-title" style="color:var(--amber)">
           <svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--amber)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          DON&rsquo;T Need One
+          TIDAK Butuh
         </div>
-        <ul class="when-list"><li>Simple, static, never-changing app</li><li>Strict real-time constraints</li><li>Embedded/limited storage systems</li><li>Single user, no concurrency</li></ul>
+        <ul class="when-list"><li>Aplikasi sederhana, statis, tidak pernah berubah</li><li>Terdapat batasan real-time yang ketat</li><li>Sistem tertanam (embedded) atau storage terbatas</li><li>Single user, tanpa perlu concurrency</li></ul>
       </div>
       <div class="when-card red">
         <div class="when-card-title" style="color:var(--red)">
           <svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--red)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-          CANNOT Use One
+          TIDAK BISA Digunakan
         </div>
-        <ul class="when-list"><li>Data complexity exceeds DBMS modeling limits</li><li>Users need special ops DBMS can&rsquo;t handle</li></ul>
+        <ul class="when-list"><li>Kompleksitas data melebihi batas modeling dari DBMS</li><li>User butuh operasi khusus yang tidak dapat ditangani DBMS</li></ul>
       </div>
     </div>
     <div class="callout-box green">
-      <div class="callout-label green">Mental Model</div>
-      <p class="callout-body">Using a DBMS for a 50-row personal shopping list is like using an industrial freight truck to carry a bag of groceries &mdash; massive overhead for minimal benefit. Match the tool to the scale of the problem.</p>
+      <div class="callout-label green">Model Mental</div>
+      <p class="callout-body">Menggunakan DBMS untuk 50 baris catatan belanja pribadi sama seperti memakai truk kargo industri hanya untuk membawa tas belanjaan &mdash; terlalu berlebihan (overhead tinggi) namun sedikit benefitnya. Sesuaikan tools dengan skala masalahnya.</p>
     </div>
   </div>
 </section>
@@ -315,12 +315,12 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
 <section>
   <div class="section-header">
     <div class="section-num purple">2</div>
-    <h2>Algorithm &amp; Logic Walkthrough</h2>
+    <h2>Algoritma &amp; Analisis Logika Secara Berurutan (Walkthrough)</h2>
   </div>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Core SQL operations on the University Database from the slides, with a step-by-step walkthrough.</p>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Operasi dasar SQL pada komponen University Database yang diambil dari slide material dengan penjelasan langkah demi langkah (walkthrough) logika operasionalnya.</p>
 
   <div style="margin-bottom:20px">
-    <div class="code-label"><span>University Database &mdash; Schema Definition (DDL)</span><span>SQL</span></div>
+    <div class="code-label"><span>Definisi Schema &mdash; (DDL)</span><span>SQL</span></div>
     <pre><code><span class="cm">-- Create STUDENT table (meta-data / structure definition)</span>
 <span class="kw">CREATE TABLE</span> <span class="tbl">STUDENT</span> (
   Name           <span class="fn">CHAR</span>(<span class="num">30</span>),
@@ -342,8 +342,8 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
   </div>
 
   <div style="margin-bottom:20px">
-    <div class="code-label"><span>Sample Queries &amp; Updates (DML)</span><span>SQL</span></div>
-    <pre><code><span class="cm">-- Q1: Students in &apos;Database&apos; course Fall 2008 + their grades</span>
+    <div class="code-label"><span>Contoh Queries &amp; Updates (DML)</span><span>SQL</span></div>
+    <pre><code><span class="cm">-- Q1: List nama mahasiswa di matkul 'Database' pada semester 'Fall' 2008 & nilai mahasiswa</span>
 <span class="kw">SELECT</span> s.Name, gr.Grade
 <span class="kw">FROM</span>   <span class="tbl">STUDENT</span>      s
 <span class="kw">JOIN</span>   <span class="tbl">GRADE_REPORT</span> gr  <span class="kw">ON</span> s.Student_number      = gr.Student_number
@@ -353,13 +353,13 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
   <span class="kw">AND</span>  sec.Semester  = <span class="str">&apos;Fall&apos;</span>
   <span class="kw">AND</span>  sec.Year      = <span class="num">08</span>;
 
-<span class="cm">-- Q2: Prerequisites of the &apos;Database&apos; course</span>
+<span class="cm">-- Q2: Prerequisites pada mata kuliah 'Database'</span>
 <span class="kw">SELECT</span> p.Prerequisite_number
 <span class="kw">FROM</span>   <span class="tbl">PREREQUISITE</span> p
 <span class="kw">JOIN</span>   <span class="tbl">COURSE</span>       c <span class="kw">ON</span> p.Course_number = c.Course_number
 <span class="kw">WHERE</span>  c.Course_name = <span class="str">&apos;Database&apos;</span>;
 
-<span class="cm">-- U1: Update Smith&apos;s class to sophomore (2)</span>
+<span class="cm">-- U1: Update class untuk mahasiswa Smith menjadi tingkat dua ('sophomore') / '2'</span>
 <span class="kw">UPDATE</span> <span class="tbl">STUDENT</span>
 <span class="kw">SET</span>    Class = <span class="num">2</span>
 <span class="kw">WHERE</span>  Name  = <span class="str">&apos;Smith&apos;</span>;</code></pre>
@@ -369,11 +369,11 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
     <div class="wt-header">
       <div class="wt-title-row">
         <svg style="width:16px;height:16px;stroke:var(--green);flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-        Step-by-Step: Q1 JOIN Query
+        Step-by-Step: Berjalannya Q1 JOIN Query
       </div>
       <div class="wt-btns">
-        <button class="wt-btn" onclick="prevStep()">&larr; Prev</button>
-        <button class="wt-btn primary" onclick="nextStep()">Next &rarr;</button>
+        <button class="wt-btn" onclick="prevStep()">&larr; Mundur</button>
+        <button class="wt-btn primary" onclick="nextStep()">Lanjut &rarr;</button>
       </div>
     </div>
     <div class="wt-progress" id="wt-progress"></div>
@@ -385,15 +385,15 @@ code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.
 <section>
   <div class="section-header" style="margin-bottom:8px">
     <div class="section-num green">3</div>
-    <h2>Interactive Practice Suite</h2>
+    <h2>Paket Latihan Interaktif</h2>
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-    <p style="font-size:13px;color:var(--muted)">5 challenging questions. Select an answer for instant feedback.</p>
-    <div class="score-pill">Score: <span id="score-display">0</span> / 5</div>
+    <p style="font-size:13px;color:var(--muted)">5 Latihan Menantang. Pilih salah satu jawaban untuk langsung melihat hasilnya.</p>
+    <div class="score-pill">Skor: <span id="score-display">0</span> / 5</div>
   </div>
   <div id="quiz-container"></div>
   <div class="results" id="results-panel">
-    <h3>Your Results</h3>
+    <h3>Hasil Mengerjakan Anda</h3>
     <div class="results-bar-bg"><div class="results-bar" id="score-bar"></div></div>
     <p class="results-text" id="results-text"></p>
   </div>
@@ -412,18 +412,18 @@ function showTab(id, btn) {
 
 // ── WALKTHROUGH ───────────────────────────────────────────────────────────
 var steps = [
-  { title: 'Start: What do we need?',
-    body: 'We want the <strong>name</strong> of each student and their <strong>grade</strong> for the Database course in Fall 2008. This data lives across 4 tables: STUDENT, GRADE_REPORT, SECTION, and COURSE.' },
-  { title: 'Step 1 &mdash; FROM &amp; first JOIN',
-    body: 'We start with <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">STUDENT s</code> and JOIN <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">GRADE_REPORT gr</code> on <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Student_number</code>. This pairs each student with their grade record(s).' },
-  { title: 'Step 2 &mdash; JOIN to SECTION',
-    body: 'JOIN <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">SECTION sec</code> on <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Section_identifier</code>. Now each row carries the semester, year, and course number for that section.' },
-  { title: 'Step 3 &mdash; JOIN to COURSE',
-    body: 'JOIN <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">COURSE c</code> on <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Course_number</code>. We now have the human-readable course name alongside every student and grade &mdash; all four tables are linked.' },
-  { title: 'Step 4 &mdash; WHERE filter',
-    body: 'Filter to rows where <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Course_name = &apos;Database&apos;</code>, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Semester = &apos;Fall&apos;</code>, and <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Year = 08</code>. This eliminates all unrelated courses and semesters.' },
-  { title: 'Step 5 &mdash; SELECT output',
-    body: 'Finally, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">SELECT s.Name, gr.Grade</code> projects only the two columns we care about. The result is a clean list of student names with grades for that specific course and semester.' }
+  { title: 'Persiapan: Data Apa yang Ingin Kita Tampilkan?',
+    body: 'Kita ingin menampilkan <strong>Name</strong> setiap mahasiswa dan <strong>Grade</strong> mereka pada mata kuliah Database di masa awal Fall 2008. Data-data tersebut saling menyebar pada empat file (tables): STUDENT, GRADE_REPORT, SECTION, dan COURSE.' },
+  { title: 'Langkah 1 &mdash; FROM &amp; JOIN Bagian 1',
+    body: 'Kita mulai dengan menetapkan inisialisinya <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">STUDENT s</code> dan melakukan JOIN pada tabel <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">GRADE_REPORT gr</code> melalui <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Student_number</code>. Ini akan memadankan setiap mahasiswa dengan records / catatan nilainya (grades).' },
+  { title: 'Langkah 2 &mdash; JOIN ke Tabel SECTION',
+    body: 'Lama kemudian, laksanakan perpaduan relasi tabel JOIN <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">SECTION sec</code> di <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Section_identifier</code>. Hasilnya tabel akan memuat rows tiap-tiap bagian tentang variabel Semester, Tahun Akademik dan data courses mereka secara spesifik.' },
+  { title: 'Langkah 3 &mdash; JOIN ke Tabel COURSE',
+    body: 'Sama halnya buatlah skema relasi JOIN <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">COURSE c</code> pada <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Course_number</code>. Maka akan muncul identifikasi mata kuliah yang dibaca/diterjemahkan berdampingan dengan mahasiswa dan nilainya secara komprehensif pada tempat satu.' },
+  { title: 'Langkah 4 &mdash; Kondisi Pemfilteran WHERE',
+    body: 'Tetapkan baris rows khusus menggunakan <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Course_name = &apos;Database&apos;</code>, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Semester = &apos;Fall&apos;</code>, dan <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Year = 08</code>. Dimana ini akan mengeliminasi selingkuhan baris tables dari records jurusan lain / waktu di luar subjek yang dicari.' },
+  { title: 'Langkah 5 &mdash; SELECT output',
+    body: 'Akhirnya <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">SELECT s.Name, gr.Grade</code> yang bertujuan mendaftarkan proyeksi dua variabel kolom di atas tersebut. Mengetengahkan catatan yang bersih untuk satu mahasiswa pada suatu masa Fall terkait Database tersebut pada database akhir.' }
 ];
 var currentStep = 0;
 
@@ -437,7 +437,7 @@ function renderWT() {
   prog.innerHTML = segs;
   var s = steps[currentStep];
   document.getElementById('wt-panel').innerHTML =
-    '<div class="wt-step-num">Step ' + (currentStep + 1) + ' of ' + steps.length + '</div>' +
+    '<div class="wt-step-num">Langkah ' + (currentStep + 1) + ' dari ' + steps.length + '</div>' +
     '<div class="wt-step-title">' + s.title + '</div>' +
     '<div class="wt-step-body">' + s.body + '</div>';
 }
@@ -448,29 +448,29 @@ renderWT();
 // ── QUIZ ──────────────────────────────────────────────────────────────────
 var questions = [
   {
-    q: 'Which of the following is NOT a required property of a database?',
+    q: 'Manakah dari berikut ini yang BUKAN merupakan sebuah kewajiban (required property) dari database?',
     opts: [
-      'It must represent some aspect of the real world (miniworld/UoD).',
-      'It must be logically coherent with inherent meaning.',
-      'It must be stored on a cloud server.',
-      'It must be built for a specific purpose.'
+      'Itu perlu mencerminkan representasi kehidupan nyata (miniworld/UoD)',
+      'Data tersebut dapat diselarikan secara logis dengan pemaknaan (inherent meaning)',
+      'Wajib diserap dan disimpan pada wadah di cloud server',
+      'Database dibangun karena kebutuhan di satu tujuan / misi spesifik.'
     ],
     correct: 2,
-    explanation: '<strong style="color:#fff">Option C is NOT required.</strong><br><br>The three essential properties are: (1) Miniworld representation, (2) Logical coherence, (3) Specific purpose. Where the database is physically stored is an implementation detail, not a definitional property.'
+    explanation: '<strong style="color:#fff">Pilihan C BUKAN syarat mutlak.</strong><br><br>Memang penting database memiliki : 1) Representasi Miniworld 2) Logically Coherent dan 3) Tujuan yang jelas (Specific purposes). Disimpan di fisikal file system di cloud vs flashdisk, tak akan berpengaruh ke persyaratan inti penamaan atau definisinya.'
   },
   {
-    q: "To retrieve Smith's full course names from sections 112 and 119, which tables must you JOIN?",
+    q: "Sebagai bentuk evaluasi mandiri dari Relasi Table di slide, tabel dasar / raw yang bagaimana agar bisa JOIN ketika melengkapi data untuk mencari rekam akademis (Sections 112 & 119) si orang ini: Smith di tiap mata kuliah dengan human readable form?",
     opts: [
-      'STUDENT and GRADE_REPORT only.',
-      'STUDENT, GRADE_REPORT, and SECTION only.',
-      'STUDENT, GRADE_REPORT, SECTION, and COURSE.',
-      'COURSE and PREREQUISITE only.'
+      'STUDENT dan GRADE_REPORT saja.',
+      'STUDENT, GRADE_REPORT, dan SECTION saja.',
+      'STUDENT, GRADE_REPORT, SECTION, dan COURSE.',
+      'COURSE dan PREREQUISITE saja.'
     ],
     correct: 2,
-    explanation: '<strong style="color:#fff">Option C is correct.</strong><br><br>Trace the foreign key chain: STUDENT &rarr; GRADE_REPORT (Student_number) &rarr; SECTION (Section_identifier) &rarr; COURSE (Course_number) &rarr; Course_name. Stopping at SECTION gives only a code like CS3380, not the human-readable name.'
+    explanation: '<strong style="color:#fff">Pilihan C tepat.</strong><br><br>Banyak yang dapat dimaknai melalui foreign keys chain: STUDENT &rarr; GRADE_REPORT (Student_number) &rarr; SECTION (Section_identifier) &rarr; COURSE (Course_number) &rarr; Course_name. Apabila query ditutup sampai kolom identifikasi SECTION saja maka outputnya akan memunculkan ID seperti CS3380'
   },
   {
-    q: 'Which actor determines end-user requirements but does NOT implement the programs themselves?',
+    q: 'Pekerjaan (Actors) pada model database siapakah ini : Mereka yang menerjemahkan requirements end user ke suatu spesifikasi / aturan dasar dari aplikasi dan tidak bertugas coding langsung di program untuk mengolah ke fasa selanjutnya?',
     opts: [
       'Database Administrator (DBA)',
       'Database Designer',
@@ -478,29 +478,29 @@ var questions = [
       'Application Programmer'
     ],
     correct: 2,
-    explanation: '<strong style="color:#fff">Option C &mdash; System Analyst.</strong><br><br>System Analysts bridge business requirements and technical implementation. Application Programmers then write the actual code. DBAs manage access and resources. Designers choose data structures.'
+    explanation: '<strong style="color:#fff">Pilihan C &mdash; System Analyst.</strong><br><br>System Analysts menyajikan prasyarat antara alur relasional skema implementasi nyata maupun requirements sistem agar programmers dapat berkarya (writing code) diatasnya sesuai framework database itu tersebut.'
   },
   {
-    q: 'A startup has 40 rows of customer data, one employee accesses it, and the structure will never change. Should they use a DBMS?',
+    q: 'Bila perusahaan mempunyai data pelanggan sebanyak 40 relasional rows lalu hanya dimanifestasikan pada spreadsheet si employee untuk tidak di-update dan di-edit selanjutnya, perlukah dia buat database & DBMS ?',
     opts: [
-      'Yes &mdash; all data should always be in a DBMS for safety.',
-      'No &mdash; the overhead of a DBMS is not justified here.',
-      'Yes &mdash; a DBMS is required for any business data.',
-      'No &mdash; CSV files are always superior to databases.'
+      'Tentu perlu &mdash; Semua data sebaiknya digunakan DBMS sebagai safety.',
+      'Tidak perlu &mdash; Pekerjaan (overhead setup dsb) atas hal ini akan memberatkan di sisi resource.',
+      'Perlu &mdash; Ini diwajibkan untuk bisnis modern.',
+      'Tidak &mdash; File berbasis .csv dipahami jauh lebih mapan daripada DB.'
     ],
     correct: 1,
-    explanation: '<strong style="color:#fff">Option B is correct.</strong><br><br>A DBMS is NOT warranted when the application is simple and static, there is no multi-user access, and DBMS overhead cannot be tolerated. A spreadsheet is perfectly appropriate here. Option D is wrong &mdash; databases ARE better at scale.'
+    explanation: '<strong style="color:#fff">Pilihan B adalah yang benar.</strong><br><br>DBMS sama-sekali TIDAK perlu apabila datanya kecil dan statis dan tidak ada kegiatan untuk inter-konektivitas antar multi-user untuk pengaksesannya. Jawaban D keliru di kasus ini Database selalu bagus di persoalan scaling.'
   },
   {
-    q: 'What is the role of meta-data in a database system?',
+    q: 'Apakah meta-data itu dan apa perannya?',
     opts: [
-      'It stores the actual user data such as student names and grades.',
-      'It is the query language used to retrieve data.',
-      'It stores the database definition &mdash; data types, structures, and constraints.',
-      'It is a backup copy of the stored database.'
+      'Data tersebut merepresentasikan seluruh penyimpanan user details data / nama / log aktivitasnya dengan file database system tersebut.',
+      'Yaitu sebuah cara querying dalam pengambilan parameter di sistem tabel data base.',
+      'Sebagai penyimpan basis aturan dasar & defining : data types, structure, constrain/rule atas penamaan relasi ini.',
+      'Hanya backup copy/cloning yang tak begitu esensial daripada main DB-nya tersebut'
     ],
     correct: 2,
-    explanation: '<strong style="color:#fff">Option C is correct.</strong><br><br>Meta-data is &ldquo;data about data.&rdquo; It lives in the database catalog or data dictionary and describes structure: table names, column names, data types, constraints, and relationships. The DBMS uses meta-data to validate queries and enforce integrity.'
+    explanation: '<strong style="color:#fff">Pilihan C tepat.</strong><br><br>Meta-data lazim disebutkan "data about data." Meta-data bersemayam di struktur tabel catalog/dictionary. Dia memanage tentang rule data structures atau jenis string-integer tipe datanya apa saja. DBMS akan mengambil kebijakan dari Meta-data untuk dapat menjalankan validation atas query yang dilakukan.'
   }
 ];
 
@@ -529,11 +529,11 @@ function buildQuiz() {
       '<div class="feedback" id="fb-' + qi + '"><span id="fb-text-' + qi + '"></span></div>' +
       '<button class="reveal-btn" onclick="toggleReveal(' + qi + ')">' +
         '<svg style="width:13px;height:13px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
-        ' Reveal Explanation' +
+        ' Tampilkan Penjelasan' +
       '</button>' +
       '<div class="reveal-panel" id="reveal-' + qi + '">' +
         '<div class="callout-box blue" style="margin-top:0">' +
-          '<div class="callout-label blue">How to Solve This</div>' +
+          '<div class="callout-label blue">Cara Mengerjakan Ini</div>' +
           '<p class="callout-body">' + q.explanation + '</p>' +
         '</div>' +
       '</div>' +
@@ -561,10 +561,10 @@ function checkAnswer(qi, oi) {
   var txt = document.getElementById('fb-text-' + qi);
   if (isCorrect) {
     fb.className = 'feedback ok';
-    txt.textContent = 'Correct! Well done.';
+    txt.textContent = 'Benar! Kerja bagus.';
   } else {
     fb.className = 'feedback ng';
-    txt.textContent = 'Incorrect. The correct answer is highlighted. Check the explanation below.';
+    txt.textContent = 'Kurang tepat. Jawaban yang benar ditandai. Periksa penjelasan di bawah.';
   }
 
   var allDone = true;
@@ -584,15 +584,15 @@ function showResults() {
     document.getElementById('score-bar').style.width = pct + '%';
   }, 100);
   var msgs = [
-    'Keep studying &mdash; review the concepts above!',
-    'Good effort! Check the explanations for missed questions.',
-    'Solid understanding!',
-    'Great work!',
-    'Perfect score! Excellent mastery.'
+    'Terus belajar &mdash; tinjau ulang konsep di atas!',
+    'Usaha yang bagus! Cek penjelasan untuk jawaban yang terlewat.',
+    'Pemahaman yang solid!',
+    'Kerja hebat!',
+    'Nilai sempurna! Penguasaan materi yang luar biasa.'
   ];
   var idx = score >= 5 ? 4 : score >= 4 ? 3 : score >= 3 ? 2 : score >= 2 ? 1 : 0;
   document.getElementById('results-text').textContent =
-    'You scored ' + score + ' out of 5 (' + pct + '%). ' + msgs[idx];
+    'Skor Anda ' + score + ' dari 5 (' + pct + '%). ' + msgs[idx];
 }
 
 buildQuiz();
