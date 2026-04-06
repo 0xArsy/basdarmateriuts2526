@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheatsheet References — BASDAT UTS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0d14;
+      --surface: #111827;
+      --border: #1e2d45;
+      --accent: #22d3ee;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(34,211,238,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: -1;
+    }
+    h1, h2, h3 { font-family: 'Syne', sans-serif; }
+    .mono { font-family: 'Space Mono', monospace; }
+    
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      transition: all 0.2s;
+    }
+    .card:hover {
+      border-color: rgba(34,211,238,0.3);
+      box-shadow: 0 4px 20px rgba(34,211,238,0.05);
+    }
+    .badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold;
+      letter-spacing: .05em; font-family: 'Space Mono', monospace;
+    }
+    .badge-cyan { background: rgba(34,211,238,.12); color: #22d3ee; border: 1px solid rgba(34,211,238,.3); }
+    ul { list-style-type: none; padding-left: 0; }
+    li { position: relative; padding-left: 1.25rem; margin-bottom: 0.6rem; color: #cbd5e1; }
+    li::before { content: "•"; position: absolute; left: 0; color: #22d3ee; font-weight: bold; }
+    code { 
+      background: #1e293b; color: #a5b4fc; padding: 2px 6px; 
+      border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 12.5px; 
+    }
+  </style>
+</head>
+<body class="p-6 md:p-10 hide-scrollbar overflow-y-auto">
+
+  <div class="max-w-4xl mx-auto space-y-6 pb-20">
+    <div class="card bg-gradient-to-br from-slate-900 to-[#0a0d14] border-cyan-500/20 text-center py-10 mb-8 border-b-[3px] border-b-cyan-500">
+      <div class="w-16 h-16 rounded-full bg-cyan-400/10 flex items-center justify-center mx-auto mb-4 border border-cyan-400/20">
+        <i data-lucide="zap" class="w-8 h-8 text-cyan-400"></i>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3 tracking-tight">CHEATSHEET <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">REFERENCES</span></h1>
+      <p class="text-slate-400 max-w-lg mx-auto leading-relaxed text-sm">Ringkasan padat materi UTS Basis Data CSGE602070 (Bab 1 - 8). Gunakan tab ini sebagai rangkuman poin-poin utama sebelum ujian!</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <!-- BAB 1 -->
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
+          <span class="badge badge-cyan">BAB 1</span>
+          <h2 class="text-xl font-bold text-white tracking-tight">Pengenalan Basis Data</h2>
+        </div>
+        <ul class="text-sm">
+          <li><strong class="text-white">Database:</strong> Kumpulan data yang punya makna tersembunyi.</li>
+          <li><strong class="text-white">DBMS:</strong> Software pembuat, pengelola & pengguna DB.</li>
+          <li><strong class="text-white">DB System:</strong> Gabungan Database + Software DBMS.</li>
+          <li><strong class="text-white">Sifat Kunci:</strong> <em>Self-describing</em> (memiliki meta-data/katalog), Isolas Program-Data, Data Abstraction interaktif.</li>
+          <li><strong class="text-white">Aktor Balik Layar:</strong> DBA, DB Designer.</li>
+          <li><strong class="text-white">Aktor Pemakai:</strong> End Users, System Analyst, App Programmer.</li>
+        </ul>
+      </div>
+
+      <!-- BAB 2 -->
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
+          <span class="badge badge-cyan">BAB 2</span>
+          <h2 class="text-xl font-bold text-white tracking-tight">Konsep & Arsitektur</h2>
+        </div>
+        <ul class="text-sm">
+          <li><strong class="text-white">Data Model:</strong> Abstrak mendefinisikan struktur + constraints. <em>High (ER)</em>, <em>Mid (Relational)</em>, <em>Low (Fisik)</em>.</li>
+          <li><strong class="text-white">Three-Schema:</strong> 
+            <ul class="ml-4 mt-1 opacity-90 text-[13px]">
+              <li>- <em>Internal:</em> Struktur fisik (B-tree, index).</li>
+              <li>- <em>Conceptual:</em> Logical structure untuk semua user.</li>
+              <li>- <em>External:</em> User View turunan aman.</li>
+            </ul>
+          </li>
+          <li><strong class="text-white">Data Independence:</strong> Logical (Ubah Concept tanpa ngefek External) & Physical (Ubah fisik tanpa ngefek Concept).</li>
+          <li><strong class="text-white">Bahasa:</strong> DDL (Definisi structure), DML (Manipulasi Data).</li>
+        </ul>
+      </div>
+
+      <!-- BAB 3 -->
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
+          <span class="badge badge-cyan">BAB 3</span>
+          <h2 class="text-xl font-bold text-white tracking-tight">Pemodelan ER (Dasar)</h2>
+        </div>
+        <ul class="text-sm">
+          <li><strong class="text-white">Entitas vs Atribut:</strong> Object nyata (Entity). Tipe Atribut: <em>Simple</em>, <em>Composite</em> (Pecahan), <em>Multi-valued</em> (Opsi banyak), <em>Derived</em> (Bisa diturunkan).</li>
+          <li><strong class="text-white">Keys:</strong> Pembeda unik, simbolnya label bergaris bawah.</li>
+          <li><strong class="text-white">Relasi (Kardinalitas):</strong> 1:1, 1:N, M:N (ManyToMany).</li>
+          <li><strong class="text-white">Participation:</strong>
+            <ul class="ml-4 mt-1 opacity-90 text-[13px]">
+              <li>- <em>Total/Existence:</em> Wajib (Garis lurus DUA/Ganda).</li>
+              <li>- <em>Partial:</em> Boleh tidak ikut (Garis lurus SATU).</li>
+            </ul>
+          </li>
+          <li><strong class="text-white">Weak Entity:</strong> Ketergantungan ke <em>Owner</em>, gak punya Key murni (pakai Partial Key - garis putus/titik2).</li>
+        </ul>
+      </div>
+
+      <!-- BAB 4 -->
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
+          <span class="badge badge-cyan">BAB 4</span>
+          <h2 class="text-xl font-bold text-white tracking-tight">Pemodelan EER (Lanjut)</h2>
+        </div>
+        <ul class="text-sm">
+          <li><strong class="text-white">Inheritance:</strong> Subclass menyebar warisan Atribut+Relasi dari Superclass induk (Simbol 'd'/'o' bulatan).</li>
+          <li><strong class="text-white">Disjointness:</strong>
+            <ul class="ml-4 mt-1 opacity-90 text-[13px]">
+              <li>- <code>d</code> <em>Disjoint:</em> Murni cuma bisa satu opsi kelas.</li>
+              <li>- <code>o</code> <em>Overlap:</em> Boleh ada 2 tipe status subclass sekaligus.</li>
+            </ul>
+          </li>
+          <li><strong class="text-white">Completeness (Total/Partial):</strong>
+            <ul class="ml-4 mt-1 opacity-90 text-[13px]">
+              <li>- Wajib total (Garis ganda dari sup ke lingkar). Tiap object Induk wajib ada tipe anaknya.</li>
+            </ul>
+          </li>
+          <li><strong class="text-white">Union/Category (U):</strong> Object subclass hasil persilangan bermacam-macam Tipe/Macam Superclass acak.</li>
+        </ul>
+      </div>
+
+      <!-- BAB 5 -->
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
+          <span class="badge badge-cyan">BAB 5</span>
+          <h2 class="text-xl font-bold text-white tracking-tight">Model Relasional & Integritas</h2>
+        </div>
+        <ul class="text-sm">
+          <li><strong class="text-white">Komponen:</strong> Relation (Tabel), Tuple (Row/Baris), Atribut (Kolom/Garis).</li>
+          <li><strong class="text-white">Ketentuan Atribut:</strong> WAJIB <em>Atomic/Tunggal</em> tak boleh pecahan Array.</li>
+          <li><strong class="text-white">Kunci/Keys:</strong>
+            <ul class="ml-4 mt-1 opacity-90 text-[13px]">
+              <li>- <em>Superkey:</em> Combinasi apapun pencegah kembar.</li>
+              <li>- <em>Candidate Key:</em> Superkey terpendek / minimalis.</li>
+              <li>- <em>Primary Key (PK):</em> Pemenang Candidate (garis bawah).</li>
+            </ul>
+          </li>
+          <li><strong class="text-white">Constraints Integritas:</strong> 
+            <em>Entity Integrity</em> (PK gak boleh = Null).
+            <em>Referential Integrity</em> (Sebuah Foreign Key [FK] hrs Valid mengarah ke Tabel tujuan/NULL. Arahnya dr FK -> tabel ref).
+          </li>
+        </ul>
+      </div>
+
+      <!-- BAB 6 -->
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
+          <span class="badge badge-cyan">BAB 6</span>
+          <h2 class="text-xl font-bold text-white tracking-tight">Pemetaan Skema ke Tabel</h2>
+        </div>
+        <ul class="text-sm">
+          <li><strong class="text-white">Langkah Cepat Algoritma Map-nya:</strong>
+            <ul class="ml-4 mt-1 opacity-90 text-[13px] space-y-1">
+              <li>1. <em>Regular Entity:</em> Jadiin 1 Tabel. Atribut -> kol.</li>
+              <li>2. <em>Weak Entity:</em> Jadiin Tabel, tambahkan PK parent (sbg FK), PK Weak gabungan PK+PartialKey_nya.</li>
+              <li>3. <em>Mapping 1:1:</em> Sisipkan FK dari ujung entity A ke entity B (yg <em>Total Participation</em> prioritasnya sbg penyerap).</li>
+              <li>4. <em>Mapping 1:N:</em> Beri FK di sisi Entity banyak (N) yang nunjuk ke Entity Satu (1).</li>
+              <li>5. <em>Mapping M:N:</em> <strong>WAJIB Buat tabel Baru</strong> penengah (Junction/Cross Referencce). Isinya PK tabel A & PK tabel B. Keduanya jadi PK (Junction).</li>
+              <li>6. <em>Multivalue Attr:</em> <strong>Buat Tabel Cuma Spesialis Multivalue ini</strong> + Bawa FK Induknya.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- BAB 7 -->
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
+          <span class="badge badge-cyan">BAB 7</span>
+          <h2 class="text-xl font-bold text-white tracking-tight">SQL - DDL (Data Def)</h2>
+        </div>
+        <ul class="text-sm">
+          <li><strong class="text-white">Konstruksi:</strong> <code>CREATE SCHEMA</code>, <code>CREATE TABLE x (...)</code>.</li>
+          <li><strong class="text-white">Tipe Data Canggih:</strong> <code>VARCHAR(n)</code> dinamis asalkan di bwh n limit. <code>CHAR(n)</code> static buang tempat bila tak sampai length.</li>
+          <li><strong class="text-white">Contoh Table Config:</strong> <br>
+            <code>Dno INT NOT NULL,</code><br>
+            <code>PRIMARY KEY (Ssn),</code><br>
+            <code>FOREIGN KEY (Dno) REFERENCES DEPT(Dnum)</code>
+          </li>
+          <li><strong class="text-white">Ref Integritas Eksekusi:</strong> <code>ON DELETE / ON UPDATE </code> punya Opsi: <code>CASCADE</code> (Ekoran ikut dihapus), <code>SET NULL</code>, <code>SET DEFAULT</code>.</li>
+        </ul>
+      </div>
+
+      <!-- BAB 8 -->
+      <div class="card">
+        <div class="flex items-center gap-3 mb-4 border-b border-slate-700/60 pb-3">
+          <span class="badge badge-cyan">BAB 8</span>
+          <h2 class="text-xl font-bold text-white tracking-tight">Kueri Dasar SQL (DML SFW)</h2>
+        </div>
+        <ul class="text-sm">
+          <li><strong class="text-white">S-F-W Block:</strong> <code>SELECT</code> (Ambil kolom apa?), <code>FROM</code> (Dari table-table apa?), <code>WHERE</code> (Filter Row dengan kondisi?).</li>
+          <li><strong class="text-white">Join Kondisi Langsung:</strong> Kalau join 2 tabel, pasti butuh aliasnya disambung <code>WHERE E.Dno = D.Dnumber</code>.</li>
+          <li><strong class="text-white">String / Pura-pura Tahu:</strong> <code>LIKE</code> menggunakan <code>%</code> (Apa aja hurufnya), <code>_</code> (Persis satu huruf apa aja). Cth: <code>Name LIKE 'Jo%'</code></li>
+          <li><strong class="text-white">Arithmetic & Sort:</strong> 
+            <br>- Operasi Set Relasi (Union Kompatibel): <code>UNION</code>, <code>EXCEPT</code>, <code>INTERSECT</code>.
+            <br>- Terakhir untuk urut Ascend/Descend: <code>ORDER BY col1 DESC</code> 
+          </li>
+        </ul>
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  </script>
+</body>
+</html>
