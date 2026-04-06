@@ -341,20 +341,19 @@
     // SEARCH LOGIC
     const searchInput = document.getElementById('global-search');
     const searchResults = document.getElementById('search-results');
-    
-    // Minimal database of keywords/topics mapped to files
-    const searchData = [
-      { title: "Pengenalan Basis Data", file: "Slide 1 - Introduction to Databases_.pptx.html", tags: ["dbms", "database", "data", "history", "users"] },
-      { title: "Konsep & Arsitektur", file: "Slide-02_Database-Concept-and-Architecture.html", tags: ["schema", "internal", "conceptual", "external", "independence", "ddl", "dml"] },
-      { title: "Pemodelan ER", file: "Slide_3_-_Pemodelan_Basis_Data_dengan_ER.html", tags: ["entity", "relationship", "attribute", "cardinality", "key"] },
-      { title: "Pemodelan EER Part 1", file: "Slide_4_-_Pemodelan_Basis_Data_dengan_EER_Part_1.html", tags: ["subclass", "superclass", "inheritance", "specialization", "generalization"] },
-      { title: "Pemodelan EER Part 2", file: "Slide_4_-_Pemodelan_Basis_Data_dengan_EER_Part_2(1).html", tags: ["union", "category", "shared subclass"] },
-      { title: "Model Relasional", file: "Slide_5_-_The_Relational_Data_Model_and_Relational_Database_Constraints.html", tags: ["tuple", "integrity", "primary key", "foreign key", "null"] },
-      { title: "Pemetaan (E)ER", file: "Slide_6_-_Pemetaan_Diagram__E_ER_ke_Skema_Relasional_-_updated-by-sby.html", tags: ["mapping", "conversion", "algorithm"] },
-      { title: "SQL Definition", file: "Slide_7_-_SQL_-_Data_Definition.html", tags: ["create", "table", "alter", "drop", "constraints"] },
-      { title: "Basic SQL Query", file: "Slide_8_-_Basic_SQL_Query.html", tags: ["select", "from", "where", "join", "aggregate", "group by", "having"] },
-      { title: "Cheatsheet", file: "cheatsheet.html", tags: ["summary", "uts", "rumus", "kunci"] }
-    ];
+    let searchData = [];
+
+    // Load search index
+    fetch('search_index.json')
+      .then(response => response.json())
+      .then(data => {
+        searchData = data;
+        console.log('Search index loaded:', searchData.length, 'chapters');
+      })
+      .catch(err => {
+        console.error('Failed to load search index:', err);
+        // Fallback or alert user
+      });
 
     searchInput.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase().trim();
@@ -363,18 +362,35 @@
         return;
       }
 
+      if (!searchData || searchData.length === 0) {
+        searchResults.innerHTML = '<p class="text-[10px] text-gray-500 p-2 text-center italic">Memuat index...</p>';
+        searchResults.classList.remove('hidden');
+        return;
+      }
+
       const filtered = searchData.filter(item => 
         item.title.toLowerCase().includes(term) || 
-        item.tags.some(tag => tag.includes(term))
+        item.keywords.some(tag => tag.toLowerCase().includes(term))
       );
 
       if (filtered.length > 0) {
-        searchResults.innerHTML = filtered.map(item => `
-          <div onclick="executeSearchLink('${item.file}')" class="p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-white/10 mb-1 group">
-            <p class="text-[11px] font-bold text-gray-200 group-hover:text-blue-400">${item.title}</p>
-            <p class="text-[9px] text-gray-500">${item.tags.join(', ')}</p>
-          </div>
-        `).join('');
+        searchResults.innerHTML = filtered.map(item => {
+          // Find if the term is in keywords for small preview
+          const matchingKeywords = item.keywords
+            .filter(k => k.includes(term))
+            .slice(0, 3)
+            .join(', ');
+
+          return `
+            <div onclick="executeSearchLink('${item.file}')" class="p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-white/10 mb-1 group">
+              <div class="flex justify-between items-start mb-0.5">
+                <p class="text-[11px] font-bold text-gray-200 group-hover:text-blue-400 truncate">${item.title}</p>
+                <span class="text-[8px] bg-white/5 px-1 rounded text-gray-500">Materi</span>
+              </div>
+              <p class="text-[9px] text-gray-400 line-clamp-1 italic">"${matchingKeywords || item.preview.substring(0, 40)}"</p>
+            </div>
+          `;
+        }).join('');
         searchResults.classList.remove('hidden');
       } else {
         searchResults.innerHTML = '<p class="text-[10px] text-gray-500 p-2 text-center">Tidak ada hasil ditemukan</p>';
