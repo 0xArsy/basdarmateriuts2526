@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pemodelan Basis Data dengan ER - Interactive Learning</title>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.383.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d27;
+    --bg-card: #1e2130;
+    --bg-card-hover: #252840;
+    --border: #2a2d3e;
+    --border-accent: #3d4160;
+    --text-primary: #e8eaf0;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --accent-blue: #60a5fa;
+    --accent-green: #34d399;
+    --accent-amber: #fbbf24;
+    --accent-purple: #a78bfa;
+    --accent-coral: #fb7185;
+    --accent-teal: #2dd4bf;
+    --highlight-bg: #1e3a5f;
+    --highlight-border: #3b82f6;
+    --success-bg: #064e3b;
+    --success-border: #10b981;
+    --error-bg: #450a0a;
+    --error-border: #ef4444;
+    --warning-bg: #451a03;
+    --warning-border: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.7;
+    font-size: 16px;
+  }
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .callout-key {
+    background: var(--highlight-bg);
+    border-left: 3px solid var(--highlight-border);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .callout-pitfall {
+    background: var(--error-bg);
+    border-left: 3px solid var(--error-border);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .callout-tip {
+    background: var(--success-bg);
+    border-left: 3px solid var(--success-border);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .callout-warning {
+    background: var(--warning-bg);
+    border-left: 3px solid var(--warning-border);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .badge-blue { background: #1e3a5f; color: var(--accent-blue); }
+  .badge-green { background: #064e3b; color: var(--accent-green); }
+  .badge-amber { background: #451a03; color: var(--accent-amber); }
+  .badge-purple { background: #2e1065; color: var(--accent-purple); }
+  .badge-coral { background: #4c0519; color: var(--accent-coral); }
+  .badge-teal { background: #042f2e; color: var(--accent-teal); }
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .concept-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .concept-card:hover {
+    border-color: var(--border-accent);
+    background: var(--bg-card-hover);
+  }
+  .concept-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  pre {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 1rem 0;
+  }
+  code { font-family: 'Fira Code', 'Courier New', monospace; font-size: 13px; }
+  .kw { color: #ff79c6; }
+  .cm { color: #6272a4; font-style: italic; }
+  .st { color: #f1fa8c; }
+  .nm { color: #bd93f9; }
+  .fn { color: #50fa7b; }
+  .op { color: #ff79c6; }
+  .entity-box {
+    display: inline-block;
+    background: #1a2744;
+    border: 2px solid #3b82f6;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    font-family: monospace;
+  }
+  .relationship-diamond {
+    display: inline-block;
+    background: #2d1b4e;
+    border: 2px solid #a78bfa;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-purple);
+    font-family: monospace;
+    transform: skewX(-10deg);
+  }
+  .attr-oval {
+    display: inline-block;
+    background: #1a2d1a;
+    border: 1.5px solid #34d399;
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 12px;
+    color: var(--accent-green);
+    font-family: monospace;
+  }
+  .weak-entity-box {
+    display: inline-block;
+    background: #1a2744;
+    border: 2px solid #3b82f6;
+    outline: 2px solid #3b82f6;
+    outline-offset: 3px;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    font-family: monospace;
+  }
+  .quiz-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font-size: 14px;
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .quiz-btn:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .quiz-btn.correct { background: #064e3b; border-color: #10b981; color: #d1fae5; }
+  .quiz-btn.incorrect { background: #450a0a; border-color: #ef4444; color: #fee2e2; }
+  .quiz-btn.show-correct { background: #064e3b; border-color: #10b981; color: #d1fae5; }
+  .quiz-btn:disabled { cursor: not-allowed; }
+  .feedback-box {
+    display: none;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    font-size: 14px;
+  }
+  .feedback-box.correct { display: block; background: #064e3b; border: 1px solid #10b981; color: #d1fae5; }
+  .feedback-box.incorrect { display: block; background: #450a0a; border: 1px solid #ef4444; color: #fee2e2; }
+  .explanation-box {
+    display: none;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.75rem;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .reveal-btn {
+    background: transparent;
+    border: 1px solid var(--border-accent);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    color: var(--accent-purple);
+    cursor: pointer;
+    font-size: 13px;
+    margin-top: 0.75rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .reveal-btn:hover { background: #2e1065; }
+  .nav-tab {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .nav-tab.active {
+    background: var(--bg-card);
+    border-color: var(--border);
+    color: var(--text-primary);
+  }
+  .nav-tab:hover:not(.active) { color: var(--text-primary); }
+  .section-content { display: none; }
+  .section-content.active { display: block; }
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 999px;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3b82f6, #a78bfa);
+    transition: width 0.4s ease;
+  }
+  .er-diagram {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    overflow-x: auto;
+  }
+  .er-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 12px;
+  }
+  .er-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+  }
+  .step-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #1e3a5f;
+    border: 1.5px solid #3b82f6;
+    color: var(--accent-blue);
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .cardinality-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .cardinality-table th {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .cardinality-table td {
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.8rem;
+    color: var(--text-primary);
+  }
+  .cardinality-table tr:hover td { background: var(--bg-card-hover); }
+  @media (max-width: 768px) {
+    .concept-grid { grid-template-columns: 1fr; }
+  }
+  .header-gradient {
+    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  h1 { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
+  h2 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem; }
+  h3 { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; }
+  p { color: var(--text-secondary); margin-bottom: 0.75rem; }
+  ul { color: var(--text-secondary); padding-left: 1.25rem; }
+  li { margin-bottom: 0.35rem; }
+  strong { color: var(--text-primary); font-weight: 600; }
+  .score-display {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header-gradient px-6 py-5 mb-6">
+  <div style="max-width: 900px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem;">
+      <div style="background: #1e3a5f; border-radius: 8px; padding: 8px; display: flex;">
+        <i data-lucide="database" style="width: 22px; height: 22px; color: #60a5fa;"></i>
+      </div>
+      <div>
+        <div style="font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase;">CSGE602070 / CSF2600700 · Basis Data</div>
+        <h1 style="font-size: 1.4rem; margin: 0;">Pemodelan Basis Data dengan ER</h1>
+      </div>
+    </div>
+    <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Slide 3 · Part 1 &amp; 2 — Universitas Indonesia, Fakultas Ilmu Komputer</p>
+  </div>
+</div>
+
+<div style="max-width: 900px; margin: 0 auto; padding: 0 1.5rem 4rem;">
+
+  <!-- Navigation Tabs -->
+  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 4px;">
+    <button class="nav-tab active" onclick="showSection('conceptual', this)">
+      <i data-lucide="brain" style="display: inline; width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i> Conceptual Deep Dive
+    </button>
+    <button class="nav-tab" onclick="showSection('visualization', this)">
+      <i data-lucide="git-branch" style="display: inline; width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i> Visualisasi &amp; Logika
+    </button>
+    <button class="nav-tab" onclick="showSection('practice', this)">
+      <i data-lucide="pencil" style="display: inline; width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i> Practice Suite
+    </button>
+  </div>
+
+  <!-- ============================= SECTION 1: CONCEPTUAL ============================= -->
+  <div id="section-conceptual" class="section-content active">
+
+    <!-- Overview -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Overview</span>
+        <h2 style="margin: 0;">Apa itu ER Modeling?</h2>
+      </div>
+      <p>Entity-Relationship (ER) Model adalah representasi <strong>model konseptual</strong> dari basis data. Ia menjawab pertanyaan: <em>"Data apa saja yang perlu disimpan, dan bagaimana hubungan antar datanya?"</em></p>
+      <p>ER Model adalah output dari <strong>Tahap 2 (Conceptual Design)</strong> dari 6 tahapan pengembangan basis data.</p>
+
+      <div class="callout-key">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="key" style="width: 15px; height: 15px; color: var(--accent-blue);"></i>
+          <strong style="color: var(--accent-blue); font-size: 13px;">KEY CONCEPT</strong>
+        </div>
+        <p style="margin: 0; font-size: 14px;">ERD adalah diagram <strong>skema bisnis</strong> — ia merepresentasikan aktivitas bisnis, struktur organisasi, dan prosedur operasional dalam bentuk visual yang bisa diterjemahkan menjadi tabel basis data.</p>
+      </div>
+    </div>
+
+    <!-- 6 Tahapan -->
+    <div class="section-card">
+      <h2>6 Tahapan Pengembangan Basis Data</h2>
+      <div style="position: relative; margin: 1rem 0;">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div>
+            <h3 style="color: var(--accent-blue);">Pengumpulan &amp; Analisis Kebutuhan</h3>
+            <p style="font-size: 14px; margin: 0;">Mengumpulkan requirements dari pengguna dan organisasi. Menghasilkan <strong>skema bisnis</strong>.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background: #2e1065; border-color: #a78bfa; color: #a78bfa;">2</div>
+          <div>
+            <h3 style="color: var(--accent-purple);">Pembuatan Rancangan Konseptual ← ER Model</h3>
+            <p style="font-size: 14px; margin: 0;">Membuat ERD dari requirements. <strong>Ini adalah fokus materi ini!</strong> Menghasilkan Conceptual Schema.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div>
+            <h3>Pemilihan DBMS</h3>
+            <p style="font-size: 14px; margin: 0;">Memilih sistem manajemen basis data yang sesuai (MySQL, PostgreSQL, dll).</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div>
+            <h3>Pembuatan Rancangan Logis</h3>
+            <p style="font-size: 14px; margin: 0;">Memetakan ERD ke tabel-tabel relasional (Data Model Mapping).</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div>
+            <h3>Pembuatan Rancangan Fisik</h3>
+            <p style="font-size: 14px; margin: 0;">Menentukan index, partisi, dan optimasi penyimpanan fisik.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background: #064e3b; border-color: #10b981; color: #34d399;">6</div>
+          <div>
+            <h3 style="color: var(--accent-green);">Implementasi &amp; Tuning</h3>
+            <p style="font-size: 14px; margin: 0;">Implementasi dengan SQL, pengujian, dan optimasi performa.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 Komponen Utama ERD -->
+    <div class="section-card">
+      <h2>3 Komponen Utama ERD</h2>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-icon" style="background: #1a2744;">
+            <i data-lucide="square" style="width: 18px; height: 18px; color: var(--accent-blue);"></i>
+          </div>
+          <h3 style="color: var(--accent-blue);">Entity</h3>
+          <p style="font-size: 13px; margin: 0;">Objek/benda yang direpresentasikan di basis data. Contoh: EMPLOYEE, DEPARTMENT, PROJECT.</p>
+          <div style="margin-top: 0.5rem;"><span class="entity-box">EMPLOYEE</span></div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon" style="background: #1a2d1a;">
+            <i data-lucide="circle" style="width: 18px; height: 18px; color: var(--accent-green);"></i>
+          </div>
+          <h3 style="color: var(--accent-green);">Attribute</h3>
+          <p style="font-size: 13px; margin: 0;">Sifat/properti yang mendeskripsikan suatu entity. Contoh: SSN, Name, Salary.</p>
+          <div style="margin-top: 0.5rem;"><span class="attr-oval">SSN</span></div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon" style="background: #2d1b4e;">
+            <i data-lucide="diamond" style="width: 18px; height: 18px; color: var(--accent-purple);"></i>
+          </div>
+          <h3 style="color: var(--accent-purple);">Relationship</h3>
+          <p style="font-size: 13px; margin: 0;">Asosiasi bermakna antara dua atau lebih entity. Contoh: WORKS_FOR, MANAGES.</p>
+          <div style="margin-top: 0.5rem;"><span class="relationship-diamond">WORKS_FOR</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tipe-tipe Attribute -->
+    <div class="section-card">
+      <h2>Tipe-Tipe Attribute</h2>
+      <div class="concept-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+        <div class="concept-card">
+          <span class="badge badge-blue" style="margin-bottom: 0.5rem;">Simple</span>
+          <p style="font-size: 13px; margin: 0;">Nilai atomik tunggal. Tidak dapat dipecah lagi.</p>
+          <div style="margin-top: 0.5rem; font-size: 12px; color: var(--text-muted);">Contoh: SSN, Sex</div>
+        </div>
+        <div class="concept-card">
+          <span class="badge badge-purple" style="margin-bottom: 0.5rem;">Composite</span>
+          <p style="font-size: 13px; margin: 0;">Terdiri dari beberapa sub-komponen yang bisa dipecah.</p>
+          <div style="margin-top: 0.5rem; font-size: 12px; color: var(--text-muted);">Contoh: Name(Fname, Minit, Lname)</div>
+        </div>
+        <div class="concept-card">
+          <span class="badge badge-amber" style="margin-bottom: 0.5rem;">Multi-valued</span>
+          <p style="font-size: 13px; margin: 0;">Sebuah entity bisa punya banyak nilai untuk attribute ini.</p>
+          <div style="margin-top: 0.5rem; font-size: 12px; color: var(--text-muted);">Contoh: {Locations}, {Colors}</div>
+        </div>
+        <div class="concept-card">
+          <span class="badge badge-teal" style="margin-bottom: 0.5rem;">Derived</span>
+          <p style="font-size: 13px; margin: 0;">Diturunkan/dikalkulasi dari attribute lain yang tersimpan (stored).</p>
+          <div style="margin-top: 0.5rem; font-size: 12px; color: var(--text-muted);">Contoh: Age diturunkan dari BirthDate</div>
+        </div>
+      </div>
+
+      <div class="callout-pitfall" style="margin-top: 1rem;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="alert-triangle" style="width: 15px; height: 15px; color: #ef4444;"></i>
+          <strong style="color: #ef4444; font-size: 13px;">COMMON PITFALL</strong>
+        </div>
+        <p style="margin: 0; font-size: 14px;">Jangan menyimpan <strong>derived attribute</strong> sebagai stored attribute kecuali ada alasan performa! Menyimpan Age bersamaan dengan BirthDate menyebabkan inkonsistensi data — Age harus diupdate setiap tahun, tapi BirthDate tidak.</p>
+      </div>
+    </div>
+
+    <!-- Key Attribute -->
+    <div class="section-card">
+      <h2>Key Attribute</h2>
+      <p>Key attribute adalah attribute yang nilainya <strong>unik</strong> untuk setiap entity — tidak ada dua entity yang memiliki nilai key yang sama.</p>
+
+      <div class="callout-key">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="key" style="width: 15px; height: 15px; color: var(--accent-blue);"></i>
+          <strong style="color: var(--accent-blue); font-size: 13px;">ATURAN PEMILIHAN KEY</strong>
+        </div>
+        <ul style="font-size: 14px; margin: 0;">
+          <li><strong>Tidak berubah</strong> — SSN, employee_ID lebih baik dari nama</li>
+          <li><strong>Tidak boleh NULL</strong> — harus selalu punya nilai</li>
+          <li><strong>Hindari "smart keys"</strong> — kode yang punya arti tersembunyi bisa berubah</li>
+          <li><strong>Bisa composite</strong> — VehicleTagNumber = (Number, State)</li>
+          <li><strong>Satu entity bisa punya lebih dari satu key</strong></li>
+        </ul>
+      </div>
+
+      <div class="callout-pitfall">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="alert-triangle" style="width: 15px; height: 15px; color: #ef4444;"></i>
+          <strong style="color: #ef4444; font-size: 13px;">COMMON PITFALL</strong>
+        </div>
+        <p style="margin: 0; font-size: 14px;">Tanggal kelulusan siswa adalah <strong>pilihan buruk untuk key</strong> — bisa NULL (belum lulus), tidak unik (banyak siswa lulus bersamaan), dan bisa berubah. Gunakan NIM atau student_ID sebagai gantinya.</p>
+      </div>
+    </div>
+
+    <!-- Relationship Types -->
+    <div class="section-card">
+      <h2>Relationship: Derajat &amp; Structural Constraints</h2>
+
+      <h3 style="margin-top: 1rem;">Derajat Relationship</h3>
+      <div class="concept-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 1rem;">
+        <div class="concept-card" style="text-align: center;">
+          <div style="font-size: 2rem; color: var(--accent-blue); font-weight: 700; margin-bottom: 0.25rem;">2</div>
+          <strong>Binary</strong>
+          <p style="font-size: 12px; margin: 0; margin-top: 0.25rem;">Melibatkan 2 entity type</p>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 0.25rem;">EMPLOYEE ↔ DEPARTMENT</div>
+        </div>
+        <div class="concept-card" style="text-align: center;">
+          <div style="font-size: 2rem; color: var(--accent-purple); font-weight: 700; margin-bottom: 0.25rem;">3</div>
+          <strong>Ternary</strong>
+          <p style="font-size: 12px; margin: 0; margin-top: 0.25rem;">Melibatkan 3 entity type</p>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 0.25rem;">SUPPLIER ↔ PART ↔ PROJECT</div>
+        </div>
+        <div class="concept-card" style="text-align: center;">
+          <div style="font-size: 2rem; color: var(--accent-teal); font-weight: 700; margin-bottom: 0.25rem;">1</div>
+          <strong>Recursive / Unary</strong>
+          <p style="font-size: 12px; margin: 0; margin-top: 0.25rem;">Entity berrelasi dengan dirinya sendiri</p>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 0.25rem;">EMPLOYEE supervises EMPLOYEE</div>
+        </div>
+      </div>
+
+      <h3>Cardinality Ratio</h3>
+      <table class="cardinality-table">
+        <thead>
+          <tr>
+            <th>Tipe</th>
+            <th>Simbol</th>
+            <th>Makna</th>
+            <th>Contoh Studi Kasus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>One-to-One</strong></td>
+            <td><span class="badge badge-blue">1:1</span></td>
+            <td>Satu entity berelasi dengan tepat satu entity lain</td>
+            <td>EMPLOYEE MANAGES DEPARTMENT</td>
+          </tr>
+          <tr>
+            <td><strong>One-to-Many</strong></td>
+            <td><span class="badge badge-green">1:N</span></td>
+            <td>Satu entity berelasi dengan banyak entity lain</td>
+            <td>DEPARTMENT has many EMPLOYEEs</td>
+          </tr>
+          <tr>
+            <td><strong>Many-to-One</strong></td>
+            <td><span class="badge badge-amber">N:1</span></td>
+            <td>Banyak entity berelasi dengan satu entity</td>
+            <td>Many EMPLOYEEs WORKS_FOR one DEPARTMENT</td>
+          </tr>
+          <tr>
+            <td><strong>Many-to-Many</strong></td>
+            <td><span class="badge badge-purple">M:N</span></td>
+            <td>Banyak entity berelasi dengan banyak entity lain</td>
+            <td>EMPLOYEE WORKS_ON PROJECT</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top: 1rem;">Participation Constraint</h3>
+      <div class="concept-grid" style="grid-template-columns: 1fr 1fr; margin-top: 0.75rem;">
+        <div class="concept-card">
+          <span class="badge badge-coral" style="margin-bottom: 0.5rem;">Total Participation</span>
+          <p style="font-size: 13px; margin: 0;">Setiap entity <strong>harus</strong> berpartisipasi dalam relationship. Dilambangkan dengan <strong>garis ganda (double line)</strong>.</p>
+          <p style="font-size: 12px; color: var(--text-muted); margin: 0.5rem 0 0;">Contoh: Setiap EMPLOYEE pasti WORKS_FOR satu DEPARTMENT (wajib)</p>
+        </div>
+        <div class="concept-card">
+          <span class="badge badge-teal" style="margin-bottom: 0.5rem;">Partial Participation</span>
+          <p style="font-size: 13px; margin: 0;">Tidak semua entity harus berpartisipasi. Dilambangkan dengan <strong>garis tunggal (single line)</strong>.</p>
+          <p style="font-size: 12px; color: var(--text-muted); margin: 0.5rem 0 0;">Contoh: Tidak semua EMPLOYEE menjadi manager (opsional)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weak Entity -->
+    <div class="section-card">
+      <h2>Weak Entity</h2>
+      <p>Weak entity adalah entity yang <strong>tidak memiliki key attribute sendiri</strong>. Ia bergantung pada entity lain (owner/identifying entity) untuk identifikasinya.</p>
+
+      <div class="callout-warning">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="info" style="width: 15px; height: 15px; color: var(--accent-amber);"></i>
+          <strong style="color: var(--accent-amber); font-size: 13px;">CARA MENGIDENTIFIKASI WEAK ENTITY</strong>
+        </div>
+        <p style="margin: 0; font-size: 14px;">Weak entity diidentifikasi melalui kombinasi dari: <strong>(1) Partial key</strong> dari weak entity itu sendiri + <strong>(2) Key dari owner entity</strong>. Dalam ERD, weak entity dilambangkan dengan kotak ganda (double rectangle) dan relasinya dengan berlian ganda (double diamond).</p>
+      </div>
+
+      <div style="margin-top: 1rem; font-size: 14px; color: var(--text-secondary);">
+        <strong style="color: var(--text-primary);">Contoh pada studi kasus COMPANY:</strong><br>
+        <span class="weak-entity-box" style="margin: 0.5rem 0; display: inline-block;">DEPENDENT</span>
+        <p style="margin-top: 0.5rem;">DEPENDENT tidak punya key sendiri karena <em>DependentName</em> bisa sama untuk pegawai berbeda. DEPENDENT diidentifikasi oleh: <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">DependentName + SSN (dari EMPLOYEE)</code>.</p>
+      </div>
+
+      <div class="callout-pitfall">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="alert-triangle" style="width: 15px; height: 15px; color: #ef4444;"></i>
+          <strong style="color: #ef4444; font-size: 13px;">COMMON PITFALL</strong>
+        </div>
+        <p style="margin: 0; font-size: 14px;">Jangan mengasumsikan setiap entity tanpa key adalah weak entity. Periksa: apakah entity ini bisa eksis tanpa owner-nya? DEPENDENT tidak bisa eksis tanpa EMPLOYEE pemiliknya → weak entity. Sebaliknya, PROJECT tetap bisa eksis meski managernya resign → bukan weak entity.</p>
+      </div>
+    </div>
+
+    <!-- Min Max Notation -->
+    <div class="section-card">
+      <h2>Notasi (min, max)</h2>
+      <p>Alternatif untuk menyatakan structural constraints yang lebih presisi dari cardinality ratio.</p>
+      <div class="callout-key">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="key" style="width: 15px; height: 15px; color: var(--accent-blue);"></i>
+          <strong style="color: var(--accent-blue); font-size: 13px;">ATURAN NOTASI (min, max)</strong>
+        </div>
+        <ul style="font-size: 14px; margin: 0;">
+          <li>Ditulis pada setiap sisi entity yang berpartisipasi dalam relationship</li>
+          <li><code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">(0, N)</code> = partisipasi parsial, tidak ada batas maksimum</li>
+          <li><code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">(1, 1)</code> = partisipasi total, tepat satu</li>
+          <li><code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">(1, N)</code> = partisipasi total, minimal satu, bisa banyak</li>
+          <li><strong>min = 0</strong> → partial participation; <strong>min ≥ 1</strong> → total participation</li>
+        </ul>
+      </div>
+      <div style="margin-top: 0.75rem; font-size: 14px;">
+        <strong>Contoh WORKS_FOR:</strong>
+        <p style="font-size: 13px; margin-top: 0.25rem; color: var(--text-secondary);">
+          EMPLOYEE side: <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">(1,1)</code> → setiap employee HARUS bekerja di tepat 1 department.<br>
+          DEPARTMENT side: <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">(4,N)</code> → setiap department minimal punya 4 employee, tidak ada batas atas.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================= SECTION 2: VISUALIZATION ============================= -->
+  <div id="section-visualization" class="section-content">
+
+    <!-- Studi Kasus COMPANY -->
+    <div class="section-card">
+      <h2>Studi Kasus: Basis Data COMPANY</h2>
+      <p>Berikut adalah entitas-entitas utama dalam studi kasus COMPANY beserta atributnya.</p>
+
+      <div class="concept-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="concept-card">
+          <span class="entity-box">DEPARTMENT</span>
+          <pre style="font-size: 12px; margin-top: 0.5rem; padding: 0.75rem;"><code><span class="kw">DEPARTMENT</span> {
+  <span class="nm">Name</span>              <span class="cm">// key attribute</span>
+  <span class="nm">Number</span>            <span class="cm">// key attribute</span>
+  <span class="nm">{Locations}</span>       <span class="cm">// multi-valued</span>
+  <span class="nm">Manager</span>           <span class="cm">// FK → EMPLOYEE</span>
+  <span class="nm">Manager_start_date</span>
+}</code></pre>
+        </div>
+        <div class="concept-card">
+          <span class="entity-box">PROJECT</span>
+          <pre style="font-size: 12px; margin-top: 0.5rem; padding: 0.75rem;"><code><span class="kw">PROJECT</span> {
+  <span class="nm">Name</span>              <span class="cm">// key attribute</span>
+  <span class="nm">Number</span>            <span class="cm">// key attribute</span>
+  <span class="nm">Location</span>
+  <span class="nm">Controlling_dept</span>  <span class="cm">// FK → DEPARTMENT</span>
+}</code></pre>
+        </div>
+        <div class="concept-card">
+          <span class="entity-box">EMPLOYEE</span>
+          <pre style="font-size: 12px; margin-top: 0.5rem; padding: 0.75rem;"><code><span class="kw">EMPLOYEE</span> {
+  <span class="nm">Ssn</span>               <span class="cm">// key (underlined)</span>
+  <span class="nm">Name(Fname,Minit,Lname)</span> <span class="cm">// composite</span>
+  <span class="nm">Address</span>
+  <span class="nm">Salary</span>
+  <span class="nm">Sex</span>
+  <span class="nm">Bdate</span>             <span class="cm">// stored</span>
+  <span class="cm">// Age → derived!</span>
+}</code></pre>
+        </div>
+        <div class="concept-card">
+          <span class="weak-entity-box">DEPENDENT</span>
+          <pre style="font-size: 12px; margin-top: 0.5rem; padding: 0.75rem;"><code><span class="kw">DEPENDENT</span> {
+  <span class="cm">// NO OWN KEY!</span>
+  <span class="nm">Dependent_name</span>    <span class="cm">// partial key</span>
+  <span class="nm">Sex</span>
+  <span class="nm">Birth_date</span>
+  <span class="nm">Relationship</span>
+  <span class="cm">// Identified by:</span>
+  <span class="cm">// Dependent_name + Employee.SSN</span>
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Relationships Walkthrough -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-purple">Walkthrough</span>
+        <h2 style="margin: 0;">Relationship Walkthrough — Studi Kasus COMPANY</h2>
+      </div>
+
+      <div id="walkthrough-container">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+          <button onclick="prevStep()" id="btn-prev" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1rem; color: var(--text-secondary); cursor: pointer;">← Sebelumnya</button>
+          <span id="step-indicator" style="font-size: 13px; color: var(--text-muted);">Langkah 1 dari 5</span>
+          <button onclick="nextStep()" id="btn-next" style="background: #1e3a5f; border: 1px solid #3b82f6; border-radius: 8px; padding: 0.5rem 1rem; color: var(--accent-blue); cursor: pointer;">Berikutnya →</button>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="walkthrough-progress" style="width: 20%;"></div>
+        </div>
+        <div id="walkthrough-content"></div>
+      </div>
+    </div>
+
+    <!-- ER Diagram SVG -->
+    <div class="section-card">
+      <h2>ER Diagram: Basis Data COMPANY (Simplified)</h2>
+      <p style="font-size: 13px;">Representasi visual lengkap dari entitas dan relasi dalam studi kasus COMPANY.</p>
+      <div class="er-diagram">
+        <svg viewBox="0 0 820 560" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto; max-height: 560px;">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#4b5563"/>
+            </marker>
+          </defs>
+
+          <!-- EMPLOYEE (center) -->
+          <rect x="320" y="220" width="120" height="40" rx="4" fill="#1a2744" stroke="#3b82f6" stroke-width="2"/>
+          <text x="380" y="245" text-anchor="middle" fill="#93c5fd" font-size="13" font-weight="600" font-family="monospace">EMPLOYEE</text>
+
+          <!-- EMPLOYEE Attributes -->
+          <ellipse cx="200" cy="130" rx="32" ry="18" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="200" y="135" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Fname</text>
+          <line x1="235" y1="145" x2="320" y2="225" stroke="#2d4a2d" stroke-width="1"/>
+
+          <ellipse cx="270" cy="120" rx="24" ry="17" fill="#1a2744" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="270" y="118" text-anchor="middle" fill="#6ee7b7" font-size="9" font-family="monospace" text-decoration="underline">Ssn</text>
+          <line x1="275" y1="137" x2="340" y2="220" stroke="#2d4a2d" stroke-width="1"/>
+
+          <ellipse cx="350" cy="115" rx="28" ry="17" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="350" y="120" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Name</text>
+          <line x1="355" y1="132" x2="368" y2="220" stroke="#2d4a2d" stroke-width="1"/>
+
+          <ellipse cx="430" cy="115" rx="30" ry="17" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="430" y="120" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Salary</text>
+          <line x1="427" y1="132" x2="405" y2="220" stroke="#2d4a2d" stroke-width="1"/>
+
+          <ellipse cx="500" cy="140" rx="26" ry="17" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="500" y="145" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Bdate</text>
+          <line x1="490" y1="155" x2="440" y2="220" stroke="#2d4a2d" stroke-width="1"/>
+
+          <!-- WORKS_FOR relationship -->
+          <polygon points="545,220 595,240 545,260 495,240" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="545" y="245" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600" font-family="monospace">WORKS_FOR</text>
+          <line x1="495" y1="240" x2="440" y2="240" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="none"/>
+          <text x="470" y="233" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="700">N</text>
+
+          <!-- DEPARTMENT -->
+          <rect x="640" y="220" width="130" height="40" rx="4" fill="#1a2744" stroke="#3b82f6" stroke-width="2"/>
+          <text x="705" y="245" text-anchor="middle" fill="#93c5fd" font-size="13" font-weight="600" font-family="monospace">DEPARTMENT</text>
+          <line x1="597" y1="240" x2="640" y2="240" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="625" y="233" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="700">1</text>
+
+          <!-- DEPARTMENT Attributes -->
+          <ellipse cx="700" cy="150" rx="26" ry="17" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="700" y="155" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Name</text>
+          <line x1="700" y1="167" x2="700" y2="220" stroke="#2d4a2d" stroke-width="1"/>
+
+          <ellipse cx="770" cy="170" rx="38" ry="17" fill="#1a2d1a" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text x="770" y="175" text-anchor="middle" fill="#fcd34d" font-size="9" font-family="monospace">{Locations}</text>
+          <line x1="754" y1="183" x2="730" y2="220" stroke="#2d4a2d" stroke-width="1"/>
+
+          <!-- MANAGES relationship -->
+          <polygon points="490,310 540,330 490,350 440,330" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="490" y="335" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600" font-family="monospace">MANAGES</text>
+          <line x1="440" y1="330" x2="380" y2="330" stroke="#7c3aed" stroke-width="1.5"/>
+          <line x1="380" y1="330" x2="380" y2="260" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="380" y="320" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="700">1</text>
+          <line x1="540" y1="330" x2="640" y2="280" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="600" y="320" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="700">1</text>
+
+          <!-- CONTROLS relationship -->
+          <polygon points="680,310 730,330 680,350 630,330" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="680" y="335" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600" font-family="monospace">CONTROLS</text>
+          <line x1="680" y1="310" x2="705" y2="260" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="700" y="295" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="700">1</text>
+
+          <!-- PROJECT -->
+          <rect x="640" y="390" width="100" height="40" rx="4" fill="#1a2744" stroke="#3b82f6" stroke-width="2"/>
+          <text x="690" y="415" text-anchor="middle" fill="#93c5fd" font-size="13" font-weight="600" font-family="monospace">PROJECT</text>
+          <line x1="680" y1="350" x2="683" y2="390" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="673" y="375" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="700">N</text>
+
+          <!-- WORKS_ON -->
+          <polygon points="390,390 440,410 390,430 340,410" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="390" y="415" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600" font-family="monospace">WORKS_ON</text>
+          <line x1="390" y1="390" x2="387" y2="260" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="375" y="285" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="700">M</text>
+          <line x1="440" y1="410" x2="640" y2="410" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="575" y="403" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="700">N</text>
+
+          <!-- Hours attribute on WORKS_ON -->
+          <ellipse cx="390" cy="460" rx="26" ry="16" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="390" y="465" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Hours</text>
+          <line x1="390" y1="444" x2="390" y2="430" stroke="#2d4a2d" stroke-width="1"/>
+
+          <!-- SUPERVISION (recursive) -->
+          <polygon points="180,320 230,340 180,360 130,340" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="180" y="345" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600" font-family="monospace">SUPERVISION</text>
+          <line x1="230" y1="340" x2="320" y2="280" stroke="#7c3aed" stroke-width="1.5"/>
+          <line x1="130" y1="340" x2="320" y2="250" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="220" y="270" text-anchor="middle" fill="#a78bfa" font-size="10">supervisor</text>
+          <text x="195" y="300" text-anchor="middle" fill="#a78bfa" font-size="10">1:N</text>
+
+          <!-- DEPENDENTS_OF -->
+          <polygon points="290,430 340,450 290,470 240,450" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="290" y="455" text-anchor="middle" fill="#c4b5fd" font-size="9" font-weight="600" font-family="monospace">DEPENDENTS_OF</text>
+          <line x1="290" y1="430" x2="350" y2="280" stroke="#7c3aed" stroke-width="1.5"/>
+
+          <!-- DEPENDENT (weak entity - double rectangle) -->
+          <rect x="228" y="490" width="110" height="40" rx="3" fill="#14202e" stroke="#3b82f6" stroke-width="1"/>
+          <rect x="232" y="494" width="102" height="32" rx="2" fill="#1a2744" stroke="#3b82f6" stroke-width="2"/>
+          <text x="283" y="515" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="600" font-family="monospace">DEPENDENT</text>
+          <line x1="283" y1="490" x2="290" y2="470" stroke="#7c3aed" stroke-width="1.5"/>
+
+          <!-- Legend -->
+          <rect x="10" y="490" width="200" height="60" rx="6" fill="#0d1117" stroke="#2a2d3e" stroke-width="1"/>
+          <text x="20" y="508" fill="#6b7280" font-size="10" font-family="sans-serif">LEGEND</text>
+          <rect x="20" y="516" width="16" height="10" rx="2" fill="#1a2744" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="42" y="525" fill="#9ca3af" font-size="10" font-family="sans-serif">Entity</text>
+          <rect x="80" y="513" width="16" height="10" rx="2" fill="#14202e" stroke="#3b82f6" stroke-width="1" />
+          <rect x="82" y="515" width="12" height="6" rx="1" fill="#1a2744" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="102" y="525" fill="#9ca3af" font-size="10" font-family="sans-serif">Weak Entity</text>
+          <polygon points="20,538 28,545 20,552 12,545" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="42" y="549" fill="#9ca3af" font-size="10" font-family="sans-serif">Relationship</text>
+          <ellipse cx="110" cy="545" rx="22" ry="10" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="110" y="549" text-anchor="middle" fill="#6ee7b7" font-size="9" font-family="monospace">Attr</text>
+          <text x="138" y="549" fill="#9ca3af" font-size="10" font-family="sans-serif">Attribute</text>
+        </svg>
+      </div>
+      <div class="er-legend">
+        <div class="er-legend-item">
+          <div style="width: 12px; height: 12px; background: #1a2744; border: 1.5px solid #3b82f6; border-radius: 2px;"></div>
+          Entity (kotak biasa)
+        </div>
+        <div class="er-legend-item">
+          <div style="width: 12px; height: 12px; background: #1a2744; border: 2px solid #3b82f6; outline: 1.5px solid #3b82f6; outline-offset: 2px; border-radius: 2px;"></div>
+          Weak Entity (kotak ganda)
+        </div>
+        <div class="er-legend-item">
+          <div style="width: 10px; height: 10px; background: #1a2d1a; border: 1.5px solid #34d399; border-radius: 999px;"></div>
+          Attribute (oval)
+        </div>
+        <div class="er-legend-item">
+          <div style="width: 10px; height: 10px; background: #1a2d1a; border: 1.5px dashed #f59e0b; border-radius: 999px;"></div>
+          Multi-valued attr (oval putus-putus)
+        </div>
+        <div class="er-legend-item">
+          <div style="width: 10px; height: 10px; background: #1f1535; border: 1.5px solid #a78bfa; transform: rotate(45deg);"></div>
+          Relationship (berlian)
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================= SECTION 3: PRACTICE ============================= -->
+  <div id="section-practice" class="section-content">
+
+    <div class="score-display">
+      <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 0.25rem;">Skor Kamu</div>
+      <div style="font-size: 28px; font-weight: 700; color: var(--accent-green);" id="score-display">0 / 5</div>
+      <div style="font-size: 12px; color: var(--text-muted);" id="score-sub">Belum ada soal yang dijawab</div>
+    </div>
+
+    <!-- Question 1 -->
+    <div class="section-card" id="q1-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 1</span>
+        <span class="badge badge-amber">Attribute Types</span>
+      </div>
+      <h3>Pada studi kasus COMPANY, attribute <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">Age</code> milik EMPLOYEE dikategorikan sebagai apa?</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 0.5rem;">Perhatikan bahwa yang disimpan di basis data adalah <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">BirthDate</code>, bukan Age.</p>
+
+      <div id="q1-options" style="margin-top: 1rem;">
+        <button class="quiz-btn" onclick="checkAnswer(1, 'A', false)">A. Simple attribute</button>
+        <button class="quiz-btn" onclick="checkAnswer(1, 'B', false)">B. Composite attribute</button>
+        <button class="quiz-btn" onclick="checkAnswer(1, 'C', true)">C. Derived attribute</button>
+        <button class="quiz-btn" onclick="checkAnswer(1, 'D', false)">D. Multi-valued attribute</button>
+      </div>
+
+      <div id="q1-feedback" class="feedback-box"></div>
+
+      <button class="reveal-btn" id="q1-reveal" onclick="toggleExplanation(1)">
+        <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Reveal Explanation
+      </button>
+      <div id="q1-explanation" class="explanation-box">
+        <strong style="color: var(--accent-purple);">Metodologi Penyelesaian:</strong><br><br>
+        Pertanyaan kunci: <em>"Apakah nilai attribute ini harus disimpan langsung, atau bisa dihitung dari attribute lain?"</em><br><br>
+        <strong>Age</strong> tidak perlu disimpan sendiri karena nilainya bisa dihitung dari BirthDate dan tanggal saat ini: <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">Age = CurrentYear - BirthDate.Year</code><br><br>
+        Itulah definisi <strong>Derived Attribute</strong> — diturunkan/dikalkulasi dari stored attribute lain. Dalam ERD, dilambangkan dengan oval putus-putus (dashed ellipse).<br><br>
+        Menyimpan Age sebagai stored attribute berbahaya karena perlu diupdate setiap tahun dan rentan inkonsistensi.
+      </div>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="section-card" id="q2-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 2</span>
+        <span class="badge badge-purple">Cardinality</span>
+      </div>
+      <h3>Relationship <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">WORKS_ON</code> antara EMPLOYEE dan PROJECT memiliki cardinality ratio berapa?</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 0.5rem;">Seorang pegawai dapat terlibat dalam beberapa project, dan satu project dapat dikerjakan oleh banyak pegawai.</p>
+
+      <div id="q2-options" style="margin-top: 1rem;">
+        <button class="quiz-btn" onclick="checkAnswer(2, 'A', false)">A. 1:1 (One-to-One)</button>
+        <button class="quiz-btn" onclick="checkAnswer(2, 'B', false)">B. 1:N (One-to-Many)</button>
+        <button class="quiz-btn" onclick="checkAnswer(2, 'C', false)">C. N:1 (Many-to-One)</button>
+        <button class="quiz-btn" onclick="checkAnswer(2, 'D', true)">D. M:N (Many-to-Many)</button>
+      </div>
+
+      <div id="q2-feedback" class="feedback-box"></div>
+
+      <button class="reveal-btn" id="q2-reveal" onclick="toggleExplanation(2)">
+        <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Reveal Explanation
+      </button>
+      <div id="q2-explanation" class="explanation-box">
+        <strong style="color: var(--accent-purple);">Metodologi Penyelesaian:</strong><br><br>
+        Untuk menentukan cardinality, tanyakan dua pertanyaan:<br><br>
+        <strong>1) Satu EMPLOYEE bisa terlibat di berapa PROJECT?</strong><br>
+        Requirements: "seorang pegawai dapat terlibat pada beberapa PROJECT" → BANYAK<br><br>
+        <strong>2) Satu PROJECT bisa dikerjakan oleh berapa EMPLOYEE?</strong><br>
+        Requirements: Tersirat dari kata "beberapa pegawai bisa mengerjakan project yang sama" → BANYAK<br><br>
+        Hasil: BANYAK ↔ BANYAK = <strong>M:N (Many-to-Many)</strong><br><br>
+        Catatan penting: Relationship M:N memerlukan <strong>attribute sendiri</strong> (Hours) yang disimpan di relationship, bukan di entity.
+      </div>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="section-card" id="q3-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 3</span>
+        <span class="badge badge-coral">Weak Entity</span>
+      </div>
+      <h3>Mengapa <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">DEPENDENT</code> disebut sebagai <em>weak entity</em>?</h3>
+
+      <div id="q3-options" style="margin-top: 1rem;">
+        <button class="quiz-btn" onclick="checkAnswer(3, 'A', false)">A. Karena DEPENDENT hanya memiliki sedikit attribute</button>
+        <button class="quiz-btn" onclick="checkAnswer(3, 'B', true)">B. Karena DEPENDENT tidak memiliki key attribute sendiri dan identitasnya bergantung pada EMPLOYEE</button>
+        <button class="quiz-btn" onclick="checkAnswer(3, 'C', false)">C. Karena DEPENDENT berpartisipasi secara parsial dalam relationship</button>
+        <button class="quiz-btn" onclick="checkAnswer(3, 'D', false)">D. Karena DEPENDENT hanya berelasi dengan satu entity lain</button>
+      </div>
+
+      <div id="q3-feedback" class="feedback-box"></div>
+
+      <button class="reveal-btn" id="q3-reveal" onclick="toggleExplanation(3)">
+        <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Reveal Explanation
+      </button>
+      <div id="q3-explanation" class="explanation-box">
+        <strong style="color: var(--accent-purple);">Metodologi Penyelesaian:</strong><br><br>
+        Definisi weak entity: entity yang <strong>tidak punya key attribute</strong> sehingga tidak bisa diidentifikasi secara unik tanpa bantuan entity lain.<br><br>
+        <strong>Uji pada DEPENDENT:</strong><br>
+        - Apakah DependentName unik? TIDAK — dua pegawai berbeda bisa punya tanggungan bernama "Budi"<br>
+        - Apakah ada attribute lain yang bisa jadi key? TIDAK<br>
+        - Conclusion: DEPENDENT adalah weak entity<br><br>
+        <strong>Cara identifikasi DEPENDENT:</strong> DependentName + Employee.SSN<br>
+        Ini adalah <strong>partial key</strong> (DependentName) yang dikombinasikan dengan key dari owner entity (SSN dari EMPLOYEE).<br><br>
+        Jumlah attribute tidak menentukan weak entity — ada entity dengan sedikit attribute tapi punya key sendiri.
+      </div>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="section-card" id="q4-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 4</span>
+        <span class="badge badge-teal">Structural Constraints</span>
+      </div>
+      <h3>Pada relationship <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">MANAGES</code> antara EMPLOYEE dan DEPARTMENT, mana pernyataan yang benar?</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 0.5rem;">Setiap department harus punya tepat satu manager. Tidak semua employee menjadi manager.</p>
+
+      <div id="q4-options" style="margin-top: 1rem;">
+        <button class="quiz-btn" onclick="checkAnswer(4, 'A', false)">A. EMPLOYEE: total participation, DEPARTMENT: partial participation</button>
+        <button class="quiz-btn" onclick="checkAnswer(4, 'B', true)">B. EMPLOYEE: partial participation, DEPARTMENT: total participation</button>
+        <button class="quiz-btn" onclick="checkAnswer(4, 'C', false)">C. Keduanya memiliki total participation</button>
+        <button class="quiz-btn" onclick="checkAnswer(4, 'D', false)">D. Keduanya memiliki partial participation</button>
+      </div>
+
+      <div id="q4-feedback" class="feedback-box"></div>
+
+      <button class="reveal-btn" id="q4-reveal" onclick="toggleExplanation(4)">
+        <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Reveal Explanation
+      </button>
+      <div id="q4-explanation" class="explanation-box">
+        <strong style="color: var(--accent-purple);">Metodologi Penyelesaian:</strong><br><br>
+        Untuk menentukan participation, tanyakan: <em>"Apakah SETIAP entity di tipe ini HARUS berpartisipasi?"</em><br><br>
+        <strong>EMPLOYEE side:</strong><br>
+        "Tidak semua employee menjadi manager" → Ada employee yang TIDAK berpartisipasi dalam MANAGES → <strong>Partial participation</strong> (garis tunggal)<br><br>
+        <strong>DEPARTMENT side:</strong><br>
+        "Setiap department harus punya tepat satu manager" → SEMUA department HARUS berpartisipasi → <strong>Total participation</strong> (garis ganda)<br><br>
+        Dalam notasi (min, max):<br>
+        - EMPLOYEE: (0,1) → boleh jadi 0 manager, maksimal 1 department yang dia manage<br>
+        - DEPARTMENT: (1,1) → minimal 1 manager, maksimal 1 manager
+      </div>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="section-card" id="q5-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 5</span>
+        <span class="badge badge-green">Key Selection</span>
+      </div>
+      <h3>Sebuah aplikasi rumah sakit ingin menyimpan data pasien. Attribute mana yang paling tepat dijadikan key attribute?</h3>
+
+      <div id="q5-options" style="margin-top: 1rem;">
+        <button class="quiz-btn" onclick="checkAnswer(5, 'A', false)">A. Nama lengkap pasien</button>
+        <button class="quiz-btn" onclick="checkAnswer(5, 'B', false)">B. Tanggal lahir pasien</button>
+        <button class="quiz-btn" onclick="checkAnswer(5, 'C', false)">C. Nomor kamar pasien saat ini</button>
+        <button class="quiz-btn" onclick="checkAnswer(5, 'D', true)">D. Nomor Rekam Medis (NRM) yang diterbitkan rumah sakit</button>
+      </div>
+
+      <div id="q5-feedback" class="feedback-box"></div>
+
+      <button class="reveal-btn" id="q5-reveal" onclick="toggleExplanation(5)">
+        <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Reveal Explanation
+      </button>
+      <div id="q5-explanation" class="explanation-box">
+        <strong style="color: var(--accent-purple);">Metodologi Penyelesaian — Evaluasi Setiap Pilihan:</strong><br><br>
+        <strong>A. Nama lengkap:</strong> ❌ TIDAK UNIK — banyak orang bernama sama. Juga bisa berubah (pernikahan, dll).<br><br>
+        <strong>B. Tanggal lahir:</strong> ❌ TIDAK UNIK — banyak orang lahir di hari yang sama. Tidak bisa jadi key.<br><br>
+        <strong>C. Nomor kamar:</strong> ❌ BERUBAH — pasien bisa pindah kamar, pulang, atau tidak dirawat inap. Kamar bisa kosong atau berganti pasien.<br><br>
+        <strong>D. Nomor Rekam Medis (NRM):</strong> ✅ TEPAT karena:<br>
+        - Diterbitkan khusus oleh sistem, menjamin keunikan<br>
+        - Tidak berubah seumur hidup pasien di RS tersebut<br>
+        - Tidak pernah NULL — diterbitkan saat pertama kali mendaftar<br>
+        - Tidak mengandung "intelligence" yang bisa berubah<br><br>
+        Ini adalah contoh <strong>surrogate key</strong> — identifier buatan yang dibuat sistem untuk menjamin keunikan.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  let scores = { answered: 0, correct: 0, total: 5 };
+
+  function showSection(name, tabEl) {
+    document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    tabEl.classList.add('active');
+  }
+
+  function checkAnswer(qNum, choice, isCorrect) {
+    const container = document.getElementById('q' + qNum + '-options');
+    if (container.dataset.answered) return;
+    container.dataset.answered = 'true';
+
+    const buttons = container.querySelectorAll('.quiz-btn');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      const btnText = btn.textContent.trim();
+      if (btnText.startsWith(choice + '.')) {
+        btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+      }
+    });
+
+    if (!isCorrect) {
+      buttons.forEach(btn => {
+        if (btn.onclick && btn.onclick.toString().includes('true')) {
+          btn.classList.add('show-correct');
+        }
+      });
+    }
+
+    const feedback = document.getElementById('q' + qNum + '-feedback');
+    feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
+    feedback.innerHTML = isCorrect
+      ? '<strong>✓ Benar!</strong> Jawaban kamu tepat. Lihat penjelasan untuk pemahaman lebih dalam.'
+      : '<strong>✗ Belum tepat.</strong> Jawaban yang benar sudah ditandai hijau. Buka penjelasan untuk memahami alasannya.';
+
+    scores.answered++;
+    if (isCorrect) scores.correct++;
+    updateScore();
+  }
+
+  function updateScore() {
+    document.getElementById('score-display').textContent = scores.correct + ' / ' + scores.total;
+    const pct = Math.round((scores.correct / scores.total) * 100);
+    let msg = '';
+    if (scores.answered < scores.total) msg = scores.answered + ' dari ' + scores.total + ' soal dijawab';
+    else if (pct === 100) msg = 'Sempurna! Kamu menguasai materi ini!';
+    else if (pct >= 80) msg = 'Bagus sekali! Sedikit lagi sempurna.';
+    else if (pct >= 60) msg = 'Cukup baik. Ulangi konsep yang salah ya.';
+    else msg = 'Pelajari kembali materi dan coba lagi.';
+    document.getElementById('score-sub').textContent = msg;
+    const color = pct >= 80 ? '#34d399' : pct >= 60 ? '#fbbf24' : '#fb7185';
+    document.getElementById('score-display').style.color = color;
+  }
+
+  function toggleExplanation(qNum) {
+    const box = document.getElementById('q' + qNum + '-explanation');
+    const btn = document.getElementById('q' + qNum + '-reveal');
+    if (box.style.display === 'block') {
+      box.style.display = 'none';
+      btn.innerHTML = '<i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation';
+    } else {
+      box.style.display = 'block';
+      btn.innerHTML = '<i data-lucide="eye-off" style="width:14px;height:14px;"></i> Hide Explanation';
+    }
+    lucide.createIcons();
+  }
+
+  const walkthroughSteps = [
+    {
+      title: 'WORKS_FOR — N:1 Relationship',
+      badge: 'N:1',
+      badgeClass: 'badge-green',
+      content: `
+        <p><span class="entity-box">EMPLOYEE</span> <span class="relationship-diamond">WORKS_FOR</span> <span class="entity-box">DEPARTMENT</span></p>
+        <div style="margin-top: 1rem; font-size: 14px; color: var(--text-secondary);">
+          <p><strong>Cardinality:</strong> N:1 — Banyak employee bekerja di satu department.</p>
+          <p><strong>Participation:</strong></p>
+          <ul>
+            <li>EMPLOYEE: <strong>Total</strong> (setiap employee HARUS bekerja di suatu dept) — <em>garis ganda</em></li>
+            <li>DEPARTMENT: <strong>Total</strong> (setiap dept HARUS punya employee) — <em>garis ganda</em></li>
+          </ul>
+          <p><strong>Notasi (min, max):</strong> Employee side: (1,1), Department side: (4,N)</p>
+        </div>
+      `
+    },
+    {
+      title: 'MANAGES — 1:1 Relationship',
+      badge: '1:1',
+      badgeClass: 'badge-blue',
+      content: `
+        <p><span class="entity-box">EMPLOYEE</span> <span class="relationship-diamond">MANAGES</span> <span class="entity-box">DEPARTMENT</span></p>
+        <div style="margin-top: 1rem; font-size: 14px; color: var(--text-secondary);">
+          <p><strong>Cardinality:</strong> 1:1 — Satu manager mengelola tepat satu department.</p>
+          <p><strong>Participation:</strong></p>
+          <ul>
+            <li>EMPLOYEE: <strong>Partial</strong> (tidak semua employee jadi manager) — <em>garis tunggal</em></li>
+            <li>DEPARTMENT: <strong>Total</strong> (setiap dept HARUS punya manager) — <em>garis ganda</em></li>
+          </ul>
+          <p><strong>Attribute relationship:</strong> <span class="attr-oval">Start_date</span> — tanggal mulai jadi manager, disimpan di relationship!</p>
+        </div>
+      `
+    },
+    {
+      title: 'WORKS_ON — M:N dengan Attribute',
+      badge: 'M:N',
+      badgeClass: 'badge-purple',
+      content: `
+        <p><span class="entity-box">EMPLOYEE</span> <span class="relationship-diamond">WORKS_ON</span> <span class="entity-box">PROJECT</span></p>
+        <div style="margin-top: 1rem; font-size: 14px; color: var(--text-secondary);">
+          <p><strong>Cardinality:</strong> M:N — Satu employee bisa di banyak project; satu project bisa punya banyak employee.</p>
+          <p><strong>Attribute relationship:</strong> <span class="attr-oval">Hours</span> — jam kerja pegawai di project tersebut.</p>
+          <p><strong>Kenapa Hours di relationship, bukan di entity?</strong> Karena nilai Hours bergantung pada kombinasi Employee + Project. Seorang employee bisa bekerja 10 jam di ProjectX dan 20 jam di ProjectY.</p>
+        </div>
+      `
+    },
+    {
+      title: 'SUPERVISION — Recursive Relationship',
+      badge: 'Recursive',
+      badgeClass: 'badge-amber',
+      content: `
+        <p><span class="entity-box">EMPLOYEE</span> <span class="relationship-diamond">SUPERVISION</span> <span class="entity-box">EMPLOYEE</span></p>
+        <div style="margin-top: 1rem; font-size: 14px; color: var(--text-secondary);">
+          <p><strong>Cardinality:</strong> 1:N — Satu supervisor bisa mengawasi banyak supervisee.</p>
+          <p><strong>Ini adalah Recursive Relationship</strong> — entity EMPLOYEE berpartisipasi DUA KALI dalam relationship yang sama, dengan dua <strong>role</strong> yang berbeda:</p>
+          <ul>
+            <li>Role 1: <strong>Supervisor</strong> (atasan)</li>
+            <li>Role 2: <strong>Supervisee</strong> (bawahan)</li>
+          </ul>
+          <p>Keduanya adalah entity EMPLOYEE — jadi ada satu entity tipe yang berrelasi dengan dirinya sendiri!</p>
+        </div>
+      `
+    },
+    {
+      title: 'DEPENDENTS_OF — Identifying Relationship',
+      badge: 'Weak Entity',
+      badgeClass: 'badge-coral',
+      content: `
+        <p><span class="entity-box">EMPLOYEE</span> <span class="relationship-diamond" style="transform: skewX(0);">DEPENDENTS_OF</span> <span class="weak-entity-box">DEPENDENT</span></p>
+        <div style="margin-top: 1rem; font-size: 14px; color: var(--text-secondary);">
+          <p><strong>Ini adalah Identifying Relationship</strong> — relasi yang menghubungkan weak entity ke owner-nya.</p>
+          <p><strong>Cardinality:</strong> 1:N — Satu employee bisa punya banyak dependent.</p>
+          <p><strong>Participation DEPENDENT:</strong> Total — setiap dependent HARUS berelasi dengan satu employee (tidak bisa eksis sendiri).</p>
+          <p><strong>Identifikasi DEPENDENT:</strong> <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">Employee.SSN + Dependent.Name</code></p>
+          <p>Dalam ERD: DEPENDENTS_OF digambar dengan berlian ganda (double diamond).</p>
+        </div>
+      `
+    }
+  ];
+
+  let currentStep = 0;
+
+  function renderWalkthrough() {
+    const step = walkthroughSteps[currentStep];
+    document.getElementById('step-indicator').textContent = 'Langkah ' + (currentStep + 1) + ' dari ' + walkthroughSteps.length;
+    document.getElementById('walkthrough-progress').style.width = ((currentStep + 1) / walkthroughSteps.length * 100) + '%';
+    document.getElementById('btn-prev').disabled = currentStep === 0;
+    document.getElementById('btn-prev').style.opacity = currentStep === 0 ? '0.4' : '1';
+    document.getElementById('btn-next').disabled = currentStep === walkthroughSteps.length - 1;
+    document.getElementById('btn-next').style.opacity = currentStep === walkthroughSteps.length - 1 ? '0.4' : '1';
+    document.getElementById('walkthrough-content').innerHTML = `
+      <div class="section-card" style="margin-bottom: 0;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+          <span class="badge ${step.badgeClass}">${step.badge}</span>
+          <h3 style="margin: 0;">${step.title}</h3>
+        </div>
+        ${step.content}
+      </div>
+    `;
+    lucide.createIcons();
+  }
+
+  function nextStep() {
+    if (currentStep < walkthroughSteps.length - 1) { currentStep++; renderWalkthrough(); }
+  }
+
+  function prevStep() {
+    if (currentStep > 0) { currentStep--; renderWalkthrough(); }
+  }
+
+  renderWalkthrough();
+</script>
+</body>
+</html>

@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Slide 7 - SQL - Data Definition</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Cabinet+Grotesk:wght@400;500;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --bg: #07090f;
+    --bg2: #0c1018;
+    --card: #111827;
+    --card2: #161f2e;
+    --border: rgba(255,255,255,0.06);
+    --blue: #60a5fa;
+    --cyan: #22d3ee;
+    --green: #4ade80;
+    --amber: #fbbf24;
+    --rose: #fb7185;
+    --violet: #a78bfa;
+    --text: #e2e8f0;
+    --muted: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,h4,h5 { font-family: 'Cabinet Grotesk', sans-serif; }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Grid dot background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(96,165,250,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Hero */
+  .hero {
+    background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(96,165,250,0.1) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 50%, rgba(34,211,238,0.06) 0%, transparent 50%),
+                var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(96,165,250,0.15); }
+  .card2 { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; }
+
+  /* Callouts */
+  .callout { border-radius: 0 10px 10px 0; padding: 14px 18px; }
+  .callout-blue { background: rgba(96,165,250,0.07); border-left: 3px solid var(--blue); }
+  .callout-green { background: rgba(74,222,128,0.07); border-left: 3px solid var(--green); }
+  .callout-amber { background: rgba(251,191,36,0.07); border-left: 3px solid var(--amber); }
+  .callout-rose { background: rgba(251,113,133,0.07); border-left: 3px solid var(--rose); }
+  .callout-cyan { background: rgba(34,211,238,0.07); border-left: 3px solid var(--cyan); }
+  .callout-violet { background: rgba(167,139,250,0.07); border-left: 3px solid var(--violet); }
+
+  /* Badge */
+  .badge { display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:0.05em; }
+  .badge-blue { background:rgba(96,165,250,0.12);color:#93c5fd; }
+  .badge-green { background:rgba(74,222,128,0.12);color:#86efac; }
+  .badge-amber { background:rgba(251,191,36,0.12);color:#fcd34d; }
+  .badge-rose { background:rgba(251,113,133,0.12);color:#fda4af; }
+  .badge-cyan { background:rgba(34,211,238,0.12);color:#67e8f9; }
+  .badge-violet { background:rgba(167,139,250,0.12);color:#c4b5fd; }
+
+  /* Nav pill */
+  .nav-pill { background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 14px;font-size:0.78rem;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block; }
+  .nav-pill:hover { background:rgba(96,165,250,0.1);border-color:rgba(96,165,250,0.3);color:var(--blue); }
+
+  /* Code */
+  .code-wrap { background:#060a12;border:1px solid rgba(96,165,250,0.12);border-radius:10px;overflow:hidden; }
+  .code-header { background:rgba(96,165,250,0.06);border-bottom:1px solid rgba(96,165,250,0.1);padding:8px 16px;display:flex;align-items:center;justify-content:space-between; }
+  .code-header span { font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted); }
+  pre { padding:16px 20px;font-size:0.78rem;line-height:1.9;overflow-x:auto; }
+  .kw { color:#7dd3fc; font-weight:600; }
+  .kw2 { color:#a78bfa; }
+  .str { color:#86efac; }
+  .col { color:#fbbf24; }
+  .cm { color:#374151;font-style:italic; }
+  .num { color:#fb923c; }
+  .tbl { color:#22d3ee; }
+  .con { color:#f472b6; }
+
+  /* Step */
+  .step-dot { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;flex-shrink:0; }
+  .step-blue { background:rgba(96,165,250,0.15);border:1.5px solid var(--blue);color:var(--blue); }
+  .step-cyan { background:rgba(34,211,238,0.15);border:1.5px solid var(--cyan);color:var(--cyan); }
+  .step-green { background:rgba(74,222,128,0.15);border:1.5px solid var(--green);color:var(--green); }
+  .step-amber { background:rgba(251,191,36,0.15);border:1.5px solid var(--amber);color:var(--amber); }
+  .step-rose { background:rgba(251,113,133,0.15);border:1.5px solid var(--rose);color:var(--rose); }
+  .step-violet { background:rgba(167,139,250,0.15);border:1.5px solid var(--violet);color:var(--violet); }
+
+  /* Quiz */
+  .qopt { background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:9px;padding:11px 16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:flex-start;gap:12px; }
+  .qopt:hover { border-color:rgba(96,165,250,0.3);background:rgba(96,165,250,0.04); }
+  .qopt.correct { border-color:var(--green);background:rgba(74,222,128,0.08); }
+  .qopt.incorrect { border-color:var(--rose);background:rgba(251,113,133,0.07); }
+  .qopt.disabled { pointer-events:none; }
+  .qlet { width:26px;height:26px;border:1.5px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);flex-shrink:0;margin-top:1px; }
+  .qopt.correct .qlet { border-color:var(--green);color:var(--green);background:rgba(74,222,128,0.12); }
+  .qopt.incorrect .qlet { border-color:var(--rose);color:var(--rose);background:rgba(251,113,133,0.1); }
+
+  .fb-ok { background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:9px;padding:11px 15px;color:#86efac;font-size:0.85rem; }
+  .fb-err { background:rgba(251,113,133,0.07);border:1px solid rgba(251,113,133,0.2);border-radius:9px;padding:11px 15px;color:#fda4af;font-size:0.85rem; }
+
+  .reveal-btn { background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);color:#c4b5fd;border-radius:7px;padding:7px 16px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:0.72rem;transition:all 0.2s; }
+  .reveal-btn:hover { background:rgba(167,139,250,0.18); }
+  .exp-box { background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.12);border-radius:9px;padding:15px;display:none;margin-top:10px; }
+  .exp-box.open { display:block; }
+
+  /* TOC */
+  .toc-a { color:var(--muted);text-decoration:none;font-size:0.83rem;display:flex;align-items:center;gap:8px;transition:color 0.2s; }
+  .toc-a:hover { color:var(--blue); }
+
+  /* SQL keyword highlight spans in prose */
+  .sql-kw { font-family:'JetBrains Mono',monospace;font-size:0.82em;background:rgba(96,165,250,0.1);color:#7dd3fc;padding:1px 6px;border-radius:4px; }
+
+  /* Divider */
+  .divider { height:1px;background:var(--border); }
+
+  /* Walkthrough nav */
+  .wt-btn { border-radius:7px;padding:5px 14px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:0.72rem;transition:all 0.2s;border:1px solid; }
+  .wt-prev { background:rgba(255,255,255,0.04);border-color:var(--border);color:var(--muted); }
+  .wt-prev:hover { background:rgba(255,255,255,0.08); }
+  .wt-next { background:rgba(96,165,250,0.1);border-color:rgba(96,165,250,0.25);color:var(--blue); }
+  .wt-next:hover { background:rgba(96,165,250,0.18); }
+
+  section { scroll-margin-top: 72px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width:5px;height:5px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:rgba(96,165,250,0.25);border-radius:3px; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)} }
+  .fade-up { animation:fadeUp 0.4s ease forwards; }
+
+  /* Command comparison table */
+  .cmd-row { display:grid;grid-template-columns:130px 1fr 1fr;gap:0;border-bottom:1px solid var(--border); }
+  .cmd-row:last-child { border-bottom:none; }
+  .cmd-cell { padding:10px 14px;font-size:0.83rem; }
+</style>
+</head>
+<body>
+
+<!-- STICKY NAV -->
+<nav style="position:sticky;top:0;z-index:100;background:rgba(7,9,15,0.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);">
+  <div style="max-width:1080px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:7px;height:7px;background:var(--blue);border-radius:50%;box-shadow:0 0 8px var(--blue);"></div>
+      <span style="font-family:'Cabinet Grotesk',sans-serif;font-weight:800;font-size:0.88rem;color:var(--blue);">BASIS DATA</span>
+      <span style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.75rem;">/ Slide 7</span>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <a href="#deep-dive" class="nav-pill">Konsep</a>
+      <a href="#ddl-walk" class="nav-pill">DDL Walkthrough</a>
+      <a href="#dml-walk" class="nav-pill">DML Walkthrough</a>
+      <a href="#practice" class="nav-pill">Quiz</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" style="padding:72px 20px 52px;text-align:center;position:relative;overflow:hidden;">
+  <div style="max-width:760px;margin:0 auto;position:relative;z-index:1;">
+    <div class="badge badge-blue" style="margin-bottom:18px;">CSGE602070 · Basis Data · Slide 7</div>
+    <h1 style="font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:14px;">
+      SQL — <span style="color:var(--blue);">Data Definition</span>
+    </h1>
+    <p style="color:var(--muted);font-size:1rem;max-width:560px;margin:0 auto 28px;">
+      Pahami cara mendefinisikan skema, tipe data, constraint, dan memodifikasi data menggunakan perintah DDL &amp; DML di SQL.
+    </p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="#deep-dive" style="background:var(--blue);color:#07090f;font-weight:700;font-family:'Cabinet Grotesk',sans-serif;padding:11px 26px;border-radius:9px;text-decoration:none;font-size:0.9rem;">Mulai Belajar →</a>
+      <a href="#practice" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-weight:600;font-family:'Cabinet Grotesk',sans-serif;padding:11px 26px;border-radius:9px;text-decoration:none;font-size:0.9rem;">Langsung Quiz</a>
+    </div>
+  </div>
+  <div style="position:absolute;top:-40px;left:-80px;width:320px;height:320px;border-radius:50%;border:1px solid rgba(96,165,250,0.05);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-60px;right:-40px;width:240px;height:240px;border-radius:50%;border:1px solid rgba(34,211,238,0.05);pointer-events:none;"></div>
+</header>
+
+<main style="max-width:1080px;margin:0 auto;padding:44px 20px 80px;position:relative;z-index:1;">
+
+  <!-- TOC -->
+  <div class="card" style="padding:22px;margin-bottom:36px;">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;">
+      <i data-lucide="list" style="color:var(--blue);width:16px;height:16px;"></i>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted);letter-spacing:0.08em;">DAFTAR ISI</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;">
+      <a href="#deep-dive" class="toc-a"><i data-lucide="brain" style="width:14px;height:14px;color:var(--blue);flex-shrink:0;"></i>1. Conceptual Deep Dive</a>
+      <a href="#ddl-walk" class="toc-a"><i data-lucide="code-2" style="width:14px;height:14px;color:var(--cyan);flex-shrink:0;"></i>2. DDL Walkthrough</a>
+      <a href="#constraints" class="toc-a"><i data-lucide="shield-check" style="width:14px;height:14px;color:var(--green);flex-shrink:0;"></i>3. Constraints in SQL</a>
+      <a href="#dml-walk" class="toc-a"><i data-lucide="database" style="width:14px;height:14px;color:var(--amber);flex-shrink:0;"></i>4. DML Walkthrough</a>
+      <a href="#practice" class="toc-a"><i data-lucide="zap" style="width:14px;height:14px;color:var(--rose);flex-shrink:0;"></i>5. Interactive Practice Suite</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 1: CONCEPTUAL DEEP DIVE -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="deep-dive" style="margin-bottom:56px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <div style="width:38px;height:38px;background:rgba(96,165,250,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;"><i data-lucide="brain" style="color:var(--blue);width:18px;height:18px;"></i></div>
+      <div>
+        <div class="badge badge-blue" style="margin-bottom:3px;">SECTION 01</div>
+        <h2 style="font-size:1.5rem;font-weight:800;">Conceptual Deep Dive</h2>
+      </div>
+    </div>
+
+    <!-- SQL Overview -->
+    <div class="card" style="padding:24px;margin-bottom:18px;">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;"><i data-lucide="info" style="color:var(--blue);width:16px;height:16px;"></i>Apa itu SQL?</h3>
+      <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:14px;">SQL (<em style="color:var(--text);">Structured Query Language</em>, diucapkan <span class="mono" style="color:var(--cyan);">/ˈsiːkwəl/</span>) adalah bahasa standar untuk berinteraksi dengan basis data relasional. SQL bersifat <strong style="color:var(--text);">declarative</strong> — kita menyatakan <em>apa</em> yang diinginkan, bukan <em>bagaimana</em> cara mendapatkannya.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+        <div class="callout callout-blue"><span style="font-size:0.78rem;font-weight:700;color:var(--blue);">STANDARDIZED</span><p style="font-size:0.82rem;color:#94a3b8;margin-top:4px;">Banyak fitur baru seiring waktu, namun tetap kompatibel lintas DBMS.</p></div>
+        <div class="callout callout-cyan"><span style="font-size:0.78rem;font-weight:700;color:var(--cyan);">INTERACTIVE</span><p style="font-size:0.82rem;color:#94a3b8;margin-top:4px;">Via GUI, command prompt, atau di-embed dalam program.</p></div>
+        <div class="callout callout-green"><span style="font-size:0.78rem;font-weight:700;color:var(--green);">DECLARATIVE</span><p style="font-size:0.82rem;color:#94a3b8;margin-top:4px;">Berbasis relational algebra — deskripsikan hasil, bukan langkah.</p></div>
+      </div>
+    </div>
+
+    <!-- DDL vs DML -->
+    <div class="card" style="padding:24px;margin-bottom:18px;">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i data-lucide="split" style="color:var(--amber);width:16px;height:16px;"></i>DDL vs DML — Mental Model</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div style="background:rgba(96,165,250,0.05);border:1px solid rgba(96,165,250,0.15);border-radius:10px;padding:16px;">
+          <div class="badge badge-blue" style="margin-bottom:10px;">DDL — Data Definition Language</div>
+          <p style="font-size:0.83rem;color:#94a3b8;margin-bottom:10px;">Mendefinisikan <strong style="color:var(--text);">struktur</strong> basis data. Ibarat <em>"membangun gedung"</em> — membuat denah, dinding, pintu.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span class="sql-kw">CREATE TABLE</span>
+            <span class="sql-kw">ALTER TABLE</span>
+            <span class="sql-kw">DROP TABLE</span>
+            <span class="sql-kw">CREATE SCHEMA</span>
+          </div>
+        </div>
+        <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.15);border-radius:10px;padding:16px;">
+          <div class="badge badge-amber" style="margin-bottom:10px;">DML — Data Manipulation Language</div>
+          <p style="font-size:0.83rem;color:#94a3b8;margin-bottom:10px;">Memanipulasi <strong style="color:var(--text);">isi data</strong> di dalam struktur. Ibarat <em>"mengelola isi gedung"</em> — memasukkan, memindahkan, membuang perabot.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span class="sql-kw">INSERT</span>
+            <span class="sql-kw">UPDATE</span>
+            <span class="sql-kw">DELETE</span>
+            <span class="sql-kw">SELECT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Terms Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px;">
+      <div class="card" style="padding:18px;">
+        <div class="badge badge-blue" style="margin-bottom:8px;">KEY TERM</div>
+        <h4 style="font-weight:700;font-size:0.92rem;margin-bottom:5px;">Schema</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin:0;">Wadah yang mengelompokkan tabel, view, constraint, dan elemen lain yang terkait dalam satu basis data. Diidentifikasi dengan nama schema. Dibuat dengan <span class="sql-kw">CREATE SCHEMA</span>.</p>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div class="badge badge-cyan" style="margin-bottom:8px;">KEY TERM</div>
+        <h4 style="font-weight:700;font-size:0.92rem;margin-bottom:5px;">Domain</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin:0;">Tipe data buatan pengguna yang membungkus tipe dasar. Memudahkan perubahan tipe sekaligus untuk banyak atribut. Contoh: <span class="mono" style="color:var(--cyan);font-size:0.8em;">CREATE DOMAIN SSN_TYPE AS CHAR(9)</span>.</p>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div class="badge badge-green" style="margin-bottom:8px;">KEY TERM</div>
+        <h4 style="font-weight:700;font-size:0.92rem;margin-bottom:5px;">Base Relation vs Virtual Relation</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin:0;"><strong style="color:var(--text);">Base:</strong> Dibuat dengan <span class="sql-kw">CREATE TABLE</span>, data benar-benar tersimpan. <strong style="color:var(--text);">Virtual:</strong> Dibuat dengan <span class="sql-kw">CREATE VIEW</span>, tidak punya file fisik sendiri.</p>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div class="badge badge-amber" style="margin-bottom:8px;">KEY TERM</div>
+        <h4 style="font-weight:700;font-size:0.92rem;margin-bottom:5px;">Referential Integrity</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin:0;">Jaminan bahwa setiap nilai foreign key di satu tabel harus ada di tabel yang dirujuk. Ditegakkan otomatis oleh DBMS saat data dimodifikasi.</p>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div class="badge badge-rose" style="margin-bottom:8px;">KEY TERM</div>
+        <h4 style="font-weight:700;font-size:0.92rem;margin-bottom:5px;">ON DELETE / ON UPDATE Action</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin:0;">Tindakan saat data yang dirujuk FK dihapus/diubah: <span class="sql-kw">CASCADE</span> (ikut hapus/ubah), <span class="sql-kw">SET NULL</span>, <span class="sql-kw">SET DEFAULT</span>, <span class="sql-kw">RESTRICT</span>.</p>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div class="badge badge-violet" style="margin-bottom:8px;">KEY TERM</div>
+        <h4 style="font-weight:700;font-size:0.92rem;margin-bottom:5px;">Named Constraint</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin:0;">Constraint yang diberi nama dengan keyword <span class="sql-kw">CONSTRAINT nama</span>. Memudahkan identifikasi error dan memungkinkan DROP/ALTER constraint secara spesifik.</p>
+      </div>
+    </div>
+
+    <!-- Data Types Table -->
+    <div class="card" style="padding:24px;margin-bottom:18px;">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><i data-lucide="layers" style="color:var(--cyan);width:16px;height:16px;"></i>Tipe Data SQL — Ringkasan</h3>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left;padding:9px 12px;color:var(--muted);font-weight:600;white-space:nowrap;">Kategori</th>
+              <th style="text-align:left;padding:9px 12px;color:var(--muted);font-weight:600;">Tipe</th>
+              <th style="text-align:left;padding:9px 12px;color:var(--muted);font-weight:600;">Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:9px 12px;color:var(--blue);font-family:'JetBrains Mono',monospace;white-space:nowrap;">Numeric</td><td style="padding:9px 12px;"><code style="color:#7dd3fc;font-size:0.8em;">INT, SMALLINT, NUMERIC, FLOAT, REAL, DOUBLE</code></td><td style="padding:9px 12px;color:#94a3b8;">Bilangan bulat, presisi arbitrer, bilangan real</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:9px 12px;color:var(--cyan);font-family:'JetBrains Mono',monospace;white-space:nowrap;">Character</td><td style="padding:9px 12px;"><code style="color:#67e8f9;font-size:0.8em;">CHAR(n), VARCHAR(n), TEXT</code></td><td style="padding:9px 12px;color:#94a3b8;">Fixed-length, variable-length, unlimited text</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:9px 12px;color:var(--green);font-family:'JetBrains Mono',monospace;white-space:nowrap;">Bit-string</td><td style="padding:9px 12px;"><code style="color:#86efac;font-size:0.8em;">BIT(n), BIT VARYING(n)</code></td><td style="padding:9px 12px;color:#94a3b8;">Untuk data biner</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:9px 12px;color:var(--amber);font-family:'JetBrains Mono',monospace;white-space:nowrap;">Boolean</td><td style="padding:9px 12px;"><code style="color:#fcd34d;font-size:0.8em;">BOOLEAN</code></td><td style="padding:9px 12px;color:#94a3b8;">TRUE / FALSE / NULL</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:9px 12px;color:var(--rose);font-family:'JetBrains Mono',monospace;white-space:nowrap;">Date/Time</td><td style="padding:9px 12px;"><code style="color:#fda4af;font-size:0.8em;">DATE, TIME, TIMESTAMP, INTERVAL</code></td><td style="padding:9px 12px;color:#94a3b8;">Tanggal YYYY-MM-DD, waktu, timestamp, selisih waktu</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Common Pitfalls -->
+    <div class="callout callout-rose" style="padding:16px 18px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <i data-lucide="alert-triangle" style="color:var(--rose);width:16px;height:16px;flex-shrink:0;"></i>
+        <span style="font-weight:700;font-size:0.92rem;color:var(--rose);">⚠ Common Pitfalls</span>
+      </div>
+      <ul style="padding-left:18px;color:#94a3b8;font-size:0.85rem;display:flex;flex-direction:column;gap:7px;">
+        <li><strong style="color:var(--text);">NOT NULL saat ALTER TABLE</strong> — Constraint NOT NULL tidak bisa ditambahkan langsung saat <span class="sql-kw">ALTER TABLE ADD COLUMN</span>. Kolom baru selalu nullable karena semua baris lama tidak punya nilai.</li>
+        <li><strong style="color:var(--text);">Circular FK Reference</strong> — Tabel A punya FK ke B, dan B punya FK ke A. Solusi: buat tabel dulu tanpa FK, lalu tambahkan FK via <span class="sql-kw">ALTER TABLE</span>.</li>
+        <li><strong style="color:var(--text);">Self-referencing FK</strong> — FK yang merujuk tabel itu sendiri (misal <code>Super_ssn → Ssn</code> di tabel EMPLOYEE) harus ditambahkan setelah tabel selesai dibuat.</li>
+        <li><strong style="color:var(--text);">DROP SCHEMA RESTRICT vs CASCADE</strong> — RESTRICT gagal jika schema tidak kosong. CASCADE menghapus SEMUA isinya. Berhati-hati menggunakan CASCADE di production!</li>
+        <li><strong style="color:var(--text);">INSERT tanpa nama kolom</strong> — Nilai harus persis sesuai urutan definisi kolom di CREATE TABLE. Jika ada kolom yang dilewati, gunakan form eksplisit dengan nama kolom.</li>
+        <li><strong style="color:var(--text);">INSERT ... SELECT tidak auto-update</strong> — Data yang di-insert dari query tidak otomatis tersinkronisasi saat sumber berubah. Gunakan VIEW untuk ini.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 2: DDL WALKTHROUGH -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="ddl-walk" style="margin-bottom:56px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <div style="width:38px;height:38px;background:rgba(34,211,238,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;"><i data-lucide="code-2" style="color:var(--cyan);width:18px;height:18px;"></i></div>
+      <div>
+        <div class="badge badge-cyan" style="margin-bottom:3px;">SECTION 02</div>
+        <h2 style="font-size:1.5rem;font-weight:800;">DDL — Data Definition Language</h2>
+      </div>
+    </div>
+
+    <!-- Walkthrough card -->
+    <div class="card" style="padding:26px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+        <h3 style="font-size:0.95rem;font-weight:700;">Step-by-Step: Membangun Skema COMPANY</h3>
+        <div style="display:flex;gap:8px;">
+          <button onclick="prevDDL()" class="wt-btn wt-prev" id="ddlPrev">← Prev</button>
+          <button onclick="nextDDL()" class="wt-btn wt-next" id="ddlNext">Next →</button>
+        </div>
+      </div>
+      <div id="ddlDots" style="display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;"></div>
+      <div id="ddlContent">
+
+        <!-- Step 0: CREATE SCHEMA -->
+        <div class="ddl-step active" data-step="0">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-blue">1</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">CREATE SCHEMA — Membuat Wadah Basis Data</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">Sebelum membuat tabel, buat schema sebagai kontainer logis. Berikan nama dan otorisasi pengguna.</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · CREATE SCHEMA</span><span>DDL</span></div>
+            <pre><code><span class="cm">-- Membuat schema baru bernama COMPANY</span>
+<span class="cm">-- Diotorisasi oleh user Jsmith</span>
+<span class="kw">CREATE SCHEMA</span> <span class="tbl">COMPANY</span> <span class="kw">AUTHORIZATION</span> <span class="str">Jsmith</span>;
+
+<span class="cm">-- DROP RESTRICT: gagal jika schema tidak kosong</span>
+<span class="kw">DROP SCHEMA</span> <span class="tbl">COMPANY</span> <span class="kw">RESTRICT</span>;
+
+<span class="cm">-- DROP CASCADE: hapus semua isi schema</span>
+<span class="kw">DROP SCHEMA</span> <span class="tbl">COMPANY</span> <span class="kw">CASCADE</span>; <span class="cm">-- ⚠ hati-hati!</span>
+
+<span class="cm">-- Membuat domain khusus (opsional)</span>
+<span class="kw">CREATE DOMAIN</span> <span class="tbl">SSN_TYPE</span> <span class="kw">AS</span> <span class="kw2">CHAR(9)</span>;
+<span class="cm">-- Digunakan untuk: Ssn, Super_ssn, Mgr_ssn, Essn</span></code></pre>
+          </div>
+          <div class="callout callout-blue" style="margin-top:12px;">
+            <p style="font-size:0.83rem;color:#94a3b8;margin:0;">💡 <strong style="color:var(--text);">Domain</strong> sangat berguna: jika tipe <code>CHAR(9)</code> harus diubah ke <code>VARCHAR(11)</code>, cukup ubah domain — semua atribut yang menggunakannya otomatis ikut berubah.</p>
+          </div>
+        </div>
+
+        <!-- Step 1: CREATE TABLE EMPLOYEE -->
+        <div class="ddl-step" data-step="1" style="display:none;">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-cyan">2</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">CREATE TABLE — Tabel EMPLOYEE & DEPARTMENT</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">Definisikan atribut, tipe data, dan constraint dasar. FK yang circular ditambahkan kemudian via ALTER TABLE.</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · EMPLOYEE + DEPARTMENT</span><span>Figure 6.1</span></div>
+            <pre><code><span class="kw">CREATE TABLE</span> <span class="tbl">EMPLOYEE</span> (
+  <span class="col">Fname</span>      <span class="kw2">VARCHAR(15)</span>    <span class="con">NOT NULL</span>,
+  <span class="col">Minit</span>      <span class="kw2">CHAR</span>,
+  <span class="col">Lname</span>      <span class="kw2">VARCHAR(15)</span>    <span class="con">NOT NULL</span>,
+  <span class="col">Ssn</span>        <span class="kw2">CHAR(9)</span>        <span class="con">NOT NULL</span>,
+  <span class="col">Bdate</span>      <span class="kw2">DATE</span>,
+  <span class="col">Address</span>    <span class="kw2">VARCHAR(30)</span>,
+  <span class="col">Sex</span>        <span class="kw2">CHAR</span>,
+  <span class="col">Salary</span>     <span class="kw2">DECIMAL(10,2)</span>,
+  <span class="col">Super_ssn</span>  <span class="kw2">CHAR(9)</span>,       <span class="cm">-- FK ditambahkan nanti (self-ref)</span>
+  <span class="col">Dno</span>        <span class="kw2">INT</span>            <span class="con">NOT NULL</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="col">Ssn</span>)
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">DEPARTMENT</span> (
+  <span class="col">Dname</span>          <span class="kw2">VARCHAR(15)</span>  <span class="con">NOT NULL</span>,
+  <span class="col">Dnumber</span>        <span class="kw2">INT</span>          <span class="con">NOT NULL</span>,
+  <span class="col">Mgr_ssn</span>        <span class="kw2">CHAR(9)</span>      <span class="con">NOT NULL</span>,
+  <span class="col">Mgr_start_date</span> <span class="kw2">DATE</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="col">Dnumber</span>),
+  <span class="kw">UNIQUE</span> (<span class="col">Dname</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="col">Mgr_ssn</span>) <span class="kw">REFERENCES</span> <span class="tbl">EMPLOYEE</span>(<span class="col">Ssn</span>)
+);</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 2: CREATE TABLE remaining -->
+        <div class="ddl-step" data-step="2" style="display:none;">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-green">3</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">CREATE TABLE — Tabel Relasional Lanjutan</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">DEPT_LOCATIONS, PROJECT, WORKS_ON, DEPENDENT — masing-masing dengan composite PK dan multiple FK.</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · Tabel Lanjutan</span><span>Figure 6.1</span></div>
+            <pre><code><span class="kw">CREATE TABLE</span> <span class="tbl">DEPT_LOCATIONS</span> (
+  <span class="col">Dnumber</span>   <span class="kw2">INT</span>           <span class="con">NOT NULL</span>,
+  <span class="col">Dlocation</span> <span class="kw2">VARCHAR(15)</span>   <span class="con">NOT NULL</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="col">Dnumber</span>, <span class="col">Dlocation</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="col">Dnumber</span>) <span class="kw">REFERENCES</span> <span class="tbl">DEPARTMENT</span>(<span class="col">Dnumber</span>)
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">WORKS_ON</span> (
+  <span class="col">Essn</span>  <span class="kw2">CHAR(9)</span>       <span class="con">NOT NULL</span>,
+  <span class="col">Pno</span>   <span class="kw2">INT</span>           <span class="con">NOT NULL</span>,
+  <span class="col">Hours</span> <span class="kw2">DECIMAL(3,1)</span>  <span class="con">NOT NULL</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="col">Essn</span>, <span class="col">Pno</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="col">Essn</span>) <span class="kw">REFERENCES</span> <span class="tbl">EMPLOYEE</span>(<span class="col">Ssn</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="col">Pno</span>)  <span class="kw">REFERENCES</span> <span class="tbl">PROJECT</span>(<span class="col">Pnumber</span>)
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">DEPENDENT</span> (
+  <span class="col">Essn</span>           <span class="kw2">CHAR(9)</span>      <span class="con">NOT NULL</span>,
+  <span class="col">Dependent_name</span> <span class="kw2">VARCHAR(15)</span>  <span class="con">NOT NULL</span>,
+  <span class="col">Sex</span>            <span class="kw2">CHAR</span>,
+  <span class="col">Bdate</span>          <span class="kw2">DATE</span>,
+  <span class="col">Relationship</span>   <span class="kw2">VARCHAR(8)</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="col">Essn</span>, <span class="col">Dependent_name</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="col">Essn</span>) <span class="kw">REFERENCES</span> <span class="tbl">EMPLOYEE</span>(<span class="col">Ssn</span>)
+);</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 3: ALTER TABLE -->
+        <div class="ddl-step" data-step="3" style="display:none;">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-amber">4</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">ALTER TABLE — Modifikasi Struktur Tabel</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">Menambah kolom baru atau FK yang tidak bisa dibuat saat CREATE TABLE (circular reference, self-reference).</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · ALTER TABLE</span><span>DDL</span></div>
+            <pre><code><span class="cm">-- Menambah kolom baru (kolom baru = NULL di semua baris)</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">EMPLOYEE</span> <span class="kw">ADD</span> <span class="col">JOB</span> <span class="kw2">VARCHAR(12)</span>;
+<span class="cm">-- ⚠ NOT NULL tidak boleh di sini! Semua baris lama = NULL</span>
+<span class="cm">-- Gunakan UPDATE setelah ini untuk mengisi nilai JOB</span>
+
+<span class="cm">-- Menambah FK self-referencing (tidak bisa di CREATE TABLE)</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">EMPLOYEE</span>
+  <span class="kw">ADD CONSTRAINT</span> <span class="con">EMP_SUPER_FK</span>
+  <span class="kw">FOREIGN KEY</span> (<span class="col">Super_ssn</span>) <span class="kw">REFERENCES</span> <span class="tbl">EMPLOYEE</span>(<span class="col">Ssn</span>);
+
+<span class="cm">-- Menambah FK dari EMPLOYEE ke DEPARTMENT</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">EMPLOYEE</span>
+  <span class="kw">ADD CONSTRAINT</span> <span class="con">EMP_DEPT_FK</span>
+  <span class="kw">FOREIGN KEY</span> (<span class="col">Dno</span>) <span class="kw">REFERENCES</span> <span class="tbl">DEPARTMENT</span>(<span class="col">Dnumber</span>);</code></pre>
+          </div>
+          <div class="callout callout-amber" style="margin-top:12px;">
+            <p style="font-size:0.83rem;color:#94a3b8;margin:0;">💡 <strong style="color:var(--text);">Mengapa EMPLOYEE dan DEPARTMENT saling referensi?</strong> EMPLOYEE punya FK <code>Dno → DEPARTMENT</code>, sementara DEPARTMENT punya FK <code>Mgr_ssn → EMPLOYEE</code>. Karena circular, salah satunya harus ditambahkan via ALTER TABLE setelah keduanya terbuat.</p>
+          </div>
+        </div>
+
+        <!-- Step 4: DROP TABLE -->
+        <div class="ddl-step" data-step="4" style="display:none;">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-rose">5</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">DROP TABLE — Menghapus Tabel</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">Menghapus tabel beserta definisinya. Setelah di-DROP, tabel tidak bisa digunakan dalam query maupun command lain.</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · DROP TABLE</span><span>DDL</span></div>
+            <pre><code><span class="cm">-- Menghapus tabel DEPENDENT</span>
+<span class="kw">DROP TABLE</span> <span class="tbl">DEPENDENT</span>;
+<span class="cm">-- Tabel + definisi hilang sepenuhnya</span>
+<span class="cm">-- Tidak bisa di-query, di-update, atau dirujuk lagi</span>
+
+<span class="cm">-- Jika ada tabel lain yang punya FK ke DEPENDENT,</span>
+<span class="cm">-- DROP mungkin gagal (tergantung DBMS &amp; setting CASCADE)</span></code></pre>
+          </div>
+          <div class="callout callout-rose" style="margin-top:12px;">
+            <p style="font-size:0.83rem;color:#94a3b8;margin:0;">🚨 <strong style="color:var(--text);">Perhatian:</strong> DROP TABLE tidak bisa di-undo! Pastikan tidak ada data penting yang akan hilang, dan pastikan tidak ada tabel lain yang punya FK ke tabel ini.</p>
+          </div>
+        </div>
+
+      </div>
+      <div id="ddlStepText" style="text-align:center;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);">Langkah 1 dari 5</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 3: CONSTRAINTS -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="constraints" style="margin-bottom:56px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <div style="width:38px;height:38px;background:rgba(74,222,128,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;"><i data-lucide="shield-check" style="color:var(--green);width:18px;height:18px;"></i></div>
+      <div>
+        <div class="badge badge-green" style="margin-bottom:3px;">SECTION 03</div>
+        <h2 style="font-size:1.5rem;font-weight:800;">Specifying Constraints in SQL</h2>
+      </div>
+    </div>
+
+    <!-- Constraints Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:20px;">
+
+      <div class="card" style="padding:20px;border-top:2px solid var(--blue);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span class="sql-kw" style="font-size:0.85em;">NOT NULL</span><span style="font-size:0.78rem;color:var(--muted);">— Nilai wajib diisi</span></div>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:10px;">Kolom tidak boleh berisi NULL. Secara implisit sudah diterapkan untuk PRIMARY KEY.</p>
+        <div class="code-wrap"><pre style="padding:10px 14px;font-size:0.75rem;"><code><span class="kw">CREATE TABLE</span> <span class="tbl">PRODUCTS</span> (
+  <span class="col">Product_no</span> <span class="kw2">INT</span>         <span class="con">NOT NULL</span>,
+  <span class="col">Name</span>       <span class="kw2">VARCHAR(10)</span> <span class="con">NOT NULL</span>,
+  <span class="col">Price</span>      <span class="kw2">INT</span>  <span class="cm">← boleh NULL</span>
+);</code></pre></div>
+      </div>
+
+      <div class="card" style="padding:20px;border-top:2px solid var(--cyan);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span class="sql-kw" style="font-size:0.85em;">UNIQUE</span><span style="font-size:0.78rem;color:var(--muted);">— Nilai unik per kolom</span></div>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:10px;">Semua nilai di kolom harus berbeda satu sama lain. Berbeda dengan PK: UNIQUE boleh NULL (di beberapa DBMS, satu NULL diizinkan).</p>
+        <div class="code-wrap"><pre style="padding:10px 14px;font-size:0.75rem;"><code><span class="kw">CREATE TABLE</span> <span class="tbl">DEPARTMENT</span> (
+  <span class="col">Dnumber</span> <span class="kw2">INT</span> <span class="kw">PRIMARY KEY</span>,
+  <span class="col">Dname</span>   <span class="kw2">VARCHAR(15)</span> <span class="con">UNIQUE</span>
+  <span class="cm">-- Dua dept tidak boleh nama sama</span>
+);</code></pre></div>
+      </div>
+
+      <div class="card" style="padding:20px;border-top:2px solid var(--green);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span class="sql-kw" style="font-size:0.85em;">PRIMARY KEY</span><span style="font-size:0.78rem;color:var(--muted);">— Identitas unik baris</span></div>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:10px;">Kombinasi UNIQUE + NOT NULL. Satu tabel hanya boleh punya satu PK (bisa composite).</p>
+        <div class="code-wrap"><pre style="padding:10px 14px;font-size:0.75rem;"><code><span class="cm">-- Single PK</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">PRODUCTS</span> (
+  <span class="col">Product_no</span> <span class="kw2">INT</span> <span class="kw">PRIMARY KEY</span>, ...
+);
+<span class="cm">-- Composite PK</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">EXAMPLE</span> (
+  <span class="col">A</span> <span class="kw2">INT</span>, <span class="col">B</span> <span class="kw2">INT</span>, <span class="col">C</span> <span class="kw2">INT</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="col">A</span>, <span class="col">C</span>)
+);</code></pre></div>
+      </div>
+
+      <div class="card" style="padding:20px;border-top:2px solid var(--amber);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span class="sql-kw" style="font-size:0.85em;">CHECK</span><span style="font-size:0.78rem;color:var(--muted);">— Kondisi kustom</span></div>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:10px;">Nilai harus memenuhi ekspresi boolean tertentu. Bisa diberi nama dengan CONSTRAINT untuk kemudahan identifikasi error.</p>
+        <div class="code-wrap"><pre style="padding:10px 14px;font-size:0.75rem;"><code><span class="kw">CREATE TABLE</span> <span class="tbl">PRODUCTS</span> (
+  <span class="col">Price</span> <span class="kw2">INT</span> <span class="con">CHECK</span> (<span class="col">price</span> &gt; <span class="num">0</span>)
+);
+<span class="cm">-- Dengan nama constraint:</span>
+<span class="col">Price</span> <span class="kw2">INT</span> <span class="kw">CONSTRAINT</span> <span class="con">POS_PRICE</span>
+  <span class="con">CHECK</span> (<span class="col">price</span> &gt; <span class="num">0</span>)</code></pre></div>
+      </div>
+
+      <div class="card" style="padding:20px;border-top:2px solid var(--rose);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span class="sql-kw" style="font-size:0.85em;">FOREIGN KEY</span><span style="font-size:0.78rem;color:var(--muted);">— Referential Integrity</span></div>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:10px;">Nilai FK harus ada di tabel rujukan. Bisa multi-kolom. Bisa diberi aksi ON DELETE / ON UPDATE.</p>
+        <div class="code-wrap"><pre style="padding:10px 14px;font-size:0.75rem;"><code><span class="kw">FOREIGN KEY</span> (<span class="col">B</span>, <span class="col">C</span>)
+  <span class="kw">REFERENCES</span> <span class="tbl">OTHER</span>(<span class="col">C1</span>, <span class="col">C2</span>)
+  <span class="kw">ON DELETE</span> <span class="con">SET NULL</span>
+  <span class="kw">ON UPDATE</span> <span class="con">CASCADE</span>;</code></pre></div>
+      </div>
+
+      <div class="card" style="padding:20px;border-top:2px solid var(--violet);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span class="sql-kw" style="font-size:0.85em;">DEFAULT</span><span style="font-size:0.78rem;color:var(--muted);">— Nilai bawaan</span></div>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:10px;">Jika INSERT tidak menyertakan nilai untuk kolom ini, nilai default yang digunakan. Jika tidak ada DEFAULT, nilai otomatis NULL.</p>
+        <div class="code-wrap"><pre style="padding:10px 14px;font-size:0.75rem;"><code><span class="col">Price</span> <span class="kw2">INT</span> <span class="kw">DEFAULT</span> <span class="num">9.99</span>,
+<span class="col">Dno</span>   <span class="kw2">INT</span> <span class="con">NOT NULL</span> <span class="kw">DEFAULT</span> <span class="num">1</span>,
+<span class="col">Mgr_ssn</span> <span class="kw2">CHAR(9)</span> <span class="con">NOT NULL</span>
+  <span class="kw">DEFAULT</span> <span class="str">'888665555'</span></code></pre></div>
+      </div>
+
+    </div>
+
+    <!-- ON DELETE/UPDATE Comparison -->
+    <div class="card" style="padding:22px;">
+      <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><i data-lucide="git-fork" style="color:var(--rose);width:15px;height:15px;"></i>Perbandingan Aksi ON DELETE / ON UPDATE</h3>
+      <div style="overflow-x:auto;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:9px;overflow:hidden;min-width:500px;">
+          <div class="cmd-row" style="background:rgba(255,255,255,0.04);">
+            <div class="cmd-cell" style="font-weight:700;color:var(--muted);font-size:0.75rem;font-family:'JetBrains Mono',monospace;">AKSI</div>
+            <div class="cmd-cell" style="font-weight:700;color:var(--muted);font-size:0.75rem;font-family:'JetBrains Mono',monospace;">ON DELETE</div>
+            <div class="cmd-cell" style="font-weight:700;color:var(--muted);font-size:0.75rem;font-family:'JetBrains Mono',monospace;">ON UPDATE</div>
+          </div>
+          <div class="cmd-row"><div class="cmd-cell"><span class="sql-kw">CASCADE</span></div><div class="cmd-cell" style="color:#94a3b8;">Baris yang merujuk ikut dihapus</div><div class="cmd-cell" style="color:#94a3b8;">Nilai FK di baris merujuk ikut berubah</div></div>
+          <div class="cmd-row"><div class="cmd-cell"><span class="sql-kw">SET NULL</span></div><div class="cmd-cell" style="color:#94a3b8;">FK di baris merujuk di-set NULL</div><div class="cmd-cell" style="color:#94a3b8;">FK di baris merujuk di-set NULL</div></div>
+          <div class="cmd-row"><div class="cmd-cell"><span class="sql-kw">SET DEFAULT</span></div><div class="cmd-cell" style="color:#94a3b8;">FK di baris merujuk di-set ke nilai DEFAULT-nya</div><div class="cmd-cell" style="color:#94a3b8;">FK di baris merujuk di-set ke nilai DEFAULT-nya</div></div>
+          <div class="cmd-row"><div class="cmd-cell"><span class="sql-kw">RESTRICT</span></div><div class="cmd-cell" style="color:#94a3b8;">Gagal jika ada baris yang merujuk</div><div class="cmd-cell" style="color:#94a3b8;">Gagal jika ada baris yang merujuk</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 4: DML WALKTHROUGH -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="dml-walk" style="margin-bottom:56px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <div style="width:38px;height:38px;background:rgba(251,191,36,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;"><i data-lucide="database" style="color:var(--amber);width:18px;height:18px;"></i></div>
+      <div>
+        <div class="badge badge-amber" style="margin-bottom:3px;">SECTION 04</div>
+        <h2 style="font-size:1.5rem;font-weight:800;">DML — INSERT, DELETE, UPDATE</h2>
+      </div>
+    </div>
+
+    <div class="card" style="padding:26px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+        <h3 style="font-size:0.95rem;font-weight:700;">Walkthrough: Memodifikasi Data</h3>
+        <div style="display:flex;gap:8px;">
+          <button onclick="prevDML()" class="wt-btn wt-prev" id="dmlPrev">← Prev</button>
+          <button onclick="nextDML()" class="wt-btn wt-next" id="dmlNext">Next →</button>
+        </div>
+      </div>
+      <div id="dmlDots" style="display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;"></div>
+      <div id="dmlContent">
+
+        <!-- DML 0: INSERT basic -->
+        <div class="dml-step active" data-step="0">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-green">1</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">INSERT — Menambah Baris (Cara Dasar)</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">Nilai harus persis sesuai urutan kolom di CREATE TABLE. Semua kolom wajib diisi (atau berisi DEFAULT/NULL).</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · INSERT INTO ... VALUES</span><span>U1</span></div>
+            <pre><code><span class="cm">-- Cara 1: Urutan mengikuti definisi tabel (posisional)</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">EMPLOYEE</span>
+<span class="kw">VALUES</span> (
+  <span class="str">'Richard'</span>,     <span class="cm">-- Fname</span>
+  <span class="str">'K'</span>,           <span class="cm">-- Minit</span>
+  <span class="str">'Marini'</span>,      <span class="cm">-- Lname</span>
+  <span class="str">'6532988653'</span>, <span class="cm">-- Ssn</span>
+  <span class="str">'1962-12-30'</span>, <span class="cm">-- Bdate</span>
+  <span class="str">'98 Oak Forest, Katy, TX'</span>, <span class="cm">-- Address</span>
+  <span class="str">'M'</span>,           <span class="cm">-- Sex</span>
+  <span class="num">37000</span>,         <span class="cm">-- Salary</span>
+  <span class="str">'653298653'</span>,  <span class="cm">-- Super_ssn</span>
+  <span class="num">4</span>              <span class="cm">-- Dno ← urutan HARUS sama</span>
+);
+
+<span class="cm">-- Cara 2: Eksplisit nama kolom (lebih aman)</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">EMPLOYEE</span> (<span class="col">Fname</span>, <span class="col">Lname</span>, <span class="col">Ssn</span>)
+<span class="kw">VALUES</span> (<span class="str">'Richard'</span>, <span class="str">'Marini'</span>, <span class="str">'653298653'</span>);
+<span class="cm">-- Kolom lain = NULL atau DEFAULT</span></code></pre>
+          </div>
+          <div class="callout callout-green" style="margin-top:12px;">
+            <p style="font-size:0.83rem;color:#94a3b8;margin:0;">💡 <strong style="color:var(--text);">Best Practice:</strong> Selalu gunakan form eksplisit dengan nama kolom. Lebih aman, tidak terpengaruh jika urutan kolom berubah, dan lebih mudah dibaca.</p>
+          </div>
+        </div>
+
+        <!-- DML 1: INSERT from SELECT -->
+        <div class="dml-step" data-step="1" style="display:none;">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-cyan">2</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">INSERT dari Hasil Query (INSERT ... SELECT)</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">Memasukkan banyak baris sekaligus dari hasil SELECT. Data snapshot saat itu — tidak auto-update saat sumber berubah.</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · INSERT ... SELECT</span><span>U3A + U3B</span></div>
+            <pre><code><span class="cm">-- Buat tabel ringkasan departemen</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">DEPTS_INFO</span> (
+  <span class="col">DEPT_NAME</span>   <span class="kw2">VARCHAR(10)</span>,
+  <span class="col">NO_OF_EMPS</span>  <span class="kw2">INTEGER</span>,
+  <span class="col">TOTAL_SAL</span>   <span class="kw2">INTEGER</span>
+);
+
+<span class="cm">-- Isi dari hasil query agregasi</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">DEPTS_INFO</span> (<span class="col">DEPT_NAME</span>, <span class="col">NO_OF_EMPS</span>, <span class="col">TOTAL_SAL</span>)
+<span class="kw">SELECT</span> <span class="col">Dname</span>, <span class="kw">COUNT</span>(*), <span class="kw">SUM</span>(<span class="col">Salary</span>)
+<span class="kw">FROM</span> <span class="tbl">DEPARTMENT</span>, <span class="tbl">EMPLOYEE</span>
+<span class="kw">WHERE</span> <span class="col">Dnumber</span> = <span class="col">Dno</span>
+<span class="kw">GROUP BY</span> <span class="col">Dname</span>;
+
+<span class="cm">-- ⚠ Jika EMPLOYEE atau DEPARTMENT berubah setelah ini,</span>
+<span class="cm">--   DEPTS_INFO TIDAK otomatis ikut berubah!</span>
+<span class="cm">--   Gunakan CREATE VIEW untuk data yang selalu up-to-date.</span></code></pre>
+          </div>
+        </div>
+
+        <!-- DML 2: DELETE -->
+        <div class="dml-step" data-step="2" style="display:none;">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-rose">3</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">DELETE — Menghapus Baris</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">Gunakan WHERE untuk memilih baris yang dihapus. Tanpa WHERE, SEMUA baris dihapus!</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · DELETE FROM ... WHERE</span><span>U4A–U4D</span></div>
+            <pre><code><span class="cm">-- U4A: Hapus berdasarkan nilai kolom</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">EMPLOYEE</span> <span class="kw">WHERE</span> <span class="col">LName</span> = <span class="str">'Brown'</span>;
+
+<span class="cm">-- U4B: Hapus berdasarkan primary key</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">EMPLOYEE</span> <span class="kw">WHERE</span> <span class="col">Ssn</span> = <span class="str">'123456789'</span>;
+
+<span class="cm">-- U4C: Hapus berdasarkan foreign key</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">EMPLOYEE</span> <span class="kw">WHERE</span> <span class="col">Dno</span> = <span class="num">5</span>;
+
+<span class="cm">-- U4D: Hapus SEMUA baris (tabel kosong, struktur tetap)</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">EMPLOYEE</span>;
+<span class="cm">-- ⚠ BERBEDA dengan DROP TABLE yang juga hapus struktur!</span></code></pre>
+          </div>
+          <div class="callout callout-rose" style="margin-top:12px;">
+            <p style="font-size:0.83rem;color:#94a3b8;margin:0;">🚨 <strong style="color:var(--text);">Ingat!</strong> <span class="sql-kw">DELETE FROM tabel</span> (tanpa WHERE) menghapus semua data tapi tabel tetap ada. <span class="sql-kw">DROP TABLE tabel</span> menghapus data sekaligus strukturnya.</p>
+          </div>
+        </div>
+
+        <!-- DML 3: UPDATE -->
+        <div class="dml-step" data-step="3" style="display:none;">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+            <div class="step-dot step-amber">4</div>
+            <div><h4 style="font-weight:700;margin-bottom:4px;font-size:0.95rem;">UPDATE — Memodifikasi Nilai Kolom</h4>
+            <p style="color:#94a3b8;font-size:0.85rem;margin:0;">Gunakan SET untuk menentukan kolom + nilai baru. WHERE memfilter baris yang diubah. Nilai baru bisa bergantung pada nilai lama.</p></div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-header"><span>SQL · UPDATE ... SET ... WHERE</span><span>U5 + U6</span></div>
+            <pre><code><span class="cm">-- U5: Update sederhana</span>
+<span class="kw">UPDATE</span> <span class="tbl">PROJECT</span>
+<span class="kw">SET</span>   <span class="col">Plocation</span> = <span class="str">'Bellaire'</span>,
+      <span class="col">Dno</span>       = <span class="num">5</span>
+<span class="kw">WHERE</span> <span class="col">Pnumber</span> = <span class="num">10</span>;
+
+<span class="cm">-- U6: Update dengan subquery (nilai baru tergantung nilai lama)</span>
+<span class="cm">-- Naikkan gaji 10% untuk karyawan di dept Research</span>
+<span class="kw">UPDATE</span> <span class="tbl">EMPLOYEE</span>
+<span class="kw">SET</span>   <span class="col">Salary</span> = <span class="col">Salary</span> * <span class="num">1.1</span>  <span class="cm">-- kanan: nilai LAMA, kiri: nilai BARU</span>
+<span class="kw">WHERE</span> <span class="col">Dno</span> <span class="kw">IN</span> (
+  <span class="kw">SELECT</span> <span class="col">Dnumber</span>
+  <span class="kw">FROM</span>   <span class="tbl">DEPARTMENT</span>
+  <span class="kw">WHERE</span>  <span class="col">Dname</span> = <span class="str">'Research'</span>
+);</code></pre>
+          </div>
+          <div class="callout callout-amber" style="margin-top:12px;">
+            <p style="font-size:0.83rem;color:#94a3b8;margin:0;">💡 <strong style="color:var(--text);">Assignment vs Reference:</strong> Dalam <code>SET Salary = Salary * 1.1</code>, <code>Salary</code> di kiri tanda = adalah kolom tujuan (nilai BARU), sedangkan <code>Salary</code> di kanan adalah nilai LAMA sebelum dimodifikasi.</p>
+          </div>
+        </div>
+
+      </div>
+      <div id="dmlStepText" style="text-align:center;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);">Langkah 1 dari 4</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 5: INTERACTIVE PRACTICE -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="practice">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <div style="width:38px;height:38px;background:rgba(251,113,133,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;"><i data-lucide="zap" style="color:var(--rose);width:18px;height:18px;"></i></div>
+      <div>
+        <div class="badge badge-rose" style="margin-bottom:3px;">SECTION 05</div>
+        <h2 style="font-size:1.5rem;font-weight:800;">Interactive Practice Suite</h2>
+      </div>
+    </div>
+
+    <!-- Score -->
+    <div class="card" style="padding:18px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <i data-lucide="trophy" style="color:var(--amber);width:20px;height:20px;"></i>
+        <span style="font-weight:700;">Skor:</span>
+        <span id="scoreDisplay" style="font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:var(--green);">0 / 5</span>
+      </div>
+      <button onclick="resetQuiz()" style="background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 14px;cursor:pointer;font-size:0.78rem;font-family:'JetBrains Mono',monospace;">↺ Reset</button>
+    </div>
+
+    <!-- Q1 -->
+    <div class="card" style="padding:26px;margin-bottom:16px;" id="q1card">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;">
+        <div style="background:rgba(251,113,133,0.12);border:1.5px solid var(--rose);border-radius:7px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--rose);flex-shrink:0;">Q1</div>
+        <p style="font-size:0.92rem;font-weight:500;margin:0;">Anda membuat tabel EMPLOYEE. Setelah itu Anda ingin menambah kolom <code style="background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;color:var(--cyan);">PHONE VARCHAR(15) NOT NULL</code> menggunakan ALTER TABLE. Apa yang terjadi?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;" id="q1opts">
+        <div class="qopt" onclick="checkAns(1,'A','C')"><div class="qlet">A</div><span style="font-size:0.86rem;">Perintah berhasil, semua baris lama otomatis diisi dengan string kosong <code>''</code></span></div>
+        <div class="qopt" onclick="checkAns(1,'B','C')"><div class="qlet">B</div><span style="font-size:0.86rem;">Perintah berhasil, semua baris lama otomatis diisi NULL, constraint NOT NULL aktif untuk INSERT berikutnya</span></div>
+        <div class="qopt" onclick="checkAns(1,'C','C')"><div class="qlet">C</div><span style="font-size:0.86rem;">Perintah gagal/error karena NOT NULL tidak diizinkan saat ALTER TABLE ADD COLUMN pada tabel yang sudah berisi data</span></div>
+        <div class="qopt" onclick="checkAns(1,'D','C')"><div class="qlet">D</div><span style="font-size:0.86rem;">Perintah berhasil dan NOT NULL langsung berlaku untuk semua baris lama</span></div>
+      </div>
+      <div id="q1fb" style="margin-top:12px;display:none;"></div>
+      <button class="reveal-btn" style="margin-top:10px;" onclick="toggleExp('q1exp')"><i data-lucide="book-open" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>Reveal Explanation</button>
+      <div class="exp-box" id="q1exp">
+        <h4 style="font-size:0.85rem;font-weight:700;color:#c4b5fd;margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;"><strong style="color:var(--text);">Aturan ALTER TABLE ADD COLUMN:</strong> Ketika kolom baru ditambahkan ke tabel yang sudah berisi data (baris), semua baris yang sudah ada tidak memiliki nilai untuk kolom tersebut → DBMS mengisi dengan NULL.</p>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;">Karena semua baris lama akan menjadi NULL, menambahkan constraint <span class="sql-kw">NOT NULL</span> sekaligus tidak mungkin — itu berarti constraint langsung dilanggar oleh semua baris yang ada.</p>
+        <p style="font-size:0.82rem;color:#94a3b8;">✅ <strong style="color:var(--text);">Solusi:</strong> Tambah kolom tanpa NOT NULL → UPDATE semua baris untuk mengisi nilai → baru tambahkan constraint NOT NULL via ALTER TABLE.</p>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="card" style="padding:26px;margin-bottom:16px;" id="q2card">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;">
+        <div style="background:rgba(251,113,133,0.12);border:1.5px solid var(--rose);border-radius:7px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--rose);flex-shrink:0;">Q2</div>
+        <p style="font-size:0.92rem;font-weight:500;margin:0;">Tabel EMPLOYEE memiliki kolom <code style="background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;color:var(--cyan);">Dno INT NOT NULL DEFAULT 1</code> dengan FK ke DEPARTMENT. Kolom Dno di EMPLOYEE menggunakan <code style="background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;">ON DELETE SET DEFAULT</code>. Jika department nomor 5 dihapus, apa yang terjadi pada karyawan di dept 5?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;" id="q2opts">
+        <div class="qopt" onclick="checkAns(2,'A','B')"><div class="qlet">A</div><span style="font-size:0.86rem;">Karyawan di dept 5 ikut terhapus dari tabel EMPLOYEE</span></div>
+        <div class="qopt" onclick="checkAns(2,'B','B')"><div class="qlet">B</div><span style="font-size:0.86rem;">Nilai Dno karyawan di dept 5 berubah menjadi <code>1</code> (nilai DEFAULT)</span></div>
+        <div class="qopt" onclick="checkAns(2,'C','B')"><div class="qlet">C</div><span style="font-size:0.86rem;">Nilai Dno karyawan di dept 5 berubah menjadi NULL</span></div>
+        <div class="qopt" onclick="checkAns(2,'D','B')"><div class="qlet">D</div><span style="font-size:0.86rem;">DELETE gagal karena masih ada karyawan yang merujuk dept 5</span></div>
+      </div>
+      <div id="q2fb" style="margin-top:12px;display:none;"></div>
+      <button class="reveal-btn" style="margin-top:10px;" onclick="toggleExp('q2exp')"><i data-lucide="book-open" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>Reveal Explanation</button>
+      <div class="exp-box" id="q2exp">
+        <h4 style="font-size:0.85rem;font-weight:700;color:#c4b5fd;margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;"><strong style="color:var(--text);">Tabel aksi referential integrity:</strong></p>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;">• <strong>CASCADE</strong> → baris referencing ikut dihapus/diubah | • <strong>SET NULL</strong> → FK di-set NULL | • <strong>SET DEFAULT</strong> → FK di-set ke nilai DEFAULT | • <strong>RESTRICT</strong> → operasi gagal</p>
+        <p style="font-size:0.82rem;color:#94a3b8;">✅ <strong style="color:var(--text);">B benar:</strong> Karena aturannya <code>ON DELETE SET DEFAULT</code> dan DEFAULT Dno adalah <code>1</code>, maka ketika dept 5 dihapus, semua karyawan dept 5 mendapat Dno = 1.</p>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="card" style="padding:26px;margin-bottom:16px;" id="q3card">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;">
+        <div style="background:rgba(251,113,133,0.12);border:1.5px solid var(--rose);border-radius:7px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--rose);flex-shrink:0;">Q3</div>
+        <p style="font-size:0.92rem;font-weight:500;margin:0;">Perhatikan perintah berikut:<br/><code style="background:rgba(255,255,255,0.06);padding:4px 10px;border-radius:6px;display:inline-block;margin-top:6px;font-size:0.85em;color:var(--cyan);">DELETE FROM EMPLOYEE;</code><br/>Apa perbedaan utama dengan <code style="background:rgba(255,255,255,0.06);padding:4px 10px;border-radius:6px;color:var(--amber);font-size:0.85em;">DROP TABLE EMPLOYEE;</code>?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;" id="q3opts">
+        <div class="qopt" onclick="checkAns(3,'A','A')"><div class="qlet">A</div><span style="font-size:0.86rem;">DELETE FROM menghapus semua baris data tetapi struktur tabel tetap ada; DROP TABLE menghapus data sekaligus definisi/struktur tabelnya</span></div>
+        <div class="qopt" onclick="checkAns(3,'B','A')"><div class="qlet">B</div><span style="font-size:0.86rem;">Keduanya identik — hasil akhirnya sama</span></div>
+        <div class="qopt" onclick="checkAns(3,'C','A')"><div class="qlet">C</div><span style="font-size:0.86rem;">DELETE FROM lebih berbahaya karena tidak bisa di-undo, sementara DROP TABLE bisa</span></div>
+        <div class="qopt" onclick="checkAns(3,'D','A')"><div class="qlet">D</div><span style="font-size:0.86rem;">DROP TABLE hanya menghapus data, struktur masih bisa dipakai untuk INSERT berikutnya</span></div>
+      </div>
+      <div id="q3fb" style="margin-top:12px;display:none;"></div>
+      <button class="reveal-btn" style="margin-top:10px;" onclick="toggleExp('q3exp')"><i data-lucide="book-open" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>Reveal Explanation</button>
+      <div class="exp-box" id="q3exp">
+        <h4 style="font-size:0.85rem;font-weight:700;color:#c4b5fd;margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;"><strong style="color:var(--text);">DELETE FROM tabel</strong> adalah operasi DML yang menghapus data (baris/tuples), bukan struktur. Tabel masih ada dan bisa menerima INSERT/SELECT baru. Ibaratnya: <em>"mengosongkan isi lemari, lemarinya masih ada."</em></p>
+        <p style="font-size:0.82rem;color:#94a3b8;">✅ <strong style="color:var(--text);">DROP TABLE tabel</strong> adalah operasi DDL yang menghapus tabel + semua definisinya. Tabel tidak bisa lagi digunakan dalam query apapun. Ibaratnya: <em>"merobohkan lemarinya sekalian."</em></p>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="card" style="padding:26px;margin-bottom:16px;" id="q4card">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;">
+        <div style="background:rgba(251,113,133,0.12);border:1.5px solid var(--rose);border-radius:7px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--rose);flex-shrink:0;">Q4</div>
+        <p style="font-size:0.92rem;font-weight:500;margin:0;">Apa yang salah dari perintah UPDATE berikut untuk menaikkan gaji 10% bagi seluruh karyawan?<br/><code style="background:rgba(255,255,255,0.06);padding:6px 12px;border-radius:6px;display:block;margin-top:8px;font-size:0.82em;color:var(--cyan);">UPDATE EMPLOYEE SET Salary = 37000 * 1.1;</code></p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;" id="q4opts">
+        <div class="qopt" onclick="checkAns(4,'A','B')"><div class="qlet">A</div><span style="font-size:0.86rem;">Perintah akan error karena tidak ada klausa WHERE</span></div>
+        <div class="qopt" onclick="checkAns(4,'B','B')"><div class="qlet">B</div><span style="font-size:0.86rem;">Semua karyawan akan mendapat gaji yang sama: 37000 * 1.1 = 40700, bukan naik 10% dari gaji masing-masing</span></div>
+        <div class="qopt" onclick="checkAns(4,'C','B')"><div class="qlet">C</div><span style="font-size:0.86rem;">Perintah benar dan valid untuk menaikkan gaji 10% semua karyawan</span></div>
+        <div class="qopt" onclick="checkAns(4,'D','B')"><div class="qlet">D</div><span style="font-size:0.86rem;">Perintah akan error karena Salary tidak boleh digunakan di kanan tanda =</span></div>
+      </div>
+      <div id="q4fb" style="margin-top:12px;display:none;"></div>
+      <button class="reveal-btn" style="margin-top:10px;" onclick="toggleExp('q4exp')"><i data-lucide="book-open" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>Reveal Explanation</button>
+      <div class="exp-box" id="q4exp">
+        <h4 style="font-size:0.85rem;font-weight:700;color:#c4b5fd;margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;"><strong style="color:var(--text);">Masalahnya:</strong> <code>37000 * 1.1</code> adalah nilai literal konstan. Semua karyawan, apapun gaji aslinya, akan di-set ke 40700. Ini bukan "naik 10% dari gaji masing-masing".</p>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;"><strong style="color:var(--text);">Yang benar:</strong> <code>SET Salary = Salary * 1.1</code> — di sini <code>Salary</code> di kanan = merujuk pada nilai LAMA kolom Salary untuk setiap baris, lalu dikalikan 1.1 menjadi nilai BARU.</p>
+        <p style="font-size:0.82rem;color:#94a3b8;">✅ Klausa WHERE tidak wajib; tanpa WHERE semua baris diperbarui (ini valid tapi berbahaya jika tidak disengaja).</p>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="card" style="padding:26px;margin-bottom:16px;" id="q5card">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;">
+        <div style="background:rgba(251,113,133,0.12);border:1.5px solid var(--rose);border-radius:7px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--rose);flex-shrink:0;">Q5</div>
+        <p style="font-size:0.92rem;font-weight:500;margin:0;">Mengapa foreign key <code style="background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;color:var(--cyan);">Super_ssn</code> di tabel EMPLOYEE tidak bisa langsung dideklarasikan saat <code style="background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;">CREATE TABLE EMPLOYEE</code>?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;" id="q5opts">
+        <div class="qopt" onclick="checkAns(5,'A','D')"><div class="qlet">A</div><span style="font-size:0.86rem;">Karena <code>Super_ssn</code> bukan primary key, sehingga tidak bisa dijadikan FK</span></div>
+        <div class="qopt" onclick="checkAns(5,'B','D')"><div class="qlet">B</div><span style="font-size:0.86rem;">Karena tipe data <code>CHAR(9)</code> tidak bisa digunakan sebagai FK</span></div>
+        <div class="qopt" onclick="checkAns(5,'C','D')"><div class="qlet">C</div><span style="font-size:0.86rem;">Karena FK hanya bisa dideklarasikan menggunakan ALTER TABLE, bukan CREATE TABLE</span></div>
+        <div class="qopt" onclick="checkAns(5,'D','D')"><div class="qlet">D</div><span style="font-size:0.86rem;">Karena <code>Super_ssn</code> merujuk ke tabel yang sama (EMPLOYEE) yang belum selesai dibuat saat itu — self-referencing circular</span></div>
+      </div>
+      <div id="q5fb" style="margin-top:12px;display:none;"></div>
+      <button class="reveal-btn" style="margin-top:10px;" onclick="toggleExp('q5exp')"><i data-lucide="book-open" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"></i>Reveal Explanation</button>
+      <div class="exp-box" id="q5exp">
+        <h4 style="font-size:0.85rem;font-weight:700;color:#c4b5fd;margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;"><strong style="color:var(--text);">Self-referencing FK:</strong> <code>Super_ssn</code> adalah FK yang merujuk ke kolom <code>Ssn</code> di tabel EMPLOYEE itu sendiri. Artinya seorang karyawan bisa punya "supervisor" yang juga seorang karyawan.</p>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-bottom:7px;"><strong>Masalah:</strong> Saat perintah <code>CREATE TABLE EMPLOYEE</code> dieksekusi, tabel EMPLOYEE belum ada/belum selesai terdefinisi. Jika langsung dideklarasikan FK <code>REFERENCES EMPLOYEE(Ssn)</code>, DBMS belum "tahu" tabel tersebut.</p>
+        <p style="font-size:0.82rem;color:#94a3b8;">✅ <strong style="color:var(--text);">Solusi:</strong> Buat EMPLOYEE tanpa FK Self-ref dulu, lalu gunakan <code>ALTER TABLE EMPLOYEE ADD FOREIGN KEY (Super_ssn) REFERENCES EMPLOYEE(Ssn)</code>.</p>
+      </div>
+    </div>
+
+    <!-- Final banner -->
+    <div id="finalBanner" style="display:none;" class="card">
+      <div style="padding:30px;text-align:center;">
+        <div id="finalIcon" style="font-size:2.8rem;margin-bottom:10px;"></div>
+        <h3 id="finalTitle" style="font-size:1.3rem;font-weight:800;margin-bottom:7px;"></h3>
+        <p id="finalMsg" style="color:var(--muted);font-size:0.88rem;margin-bottom:18px;"></p>
+        <button onclick="resetQuiz()" style="background:var(--blue);color:#07090f;font-weight:700;font-family:'Cabinet Grotesk',sans-serif;padding:11px 26px;border-radius:9px;border:none;cursor:pointer;font-size:0.88rem;">Coba Lagi</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid var(--border);padding:20px;text-align:center;">
+  <p style="color:var(--muted);font-size:0.75rem;font-family:'JetBrains Mono',monospace;">CSGE602070 · Basis Data · Slide 7 · Universitas Indonesia<br/><span style="opacity:0.5;">Berdasarkan: Database System 7th Ed., Elmasri/Navathe, Chapter 6: Basic SQL</span></p>
+</footer>
+
+<script>
+lucide.createIcons();
+
+// ── DDL WALKTHROUGH ──────────────────────
+let ddlStep = 0, ddlTotal = 5;
+
+function buildDots(containerId, current, total, fn) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`width:${i===current?24:7}px;height:7px;border-radius:4px;transition:all 0.3s;cursor:pointer;background:${i===current?'var(--blue)':'rgba(255,255,255,0.1)'};`;
+    d.onclick=()=>fn(i);
+    c.appendChild(d);
+  }
+}
+
+function showDDLStep(n){
+  document.querySelectorAll('.ddl-step').forEach((el,i)=>{ el.style.display=i===n?'block':'none'; });
+  document.getElementById('ddlStepText').textContent=`Langkah ${n+1} dari ${ddlTotal}`;
+  document.getElementById('ddlPrev').disabled=n===0; document.getElementById('ddlPrev').style.opacity=n===0?'0.4':'1';
+  document.getElementById('ddlNext').disabled=n===ddlTotal-1; document.getElementById('ddlNext').style.opacity=n===ddlTotal-1?'0.4':'1';
+  buildDots('ddlDots',n,ddlTotal,i=>{ddlStep=i;showDDLStep(i);});
+}
+function nextDDL(){if(ddlStep<ddlTotal-1){ddlStep++;showDDLStep(ddlStep);}}
+function prevDDL(){if(ddlStep>0){ddlStep--;showDDLStep(ddlStep);}}
+showDDLStep(0);
+
+// ── DML WALKTHROUGH ──────────────────────
+let dmlStep = 0, dmlTotal = 4;
+
+function showDMLStep(n){
+  document.querySelectorAll('.dml-step').forEach((el,i)=>{ el.style.display=i===n?'block':'none'; });
+  document.getElementById('dmlStepText').textContent=`Langkah ${n+1} dari ${dmlTotal}`;
+  document.getElementById('dmlPrev').disabled=n===0; document.getElementById('dmlPrev').style.opacity=n===0?'0.4':'1';
+  document.getElementById('dmlNext').disabled=n===dmlTotal-1; document.getElementById('dmlNext').style.opacity=n===dmlTotal-1?'0.4':'1';
+  buildDots('dmlDots',n,dmlTotal,i=>{dmlStep=i;showDMLStep(i);},true);
+}
+function buildDMLDots(n){
+  const c=document.getElementById('dmlDots'); c.innerHTML='';
+  for(let i=0;i<dmlTotal;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`width:${i===n?24:7}px;height:7px;border-radius:4px;transition:all 0.3s;cursor:pointer;background:${i===n?'var(--amber)':'rgba(255,255,255,0.1)'};`;
+    d.onclick=()=>{dmlStep=i;showDMLStep(i);buildDMLDots(i);};
+    c.appendChild(d);
+  }
+}
+function nextDML(){if(dmlStep<dmlTotal-1){dmlStep++;showDMLStep(dmlStep);buildDMLDots(dmlStep);}}
+function prevDML(){if(dmlStep>0){dmlStep--;showDMLStep(dmlStep);buildDMLDots(dmlStep);}}
+showDMLStep(0); buildDMLDots(0);
+
+// Override DDL dots to use correct fn
+function showDDLStepFull(n){
+  document.querySelectorAll('.ddl-step').forEach((el,i)=>{ el.style.display=i===n?'block':'none'; });
+  document.getElementById('ddlStepText').textContent=`Langkah ${n+1} dari ${ddlTotal}`;
+  document.getElementById('ddlPrev').disabled=n===0; document.getElementById('ddlPrev').style.opacity=n===0?'0.4':'1';
+  document.getElementById('ddlNext').disabled=n===ddlTotal-1; document.getElementById('ddlNext').style.opacity=n===ddlTotal-1?'0.4':'1';
+  const c=document.getElementById('ddlDots'); c.innerHTML='';
+  for(let i=0;i<ddlTotal;i++){
+    const d=document.createElement('div');
+    d.style.cssText=`width:${i===n?24:7}px;height:7px;border-radius:4px;transition:all 0.3s;cursor:pointer;background:${i===n?'var(--cyan)':'rgba(255,255,255,0.1)'};`;
+    d.onclick=()=>{ddlStep=i;showDDLStepFull(i);};
+    c.appendChild(d);
+  }
+}
+function nextDDL(){if(ddlStep<ddlTotal-1){ddlStep++;showDDLStepFull(ddlStep);}}
+function prevDDL(){if(ddlStep>0){ddlStep--;showDDLStepFull(ddlStep);}}
+showDDLStepFull(0);
+
+// ── QUIZ ─────────────────────────────────
+let score=0, answered={};
+
+function checkAns(q,sel,correct){
+  if(answered[q]) return;
+  answered[q]=true;
+  const opts=document.querySelectorAll(`#q${q}opts .qopt`);
+  const letters=['A','B','C','D'];
+  opts.forEach((o,i)=>{
+    o.classList.add('disabled');
+    if(letters[i]===correct) o.classList.add('correct');
+    else if(letters[i]===sel && sel!==correct) o.classList.add('incorrect');
+  });
+  const fb=document.getElementById(`q${q}fb`);
+  fb.style.display='block';
+  if(sel===correct){
+    score++;
+    fb.innerHTML=`<div class="fb-ok"><strong>✓ Benar!</strong> Jawaban tepat.</div>`;
+  } else {
+    fb.innerHTML=`<div class="fb-err"><strong>✗ Kurang tepat.</strong> Jawaban benar adalah <strong>${correct}</strong>. Lihat penjelasan di bawah.</div>`;
+  }
+  document.getElementById('scoreDisplay').textContent=`${score} / 5`;
+  if(Object.keys(answered).length===5) setTimeout(showFinal,400);
+}
+
+function showFinal(){
+  const b=document.getElementById('finalBanner');
+  const p=(score/5)*100;
+  let ic,ti,ms;
+  if(p===100){ic='🏆';ti='Sempurna!';ms='Anda menguasai seluruh materi SQL Data Definition dengan sangat baik!';b.style.borderColor='rgba(74,222,128,0.3)';}
+  else if(p>=60){ic='👍';ti='Bagus!';ms='Pemahaman cukup solid. Tinjau soal yang salah dan baca penjelasannya.';b.style.borderColor='rgba(251,191,36,0.3)';}
+  else{ic='📚';ti='Perlu Latihan Lebih';ms='Jangan menyerah! Baca ulang materi dan coba lagi.';b.style.borderColor='rgba(251,113,133,0.3)';}
+  document.getElementById('finalIcon').textContent=ic;
+  document.getElementById('finalTitle').textContent=`${ti} — Skor: ${score}/5`;
+  document.getElementById('finalMsg').textContent=ms;
+  b.style.display='block';
+  b.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function resetQuiz(){
+  score=0; answered={};
+  document.getElementById('scoreDisplay').textContent='0 / 5';
+  document.getElementById('finalBanner').style.display='none';
+  for(let i=1;i<=5;i++){
+    document.querySelectorAll(`#q${i}opts .qopt`).forEach(o=>o.classList.remove('correct','incorrect','disabled'));
+    const fb=document.getElementById(`q${i}fb`); fb.style.display='none'; fb.innerHTML='';
+    const ex=document.getElementById(`q${i}exp`); ex.classList.remove('open');
+  }
+}
+
+function toggleExp(id){
+  document.getElementById(id).classList.toggle('open');
+  lucide.createIcons();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Slide 5 — Relational Data Model & Constraints | CSGE602070</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+:root {
+  --bg: #080c14;
+  --surf: #0d1320;
+  --surf2: #111b2e;
+  --surf3: #162238;
+  --border: #1c2e48;
+  --accent: #22d3ee;
+  --accent2: #0891b2;
+  --accent-dim: rgba(34,211,238,0.09);
+  --green: #4ade80;
+  --green-dim: rgba(74,222,128,0.09);
+  --green-border: rgba(74,222,128,0.22);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.09);
+  --red-border: rgba(248,113,113,0.22);
+  --amber: #fbbf24;
+  --amber-dim: rgba(251,191,36,0.08);
+  --amber-border: rgba(251,191,36,0.22);
+  --purple: #c084fc;
+  --purple-dim: rgba(192,132,252,0.09);
+  --text: #cbd5e1;
+  --muted: #4b6080;
+  --head: #f1f5f9;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:14.5px;
+  line-height:1.75;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+/* noise grain overlay */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.45;
+}
+
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#080c14 0%,#0a1628 40%,#0d1f35 70%,#080c14 100%);
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:-120px;right:-80px;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(34,211,238,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-num{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(5rem,15vw,12rem);
+  color:rgba(34,211,238,0.05);
+  position:absolute;right:-20px;bottom:-30px;
+  line-height:1;pointer-events:none;user-select:none;
+}
+
+h1,h2,h3,h4{font-family:'DM Serif Display',serif;color:var(--head);letter-spacing:-.01em;}
+h1{font-size:clamp(1.8rem,5vw,3rem);line-height:1.15;}
+h2{font-size:1.45rem;}
+h3{font-size:1.1rem;}
+
+/* NAV PILLS */
+.nav-pill{
+  background:var(--surf);border:1px solid var(--border);
+  border-radius:9999px;padding:5px 15px;font-size:12.5px;
+  color:var(--muted);cursor:pointer;transition:all .18s;
+  font-family:'DM Sans',sans-serif;white-space:nowrap;
+}
+.nav-pill:hover,.nav-pill.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:26px 28px;position:relative;z-index:1;}
+.card-l{border-left:3px solid var(--accent);}
+.card-green{border-left:3px solid var(--green);}
+.card-amber{border-left:3px solid var(--amber);}
+.card-purple{border-left:3px solid var(--purple);}
+
+/* CALLOUT BOXES */
+.callout{border-radius:10px;padding:14px 16px;}
+.callout-key{background:var(--accent-dim);border:1px solid rgba(34,211,238,0.2);}
+.callout-pitfall{background:var(--red-dim);border:1px solid var(--red-border);}
+.callout-info{background:var(--green-dim);border:1px solid var(--green-border);}
+.callout-warn{background:var(--amber-dim);border:1px solid var(--amber-border);}
+.callout-purple{background:var(--purple-dim);border:1px solid rgba(192,132,252,0.22);}
+.callout-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;}
+.label-key{color:var(--accent);}
+.label-pitfall{color:var(--red);}
+.label-info{color:var(--green);}
+.label-warn{color:var(--amber);}
+.label-purple{color:var(--purple);}
+
+/* TABLE */
+.rel-table{border-collapse:collapse;width:100%;font-size:13px;}
+.rel-table th{background:var(--surf3);color:var(--accent);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;border:1px solid var(--border);text-align:left;}
+.rel-table td{padding:7px 12px;border:1px solid var(--border);color:var(--text);}
+.rel-table tr:hover td{background:rgba(34,211,238,0.03);}
+.pk-col{color:var(--amber);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+.fk-col{color:var(--purple);}
+.null-val{color:var(--muted);font-style:italic;}
+
+/* CODE */
+pre{background:#060a10;border:1px solid var(--border);border-radius:10px;padding:18px 20px;overflow-x:auto;font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.85;}
+.kw{color:#67e8f9;}
+.ty{color:#818cf8;}
+.cm{color:#334155;font-style:italic;}
+.str{color:#86efac;}
+.fn{color:var(--amber);}
+.op{color:#f472b6;}
+.num{color:#fb923c;}
+.con{color:var(--red);}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;background:var(--accent-dim);border:1px solid rgba(34,211,238,0.2);color:var(--accent);font-size:10.5px;font-family:'DM Mono',monospace;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:2px 9px;border-radius:9999px;}
+.badge-green{background:var(--green-dim);border-color:var(--green-border);color:var(--green);}
+.badge-amber{background:var(--amber-dim);border-color:var(--amber-border);color:var(--amber);}
+.badge-purple{background:var(--purple-dim);border-color:rgba(192,132,252,0.22);color:var(--purple);}
+.badge-red{background:var(--red-dim);border-color:var(--red-border);color:var(--red);}
+
+/* TAG */
+.tag{display:inline-block;background:var(--surf3);border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-size:11.5px;color:var(--accent);font-family:'DM Mono',monospace;}
+.tag-green{color:var(--green);}
+.tag-amber{color:var(--amber);}
+.tag-purple{color:var(--purple);}
+
+/* WALKTHROUGH */
+.wt-step{background:var(--surf2);border-radius:10px;padding:13px 16px;border-left:3px solid var(--border);cursor:pointer;transition:border-color .18s;}
+.wt-step.active{border-left-color:var(--accent);}
+.wt-num{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.wt-body{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:13.5px;line-height:1.65;}
+.wt-body.open{display:block;}
+
+/* QUIZ */
+.quiz-card{background:var(--surf2);border:1px solid var(--border);border-radius:14px;padding:22px 24px;}
+.q-num{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.opt-btn{display:block;width:100%;text-align:left;background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13.5px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .16s;margin-bottom:7px;}
+.opt-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent-dim);color:var(--accent);}
+.opt-btn.correct{border-color:var(--green)!important;background:var(--green-dim)!important;color:#86efac!important;}
+.opt-btn.wrong{border-color:var(--red)!important;background:var(--red-dim)!important;color:#fca5a5!important;}
+.fb-box{margin-top:10px;border-radius:8px;padding:11px 14px;font-size:13.5px;display:none;}
+.fb-box.show{display:block;}
+.fb-correct{background:var(--green-dim);border:1px solid var(--green-border);color:#86efac;}
+.fb-wrong{background:var(--red-dim);border:1px solid var(--red-border);color:#fca5a5;}
+.reveal-btn{background:transparent;border:1px solid var(--border);border-radius:7px;padding:7px 14px;color:var(--muted);font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s;margin-top:10px;}
+.reveal-btn:hover{border-color:var(--purple);color:var(--purple);}
+.explanation{display:none;margin-top:10px;background:var(--purple-dim);border:1px solid rgba(192,132,252,0.2);border-radius:8px;padding:14px 16px;font-size:13.5px;line-height:1.65;}
+.explanation.open{display:block;}
+
+/* CONSTRAINT GRID */
+.con-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+.con-item{background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:border-color .18s;}
+.con-item:hover{border-color:var(--accent);}
+.con-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;}
+
+/* KEY HIERARCHY */
+.key-chain{display:flex;flex-direction:column;gap:8px;}
+.key-node{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;position:relative;font-size:13.5px;}
+.key-node::before{content:'';position:absolute;left:20px;top:-8px;width:1px;height:8px;background:var(--border);}
+.key-node:first-child::before{display:none;}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:40px 0;}
+
+/* OPERATION CARDS */
+.op-card{background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;transition:transform .18s,border-color .18s;}
+.op-card:hover{transform:translateY(-2px);}
+
+/* FK DIAGRAM */
+.fk-box{background:#060a10;border:1px solid var(--border);border-radius:10px;padding:18px 20px;overflow-x:auto;}
+.fk-table{display:inline-flex;flex-direction:column;border:1px solid var(--border);border-radius:8px;overflow:hidden;min-width:180px;}
+.fk-header{background:var(--surf3);padding:6px 12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;font-weight:500;}
+.fk-row{padding:5px 12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);border-top:1px solid var(--border);}
+.fk-pk{color:var(--amber);}
+.fk-fk{color:var(--purple);}
+
+/* PROGRESS */
+#prog-bar{transition:width .4s ease;}
+
+@media(max-width:640px){
+  .card{padding:18px 16px;}
+  pre{font-size:11.5px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<header class="hero px-6 py-14 md:px-16 md:py-20">
+  <div class="hero-glow"></div>
+  <div class="hero-num">5</div>
+  <div class="max-w-5xl mx-auto relative z-10">
+    <div class="flex flex-wrap items-center gap-2 mb-6">
+      <span class="badge"><i data-lucide="table-2" style="width:10px;height:10px;"></i>CSGE602070</span>
+      <span class="badge-green badge">Basis Data</span>
+      <span class="badge-amber badge">Relational Model</span>
+    </div>
+    <h1 class="mb-3">The Relational Data Model<br/><span style="color:var(--accent);">& Database Constraints</span></h1>
+    <p style="color:var(--muted);max-width:520px;font-size:0.95rem;">
+      Slide 5 · Konsep Relational Model, Karakteristik Relasi, Notasi, Constraints, dan Update Operations
+    </p>
+    <nav class="flex flex-wrap gap-2 mt-8">
+      <button class="nav-pill" onclick="goTo('sec-concepts')">Deep Dive</button>
+      <button class="nav-pill" onclick="goTo('sec-viz')">Visualisasi & Logic</button>
+      <button class="nav-pill" onclick="goTo('sec-keys')">Hierarchy of Keys</button>
+      <button class="nav-pill" onclick="goTo('sec-ops')">Update Operations</button>
+      <button class="nav-pill" onclick="goTo('sec-quiz')">Practice Suite</button>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-5 md:px-10 py-10 relative z-10">
+
+<!-- PROGRESS -->
+<div class="card mb-8" style="padding:18px 24px;">
+  <div class="flex justify-between items-center mb-2">
+    <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;">Progress Quiz</span>
+    <span id="prog-label" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);">0 / 5 dijawab</span>
+  </div>
+  <div style="background:var(--surf2);border-radius:9999px;height:5px;overflow:hidden;">
+    <div id="prog-bar" style="background:var(--accent);height:100%;border-radius:9999px;width:0%;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 1 – CONCEPTUAL DEEP DIVE
+═══════════════════════════════════════════ -->
+<section id="sec-concepts">
+  <div class="flex items-center gap-3 mb-6">
+    <div style="width:34px;height:34px;background:var(--accent-dim);border:1px solid rgba(34,211,238,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+      <i data-lucide="layers" style="width:16px;height:16px;color:var(--accent);"></i>
+    </div>
+    <h2>Conceptual Deep Dive</h2>
+  </div>
+
+  <!-- 1. Relational Model Concept -->
+  <div class="card card-l mb-5">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="tag">1</span>
+      <h3>Relational Model Concept</h3>
+    </div>
+    <p style="font-size:14px;margin-bottom:14px;">Diperkenalkan oleh <strong>Ted Codd</strong> dari IBM Research pada tahun <strong>1970</strong>. Model ini menggunakan konsep <em>mathematical relation</em> — setiap database direpresentasikan sebagai kumpulan relasi (tabel).</p>
+
+    <div class="callout callout-key mb-4">
+      <div class="callout-label label-key">📌 Terminologi Formal vs Non-Formal</div>
+      <div style="overflow-x:auto;">
+        <table class="rel-table mt-2">
+          <thead><tr><th>Formal (Relational Model)</th><th>Non-Formal (Sehari-hari)</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag">Relation</span></td><td>Table / File</td></tr>
+            <tr><td><span class="tag">Tuple</span></td><td>Row / Record</td></tr>
+            <tr><td><span class="tag">Attribute</span></td><td>Column Header / Field</td></tr>
+            <tr><td><span class="tag">Domain</span></td><td>All possible column values</td></tr>
+            <tr><td><span class="tag">Schema of a relation</span></td><td>Table definition</td></tr>
+            <tr><td><span class="tag">State of the relation</span></td><td>Populated table</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout callout-key mb-3">
+      <div class="callout-label label-key">🔑 Domain D</div>
+      <p style="font-size:13.5px;"><strong>Domain</strong> adalah himpunan nilai-nilai atomic (tidak dapat dibagi lagi) yang valid untuk suatu atribut. Contoh: <span class="tag">GPA</span> = bilangan real antara 0.0–4.0. <span class="tag">Home_phone</span> = format 7-digit valid dalam suatu area code.</p>
+    </div>
+
+    <div class="callout callout-key mb-3">
+      <div class="callout-label label-key">🔑 Relation Schema</div>
+      <p style="font-size:13.5px;">Dinyatakan dengan notasi <span class="tag">R(A₁, A₂, ..., Aₙ)</span>. Contoh: <span class="tag">STUDENT(Name, SSN, Home_phone, Address, Office_phone, Age, Gpa)</span> — ini adalah relation dengan <strong>degree 7</strong> (7 atribut).</p>
+    </div>
+
+    <div class="callout callout-key mb-3">
+      <div class="callout-label label-key">🔑 Relation State r(R)</div>
+      <p style="font-size:13.5px;">Adalah subset dari Cartesian product semua domain: <span class="tag">r(R) ⊆ dom(A₁) × dom(A₂) × ... × dom(Aₙ)</span>. Setiap <strong>tuple</strong> t adalah list nilai terurut: <span class="tag">t = &lt;v₁, v₂, ..., vₙ&gt;</span>.</p>
+    </div>
+
+    <div class="callout callout-pitfall">
+      <div class="callout-label label-pitfall">⚠️ Common Pitfall</div>
+      <p style="font-size:13.5px;">Jangan bingung antara <strong>Relation Schema</strong> (definisi strukturnya) dan <strong>Relation State</strong> (isi/data aktualnya). Schema bersifat tetap, State berubah seiring waktu ketika data di-insert/delete/update.</p>
+    </div>
+  </div>
+
+  <!-- 2. Characteristics -->
+  <div class="card card-green mb-5">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="tag tag-green">2</span>
+      <h3>Karakteristik Relasi</h3>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px;">
+      <div class="callout callout-info">
+        <div class="callout-label label-info">Ordering of Tuples</div>
+        <p style="font-size:13px;">Relasi didefinisikan sebagai <strong>set of tuples</strong> — elemen dalam set tidak memiliki urutan. Tabel yang sama dengan baris berbeda urutan tetap merepresentasikan relasi yang sama.</p>
+      </div>
+      <div class="callout callout-info">
+        <div class="callout-label label-info">Ordering of Values in Tuple</div>
+        <p style="font-size:13px;">Secara formal, urutan atribut dalam tuple <em>tidak penting</em> selama korespondensi (atribut → nilai) terjaga. Tuple bisa dipandang sebagai set pasangan <span class="tag">&lt;attribute, value&gt;</span>.</p>
+      </div>
+      <div class="callout callout-info">
+        <div class="callout-label label-info">Atomic Values (1NF)</div>
+        <p style="font-size:13px;">Setiap nilai dalam tuple harus <strong>atomic</strong>. <em>Composite</em> dan <em>multivalued attributes</em> tidak diizinkan (First Normal Form). Contoh: {red, green} sebagai nilai satu atribut ❌.</p>
+      </div>
+      <div class="callout callout-info">
+        <div class="callout-label label-info">NULL Values</div>
+        <p style="font-size:13px;">NULL merepresentasikan nilai yang: (1) <em>tidak diketahui</em>, (2) <em>ada tapi tidak tersedia</em>, atau (3) <em>tidak berlaku</em> untuk tuple tersebut (undefined).</p>
+      </div>
+    </div>
+
+    <div class="callout callout-pitfall">
+      <div class="callout-label label-pitfall">⚠️ Common Pitfall — Multivalued vs NULL</div>
+      <p style="font-size:13.5px;">Multivalued attribute seperti <strong>Favourite_color = {red, green}</strong> harus dipindahkan ke relasi terpisah. NULL bukan berarti 0 atau string kosong — NULL berarti "tidak ada informasi".</p>
+    </div>
+  </div>
+
+  <!-- 3. Notation -->
+  <div class="card card-amber mb-5">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="tag tag-amber">3</span>
+      <h3>Relational Model Notation</h3>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px;">
+      <div class="callout callout-warn"><div class="callout-label label-warn">Nama Relasi</div><p style="font-size:13px;">Huruf kapital <span class="tag tag-amber">Q, R, S</span> → nama relasi (schema)</p></div>
+      <div class="callout callout-warn"><div class="callout-label label-warn">State Relasi</div><p style="font-size:13px;">Huruf kecil <span class="tag tag-amber">q, r, s</span> → state (isi) relasi</p></div>
+      <div class="callout callout-warn"><div class="callout-label label-warn">Tuple</div><p style="font-size:13px;">Huruf <span class="tag tag-amber">t, u, v</span> → tuple individual</p></div>
+      <div class="callout callout-warn"><div class="callout-label label-warn">Dot Notation</div><p style="font-size:13px;"><span class="tag tag-amber">R.A</span> → atribut A dari relasi R. <span class="tag tag-amber">t[Ai]</span> → nilai atribut Ai dalam tuple t</p></div>
+    </div>
+    <pre><code><span class="cm">-- Contoh akses nilai tuple:</span>
+<span class="ty">t</span> = &lt;<span class="str">'Barbara Benson'</span>, <span class="str">'533-69-1238'</span>, <span class="str">'(817)839-8461'</span>, ..., <span class="num">19</span>, <span class="num">3.25</span>&gt;
+
+<span class="cm">-- Akses nilai satu atribut:</span>
+<span class="ty">t</span>[<span class="kw">Name</span>]         = &lt;<span class="str">'Barbara Benson'</span>&gt;
+
+<span class="cm">-- Akses subtuple (beberapa atribut sekaligus):</span>
+<span class="ty">t</span>[<span class="kw">Ssn</span>, <span class="kw">Gpa</span>, <span class="kw">Age</span>] = &lt;<span class="str">'533-69-1238'</span>, <span class="num">3.25</span>, <span class="num">19</span>&gt;</code></pre>
+  </div>
+
+  <!-- 4. Constraints -->
+  <div class="card card-purple mb-5">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="tag tag-purple">4</span>
+      <h3>Relational Model Constraints</h3>
+    </div>
+    <p style="font-size:14px;margin-bottom:14px;"><strong>Constraint</strong> adalah batasan pada nilai-nilai aktual dalam database state, yang berasal dari aturan miniworld yang direpresentasikan oleh database.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;">
+      <div class="callout callout-purple">
+        <div class="callout-label label-purple">Implicit / Inherent Constraints</div>
+        <p style="font-size:13px;">Melekat dalam data model itu sendiri. Contoh: relasi tidak boleh punya duplicate tuples (karena relasi adalah set).</p>
+      </div>
+      <div class="callout callout-purple">
+        <div class="callout-label label-purple">Explicit / Schema-based Constraints</div>
+        <p style="font-size:13px;">Dapat diekspresikan langsung dalam schema menggunakan DDL. Contoh: PRIMARY KEY, FOREIGN KEY, NOT NULL, UNIQUE.</p>
+      </div>
+      <div class="callout callout-purple">
+        <div class="callout-label label-purple">Application-based / Semantic Constraints</div>
+        <p style="font-size:13px;">Tidak bisa diekspresikan dalam schema. Diberlakukan lewat program aplikasi. Contoh: "Mahasiswa tidak boleh mengambil lebih dari 24 SKS per semester."</p>
+      </div>
+    </div>
+
+    <!-- Classification -->
+    <div class="callout callout-key mb-3">
+      <div class="callout-label label-key">Klasifikasi Integrity Constraints</div>
+      <div class="con-grid mt-2">
+        <div class="con-item">
+          <div class="con-icon" style="background:var(--amber-dim);"><i data-lucide="key" style="width:15px;height:15px;color:var(--amber);"></i></div>
+          <div style="font-size:12.5px;font-weight:600;color:var(--amber);margin-bottom:4px;">Key Constraints</div>
+          <p style="font-size:12.5px;">Tidak ada dua tuple yang boleh memiliki kombinasi nilai yang sama untuk seluruh atribut key.</p>
+        </div>
+        <div class="con-item">
+          <div class="con-icon" style="background:var(--red-dim);"><i data-lucide="shield-alert" style="width:15px;height:15px;color:var(--red);"></i></div>
+          <div style="font-size:12.5px;font-weight:600;color:var(--red);margin-bottom:4px;">Entity Integrity</div>
+          <p style="font-size:12.5px;">Nilai primary key tidak boleh NULL. Primary key harus selalu memiliki nilai yang valid.</p>
+        </div>
+        <div class="con-item">
+          <div class="con-icon" style="background:var(--purple-dim);"><i data-lucide="link" style="width:15px;height:15px;color:var(--purple);"></i></div>
+          <div style="font-size:12.5px;font-weight:600;color:var(--purple);margin-bottom:4px;">Referential Integrity</div>
+          <p style="font-size:12.5px;">Foreign key harus merujuk ke nilai PK yang ada di relasi yang direferensikan, atau bernilai NULL.</p>
+        </div>
+        <div class="con-item">
+          <div class="con-icon" style="background:var(--accent-dim);"><i data-lucide="database" style="width:15px;height:15px;color:var(--accent);"></i></div>
+          <div style="font-size:12.5px;font-weight:600;color:var(--accent);margin-bottom:4px;">Domain Constraints</div>
+          <p style="font-size:12.5px;">Setiap nilai atribut harus berupa nilai atomic dari domain dom(A) yang telah ditentukan.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-pitfall">
+      <div class="callout-label label-pitfall">⚠️ Common Pitfall — Valid vs Invalid State</div>
+      <p style="font-size:13.5px;"><strong>Valid State</strong> = database yang memenuhi semua integrity constraints IC. <strong>Invalid State</strong> = database yang melanggar minimal satu constraint. Setiap operasi (INSERT/DELETE/UPDATE) harus menjaga database tetap dalam valid state.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 2 – VISUALISASI: RELATION TABLE + FK DIAGRAM
+═══════════════════════════════════════════ -->
+<section id="sec-viz">
+  <div class="flex items-center gap-3 mb-6">
+    <div style="width:34px;height:34px;background:var(--green-dim);border:1px solid var(--green-border);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+      <i data-lucide="table" style="width:16px;height:16px;color:var(--green);"></i>
+    </div>
+    <h2>Visualisasi Relasi & Referential Integrity</h2>
+  </div>
+
+  <!-- STUDENT Relation Table -->
+  <div class="card mb-5">
+    <h3 class="mb-2">Contoh Relasi STUDENT (r(STUDENT))</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Kolom bergaris bawah = primary key. NULL = nilai tidak tersedia/tidak berlaku.</p>
+    <div style="overflow-x:auto;">
+      <table class="rel-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th class="pk-col">Ssn ᵖᵏ</th>
+            <th>Home_phone</th>
+            <th>Address</th>
+            <th>Office_phone</th>
+            <th>Age</th>
+            <th>Gpa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Benjamin Bayer</td><td class="pk-col">305-61-2435</td><td>(817)373-1616</td><td>2918 Bluebonnet Lane</td><td class="null-val">NULL</td><td>19</td><td>3.21</td></tr>
+          <tr><td>Chung-cha Kim</td><td class="pk-col">381-62-1245</td><td>(817)375-4409</td><td>125 Kirby Road</td><td class="null-val">NULL</td><td>18</td><td>2.89</td></tr>
+          <tr><td>Dick Davidson</td><td class="pk-col">422-11-2320</td><td class="null-val">NULL</td><td>3452 Elgin Road</td><td>(817)749-1253</td><td>25</td><td>3.53</td></tr>
+          <tr><td>Rohan Panchal</td><td class="pk-col">489-22-1100</td><td>(817)376-9821</td><td>265 Lark Lane</td><td>(817)749-6492</td><td>28</td><td>3.93</td></tr>
+          <tr><td>Barbara Benson</td><td class="pk-col">533-69-1238</td><td>(817)839-8461</td><td>7384 Fontana Lane</td><td class="null-val">NULL</td><td>19</td><td>3.25</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-wrap gap-3 mt-3">
+      <span class="badge-amber badge">Degree = 7 (atribut)</span>
+      <span class="badge-green badge">Cardinality = 5 (tuple)</span>
+    </div>
+  </div>
+
+  <!-- FK Diagram: COMPANY Schema -->
+  <div class="card mb-5">
+    <h3 class="mb-2">Diagram Referential Integrity — COMPANY Schema</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Panah menunjukkan arah referensi foreign key (FK → PK). <span style="color:var(--amber);">●</span> = Primary Key, <span style="color:var(--purple);">●</span> = Foreign Key.</p>
+    <div class="fk-box">
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+        <!-- EMPLOYEE -->
+        <div class="fk-table">
+          <div class="fk-header">EMPLOYEE</div>
+          <div class="fk-row">Fname, Minit, Lname</div>
+          <div class="fk-row fk-pk">Ssn ᵖᵏ</div>
+          <div class="fk-row">Bdate, Address, Sex, Salary</div>
+          <div class="fk-row fk-fk">Super_ssn → EMPLOYEE.Ssn</div>
+          <div class="fk-row fk-fk">Dno → DEPARTMENT.Dnumber</div>
+        </div>
+        <!-- DEPARTMENT -->
+        <div class="fk-table">
+          <div class="fk-header">DEPARTMENT</div>
+          <div class="fk-row">Dname</div>
+          <div class="fk-row fk-pk">Dnumber ᵖᵏ</div>
+          <div class="fk-row fk-fk">Mgr_ssn → EMPLOYEE.Ssn</div>
+          <div class="fk-row">Mgr_start_date</div>
+        </div>
+        <!-- DEPT_LOCATIONS -->
+        <div class="fk-table">
+          <div class="fk-header">DEPT_LOCATIONS</div>
+          <div class="fk-row fk-pk">Dnumber ᵖᵏ</div>
+          <div class="fk-row fk-pk">Dlocation ᵖᵏ</div>
+        </div>
+        <!-- PROJECT -->
+        <div class="fk-table">
+          <div class="fk-header">PROJECT</div>
+          <div class="fk-row">Pname</div>
+          <div class="fk-row fk-pk">Pnumber ᵖᵏ</div>
+          <div class="fk-row">Plocation</div>
+          <div class="fk-row fk-fk">Dnum → DEPARTMENT.Dnumber</div>
+        </div>
+        <!-- WORKS_ON -->
+        <div class="fk-table">
+          <div class="fk-header">WORKS_ON</div>
+          <div class="fk-row fk-pk fk-fk">Essn ᵖᵏ→ EMPLOYEE.Ssn</div>
+          <div class="fk-row fk-pk fk-fk">Pno ᵖᵏ→ PROJECT.Pnumber</div>
+          <div class="fk-row">Hours</div>
+        </div>
+        <!-- DEPENDENT -->
+        <div class="fk-table">
+          <div class="fk-header">DEPENDENT</div>
+          <div class="fk-row fk-pk fk-fk">Essn ᵖᵏ→ EMPLOYEE.Ssn</div>
+          <div class="fk-row fk-pk">Dependent_name ᵖᵏ</div>
+          <div class="fk-row">Sex, Bdate, Relationship</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-key mt-3">
+      <div class="callout-label label-key">Aturan Foreign Key</div>
+      <p style="font-size:13px;">1. Atribut FK harus memiliki domain yang sama dengan PK yang direferensikan.<br/>2. Nilai FK pada tuple t₁ harus muncul sebagai nilai PK pada suatu tuple di relasi yang direferensikan, ATAU bernilai NULL.</p>
+    </div>
+  </div>
+
+  <!-- Logic Walkthrough: Cartesian Product -->
+  <div class="card mb-5">
+    <h3 class="mb-1">Logic Walkthrough: Cartesian Product & Relation State</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Klik setiap langkah untuk memahami bagaimana relasi dibangun secara matematis.</p>
+    <pre><code><span class="cm">-- Diberikan Relation Schema R(A₁, A₂):</span>
+<span class="kw">dom</span>(<span class="ty">A₁</span>) = { <span class="num">0</span>, <span class="num">1</span> }
+<span class="kw">dom</span>(<span class="ty">A₂</span>) = { <span class="str">a</span>, <span class="str">b</span>, <span class="str">c</span> }
+
+<span class="cm">-- Cartesian Product (semua kombinasi yang mungkin):</span>
+<span class="fn">dom(A₁) × dom(A₂)</span> = {
+  &lt;<span class="num">0</span>,<span class="str">a</span>&gt;, &lt;<span class="num">0</span>,<span class="str">b</span>&gt;, &lt;<span class="num">0</span>,<span class="str">c</span>&gt;,
+  &lt;<span class="num">1</span>,<span class="str">a</span>&gt;, &lt;<span class="num">1</span>,<span class="str">b</span>&gt;, &lt;<span class="num">1</span>,<span class="str">c</span>&gt;
+}  <span class="cm">-- 6 kombinasi total (|dom(A₁)| × |dom(A₂)| = 2×3)</span>
+
+<span class="cm">-- Satu possible Relation State r(R):</span>
+<span class="ty">r</span> = { &lt;<span class="num">0</span>,<span class="str">a</span>&gt;, &lt;<span class="num">1</span>,<span class="str">a</span>&gt;, &lt;<span class="num">1</span>,<span class="str">c</span>&gt; }  <span class="cm">-- subset dari Cartesian product ✓</span></code></pre>
+
+    <div class="mt-4 flex flex-col gap-2">
+      <div class="wt-step active" onclick="toggleWT(this)">
+        <div class="wt-num">Langkah 1 — Definisikan Domain</div>
+        <p style="font-size:13.5px;">Tentukan himpunan nilai valid untuk setiap atribut.</p>
+        <div class="wt-body open"><p>Domain adalah himpunan nilai atomic yang valid. <code>dom(A₁) = {0,1}</code> artinya atribut A₁ hanya boleh berisi nilai 0 atau 1. Tidak ada nilai lain yang diizinkan.</p></div>
+      </div>
+      <div class="wt-step" onclick="toggleWT(this)">
+        <div class="wt-num">Langkah 2 — Hitung Cartesian Product</div>
+        <p style="font-size:13.5px;">Kombinasikan semua kemungkinan nilai dari seluruh domain.</p>
+        <div class="wt-body"><p>Cartesian product menghasilkan semua kombinasi yang mungkin: 2 × 3 = 6 kombinasi. Ini adalah "universe" dari semua tuple yang secara teoritis boleh ada dalam relasi R.</p></div>
+      </div>
+      <div class="wt-step" onclick="toggleWT(this)">
+        <div class="wt-num">Langkah 3 — Pilih Subset sebagai Relation State</div>
+        <p style="font-size:13.5px;">Relation state adalah subset yang mewakili data nyata saat ini.</p>
+        <div class="wt-body"><p>Tidak semua kombinasi harus ada dalam relasi. <code>r = {&lt;0,a&gt;, &lt;1,a&gt;, &lt;1,c&gt;}</code> adalah state valid karena merupakan subset dari Cartesian product. State berubah seiring operasi INSERT/DELETE.</p></div>
+      </div>
+      <div class="wt-step" onclick="toggleWT(this)">
+        <div class="wt-num">Langkah 4 — Verifikasi Constraints</div>
+        <p style="font-size:13.5px;">Pastikan tidak ada duplicate tuple dan semua nilai dalam domain.</p>
+        <div class="wt-body"><p>Cek: (a) Semua nilai dalam domain masing-masing atribut ✓, (b) Tidak ada tuple yang duplikat ✓, (c) Jika ada PK, nilainya unik dan tidak NULL ✓. Jika semua terpenuhi → <strong>Valid State</strong>.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 3 – KEY HIERARCHY
+═══════════════════════════════════════════ -->
+<section id="sec-keys">
+  <div class="flex items-center gap-3 mb-6">
+    <div style="width:34px;height:34px;background:var(--amber-dim);border:1px solid var(--amber-border);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+      <i data-lucide="key" style="width:16px;height:16px;color:var(--amber);"></i>
+    </div>
+    <h2>Hierarchy of Keys</h2>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="mb-5">
+    <div class="card">
+      <h3 class="mb-4" style="font-size:1rem;">Rantai Konsep Key</h3>
+      <div class="key-chain">
+        <div class="key-node" style="border-color:var(--muted);">
+          <span style="font-size:12px;font-weight:600;color:var(--muted);">SK — Superkey</span>
+          <p style="font-size:12.5px;margin-top:3px;">Satu atau lebih atribut yang menjamin keunikan setiap tuple. <em>Bisa mengandung atribut ekstra.</em></p>
+        </div>
+        <div class="key-node" style="border-color:var(--accent);">
+          <span style="font-size:12px;font-weight:600;color:var(--accent);">CK — Candidate Key</span>
+          <p style="font-size:12.5px;margin-top:3px;"><strong>Minimal superkey</strong> — tidak bisa dikurangi atributnya dan tetap unik. Satu relasi bisa punya beberapa candidate key.</p>
+        </div>
+        <div class="key-node" style="border-color:var(--amber);">
+          <span style="font-size:12px;font-weight:600;color:var(--amber);">PK — Primary Key</span>
+          <p style="font-size:12.5px;margin-top:3px;">Satu candidate key yang dipilih oleh desainer. Ditandai dengan <u>underline</u> dalam notasi schema. <strong>Tidak boleh NULL.</strong></p>
+        </div>
+        <div class="key-node" style="border-color:var(--purple);">
+          <span style="font-size:12px;font-weight:600;color:var(--purple);">AK — Alternate Key</span>
+          <p style="font-size:12.5px;margin-top:3px;">Candidate key yang tidak terpilih sebagai PK. Juga disebut <em>unique key</em>.</p>
+        </div>
+        <div class="key-node" style="border-color:var(--green);">
+          <span style="font-size:12px;font-weight:600;color:var(--green);">FK — Foreign Key</span>
+          <p style="font-size:12.5px;margin-top:3px;">Atribut yang mereferensikan PK di relasi lain. Menjamin <strong>referential integrity</strong>.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="mb-4" style="font-size:1rem;">Contoh Nyata: Tabel STUDENT</h3>
+      <div style="overflow-x:auto;margin-bottom:12px;">
+        <table class="rel-table" style="font-size:12px;">
+          <thead><tr><th>Student ID</th><th>Email</th><th>National ID</th><th>Name</th><th>Major</th></tr></thead>
+          <tbody>
+            <tr><td class="pk-col">101</td><td>andi@email.com</td><td>1234567</td><td>Andi</td><td>Ilmu Komputer</td></tr>
+            <tr><td class="pk-col">102</td><td>budi@email.com</td><td>7654321</td><td>Budi</td><td>Sistem Informasi</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;">
+        <div class="callout callout-warn"><div class="callout-label label-warn">Superkey (contoh)</div>{Student ID}, {Email}, {National ID}, {Student ID, Name}, {Email, Major}</div>
+        <div class="callout callout-key"><div class="callout-label label-key">Candidate Key</div>{Student ID}, {Email}, {National ID} — ketiganya minimal superkey</div>
+        <div class="callout callout-info"><div class="callout-label label-info">Primary Key</div>{Student ID} — dipilih sebagai PK</div>
+        <div class="callout callout-purple"><div class="callout-label label-purple">Alternate Key</div>{Email}, {National ID} — tersisa sebagai unique keys</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contoh SSN -->
+  <div class="card mb-5">
+    <h3 class="mb-3" style="font-size:1rem;">Contoh Lain: Identifikasi Key dari Data</h3>
+    <div style="overflow-x:auto;margin-bottom:14px;">
+      <table class="rel-table" style="font-size:12px;">
+        <thead><tr><th class="pk-col">SSN ᵖᵏ</th><th>FName</th><th>LName</th><th>BirthDate</th><th>Sex</th><th>Address</th></tr></thead>
+        <tbody>
+          <tr><td class="pk-col">150668001</td><td>Izuku</td><td>Midoriya</td><td>01-05-1997</td><td>L</td><td>Tanegashima</td></tr>
+          <tr><td class="pk-col">150668002</td><td>Shouto</td><td>Todoroki</td><td>02-06-1997</td><td>L</td><td>Kyoto</td></tr>
+          <tr><td class="pk-col">150668003</td><td>Natsu</td><td>Hinata</td><td>03-05-2000</td><td>P</td><td>Bali</td></tr>
+          <tr><td class="pk-col">150668004</td><td>Chiaki</td><td>Morisawa</td><td>01-05-1997</td><td>L</td><td>Jakarta</td></tr>
+          <tr><td class="pk-col">150668005</td><td>Shouyou</td><td>Hinata</td><td>02-07-1997</td><td>L</td><td>Sendai</td></tr>
+          <tr><td class="pk-col">150668006</td><td>Tobio</td><td>Kageyama</td><td>01-01-1998</td><td>L</td><td>Sendai</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-pitfall">
+      <div class="callout-label label-pitfall">⚠️ Analisis: Mengapa FName bisa jadi Candidate Key?</div>
+      <p style="font-size:13px;">Pada data di atas, FName tampak unik (tidak ada duplikat). Namun perhatikan: LName "Hinata" muncul dua kali (Natsu & Shouyou). Ini menunjukkan bahwa keunikan bergantung pada <strong>data yang ada saat ini</strong>, bukan jaminan permanen. SSN jauh lebih aman sebagai PK karena merepresentasikan identitas unik yang ditetapkan secara sistematis.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 4 – UPDATE OPERATIONS
+═══════════════════════════════════════════ -->
+<section id="sec-ops">
+  <div class="flex items-center gap-3 mb-6">
+    <div style="width:34px;height:34px;background:var(--red-dim);border:1px solid var(--red-border);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+      <i data-lucide="refresh-cw" style="width:16px;height:16px;color:var(--red);"></i>
+    </div>
+    <h2>Update Operations & Constraint Violations</h2>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px;">
+    <!-- INSERT -->
+    <div class="op-card" style="border-color:var(--green);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="width:28px;height:28px;background:var(--green-dim);border-radius:7px;display:flex;align-items:center;justify-content:center;"><i data-lucide="plus" style="width:14px;height:14px;color:var(--green);"></i></div>
+        <span style="font-family:'DM Serif Display',serif;font-size:1rem;color:var(--green);">INSERT</span>
+      </div>
+      <p style="font-size:13px;margin-bottom:10px;">Memasukkan tuple baru ke dalam relasi R. Dapat melanggar:</p>
+      <ul style="font-size:12.5px;list-style:none;padding:0;">
+        <li style="padding:3px 0;border-bottom:1px solid var(--border);">• Domain Constraints</li>
+        <li style="padding:3px 0;border-bottom:1px solid var(--border);">• Key Constraints (duplicate PK)</li>
+        <li style="padding:3px 0;border-bottom:1px solid var(--border);">• Entity Integrity (PK = NULL)</li>
+        <li style="padding:3px 0;">• Referential Integrity (FK tidak ada di PK)</li>
+      </ul>
+      <div class="callout callout-info mt-3" style="font-size:12px;">Default: <strong>Tolak insertion</strong></div>
+    </div>
+
+    <!-- DELETE -->
+    <div class="op-card" style="border-color:var(--red);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="width:28px;height:28px;background:var(--red-dim);border-radius:7px;display:flex;align-items:center;justify-content:center;"><i data-lucide="trash-2" style="width:14px;height:14px;color:var(--red);"></i></div>
+        <span style="font-family:'DM Serif Display',serif;font-size:1rem;color:var(--red);">DELETE</span>
+      </div>
+      <p style="font-size:13px;margin-bottom:10px;">Hanya dapat melanggar <strong>referential integrity</strong> jika tuple yang dihapus direferensikan oleh FK dari tuple lain. Tiga opsi penanganan:</p>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
+        <div class="callout callout-pitfall"><strong>RESTRICT</strong> — Tolak penghapusan</div>
+        <div class="callout callout-warn"><strong>CASCADE</strong> — Hapus juga tuple yang mereferensikan</div>
+        <div class="callout callout-info"><strong>SET NULL / SET DEFAULT</strong> — Ubah FK menjadi NULL atau default</div>
+      </div>
+    </div>
+
+    <!-- UPDATE -->
+    <div class="op-card" style="border-color:var(--accent);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="width:28px;height:28px;background:var(--accent-dim);border-radius:7px;display:flex;align-items:center;justify-content:center;"><i data-lucide="pen-line" style="width:14px;height:14px;color:var(--accent);"></i></div>
+        <span style="font-family:'DM Serif Display',serif;font-size:1rem;color:var(--accent);">UPDATE</span>
+      </div>
+      <p style="font-size:13px;margin-bottom:10px;">Memodifikasi nilai atribut tuple. Perlu tentukan kondisi untuk memilih tuple yang dimodifikasi.</p>
+      <div style="font-size:12px;">
+        <div class="callout callout-info mb-2"><strong>Non-key attribute</strong> — Biasanya tidak bermasalah</div>
+        <div class="callout callout-pitfall"><strong>PK / FK</strong> — Berpotensi masalah seperti INSERT/DELETE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction -->
+  <div class="card mb-5">
+    <div class="flex items-center gap-2 mb-3">
+      <i data-lucide="zap" style="width:16px;height:16px;color:var(--amber);"></i>
+      <h3 style="font-size:1rem;">Transaction Concept</h3>
+    </div>
+    <p style="font-size:14px;margin-bottom:12px;">Sebuah <strong>transaction</strong> adalah sebuah program yang sedang berjalan yang mencakup beberapa operasi database. Transaction harus meninggalkan database dalam keadaan <strong>valid/consistent</strong>.</p>
+    <div class="callout callout-warn">
+      <div class="callout-label label-warn">OLTP — Online Transaction Processing</div>
+      <p style="font-size:13px;">Sistem OLTP dapat mengeksekusi ratusan bahkan ribuan transaksi per detik. Contoh nyata: sistem perbankan, e-commerce.</p>
+    </div>
+  </div>
+
+  <!-- SQL Code Walkthrough -->
+  <div class="card mb-5">
+    <h3 class="mb-1" style="font-size:1rem;">Walkthrough: Constraint Violation pada Operasi</h3>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">Klik langkah untuk analisis constraint dari soal latihan slide.</p>
+    <pre><code><span class="cm">-- Data awal: COMPANY database (Fig 3.6)</span>
+<span class="cm">-- Latihan: Apakah constraints dilanggar?</span>
+
+<span class="cm">-- Op 1: INSERT</span>
+<span class="kw">INSERT INTO</span> <span class="ty">PROJECT</span> <span class="kw">VALUES</span> (&lt;<span class="str">'ProductA'</span>, <span class="num">4</span>, <span class="str">'Bellaire'</span>, <span class="num">2</span>&gt;);
+<span class="cm">-- Pnumber=4 sudah ada? TIDAK → OK. Dnum=2 ada di DEPARTMENT? TIDAK → ❌ Referential Integrity!</span>
+
+<span class="cm">-- Op 2: INSERT</span>
+<span class="kw">INSERT INTO</span> <span class="ty">WORKS_ON</span> <span class="kw">VALUES</span> (&lt;<span class="str">'677678989'</span>, <span class="con">null</span>, <span class="str">'40.0'</span>&gt;);
+<span class="cm">-- Essn='677678989' ada di EMPLOYEE? TIDAK → ❌ Referential Integrity!</span>
+<span class="cm">-- Pno=NULL adalah bagian dari PK(Essn,Pno) → ❌ Entity Integrity!</span>
+
+<span class="cm">-- Op 3: DELETE</span>
+<span class="kw">DELETE FROM</span> <span class="ty">WORKS_ON</span> <span class="kw">WHERE</span> Essn = <span class="str">'333445555'</span>;
+<span class="cm">-- WORKS_ON tidak direferensikan FK dari relasi lain → ✓ Aman</span>
+
+<span class="cm">-- Op 4: DELETE</span>
+<span class="kw">DELETE FROM</span> <span class="ty">EMPLOYEE</span> <span class="kw">WHERE</span> Ssn = <span class="str">'987654321'</span>;
+<span class="cm">-- Ssn ini direferensikan oleh: DEPARTMENT.Mgr_ssn, EMPLOYEE.Super_ssn</span>
+<span class="cm">-- → ❌ Referential Integrity! (Cascade/Restrict/SetNull)</span>
+
+<span class="cm">-- Op 5: UPDATE</span>
+<span class="kw">UPDATE</span> <span class="ty">EMPLOYEE</span> <span class="kw">SET</span> Super_ssn = <span class="str">'943775543'</span>
+<span class="kw">WHERE</span> Ssn = <span class="str">'999887777'</span>;
+<span class="cm">-- Super_ssn='943775543' ada di EMPLOYEE.Ssn? TIDAK → ❌ Referential Integrity!</span></code></pre>
+
+    <div class="mt-4 flex flex-col gap-2">
+      <div class="wt-step active" onclick="toggleWT(this)">
+        <div class="wt-num">Op 1 — INSERT PROJECT</div>
+        <p style="font-size:13.5px;">INSERT &lt;'ProductA', 4, 'Bellaire', 2&gt; into PROJECT</p>
+        <div class="wt-body open"><p><strong>Analisis:</strong> Pnumber=4 belum ada → Key constraint OK. Dnum=2 → harus ada di DEPARTMENT.Dnumber. Cek: DEPARTMENT hanya punya Dnumber={5,4,1}. Dnumber=2 tidak ada → <span style="color:var(--red);">❌ Melanggar Referential Integrity!</span> Insert ditolak.</p></div>
+      </div>
+      <div class="wt-step" onclick="toggleWT(this)">
+        <div class="wt-num">Op 2 — INSERT WORKS_ON</div>
+        <p style="font-size:13.5px;">INSERT &lt;'677678989', null, '40.0'&gt; into WORKS_ON</p>
+        <div class="wt-body"><p><strong>Analisis dua pelanggaran:</strong> (1) Essn='677678989' tidak ada di EMPLOYEE.Ssn → <span style="color:var(--red);">❌ Referential Integrity</span>. (2) Pno=null padahal Pno adalah bagian dari composite PK(Essn,Pno) → <span style="color:var(--red);">❌ Entity Integrity</span>. Insert ditolak.</p></div>
+      </div>
+      <div class="wt-step" onclick="toggleWT(this)">
+        <div class="wt-num">Op 3 — DELETE WORKS_ON</div>
+        <p style="font-size:13.5px;">DELETE WORKS_ON WHERE Essn = '333445555'</p>
+        <div class="wt-body"><p><strong>Analisis:</strong> DELETE hanya bisa melanggar Referential Integrity jika tuple yang dihapus direferensikan sebagai PK oleh FK lain. Cek: tidak ada relasi yang mempunyai FK menunjuk ke WORKS_ON → <span style="color:var(--green);">✓ Aman! Operasi berhasil.</span></p></div>
+      </div>
+      <div class="wt-step" onclick="toggleWT(this)">
+        <div class="wt-num">Op 4 — DELETE EMPLOYEE</div>
+        <p style="font-size:13.5px;">DELETE EMPLOYEE WHERE Ssn = '987654321'</p>
+        <div class="wt-body"><p><strong>Analisis:</strong> Ssn=987654321 direferensikan oleh: DEPARTMENT.Mgr_ssn dan EMPLOYEE.Super_ssn (beberapa karyawan punya Super_ssn ini). → <span style="color:var(--red);">❌ Referential Integrity dilanggar!</span> Harus pilih: RESTRICT (tolak), CASCADE (hapus semua yang mereferensikan), atau SET NULL.</p></div>
+      </div>
+      <div class="wt-step" onclick="toggleWT(this)">
+        <div class="wt-num">Op 5 — UPDATE SUPERSSN</div>
+        <p style="font-size:13.5px;">UPDATE EMPLOYEE SET Super_ssn='943775543' WHERE Ssn='999887777'</p>
+        <div class="wt-body"><p><strong>Analisis:</strong> Super_ssn adalah FK yang mereferensikan EMPLOYEE.Ssn. Nilai '943775543' harus ada di kolom Ssn EMPLOYEE. Cek data: tidak ada SSN=943775543 → <span style="color:var(--red);">❌ Referential Integrity!</span> Update ditolak.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 5 – PRACTICE SUITE
+═══════════════════════════════════════════ -->
+<section id="sec-quiz">
+  <div class="flex items-center gap-3 mb-6">
+    <div style="width:34px;height:34px;background:var(--amber-dim);border:1px solid var(--amber-border);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+      <i data-lucide="pencil" style="width:16px;height:16px;color:var(--amber);"></i>
+    </div>
+    <h2>Interactive Practice Suite</h2>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:18px;">
+
+    <!-- Q1 -->
+    <div class="quiz-card" id="q1">
+      <div class="q-num">Soal 1 / 5</div>
+      <p style="font-size:14.5px;font-weight:600;margin-bottom:12px;">Diketahui relasi R(A₁, A₂) dengan dom(A₁) = {0,1} dan dom(A₂) = {a,b,c}. Berapa jumlah tuple yang ada dalam <strong>Cartesian product</strong> seluruh domain?</p>
+      <button class="opt-btn" onclick="ans(this,'q1',false)">A. 3 tuple</button>
+      <button class="opt-btn" onclick="ans(this,'q1',false)">B. 5 tuple</button>
+      <button class="opt-btn" onclick="ans(this,'q1',true)">C. 6 tuple</button>
+      <button class="opt-btn" onclick="ans(this,'q1',false)">D. 8 tuple</button>
+      <div class="fb-box" id="fb-q1"></div>
+      <button class="reveal-btn" onclick="reveal('exp-q1',this)"><i data-lucide="eye" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> Reveal Explanation</button>
+      <div class="explanation" id="exp-q1"><strong style="color:var(--purple);">Metodologi:</strong> Cartesian product dari dua domain dihitung dengan: |dom(A₁)| × |dom(A₂)| = 2 × 3 = <strong>6</strong>. Hasilnya: {&lt;0,a&gt;, &lt;0,b&gt;, &lt;0,c&gt;, &lt;1,a&gt;, &lt;1,b&gt;, &lt;1,c&gt;}. Relation state adalah <em>subset</em> dari 6 kombinasi ini — bisa berisi 0 hingga 6 tuple.</div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card" id="q2">
+      <div class="q-num">Soal 2 / 5</div>
+      <p style="font-size:14.5px;font-weight:600;margin-bottom:12px;">Tabel R1 memiliki nilai multivalued {b1, b2} di kolom B. Tabel R2 memiliki dua tuple identik. Tabel R3 memiliki nilai NULL di kolom AGE. <strong>Manakah yang merupakan relasi valid dalam relational database?</strong></p>
+      <button class="opt-btn" onclick="ans(this,'q2',false)">A. R1 — karena mengandung lebih banyak data</button>
+      <button class="opt-btn" onclick="ans(this,'q2',false)">B. R2 — karena semua nilai non-null</button>
+      <button class="opt-btn" onclick="ans(this,'q2',true)">C. R3 — karena semua nilai atomic, tidak ada duplicate tuple, dan NULL diperbolehkan</button>
+      <button class="opt-btn" onclick="ans(this,'q2',false)">D. Ketiganya valid sebagai relasi</button>
+      <div class="fb-box" id="fb-q2"></div>
+      <button class="reveal-btn" onclick="reveal('exp-q2',this)"><i data-lucide="eye" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> Reveal Explanation</button>
+      <div class="explanation" id="exp-q2"><strong style="color:var(--purple);">Metodologi:</strong> R1 melanggar <strong>1NF</strong> (First Normal Form) — nilai {b1,b2} adalah multivalued, tidak atomic. R2 melanggar <strong>key constraint</strong> — dua tuple identik tidak boleh ada dalam relasi (relasi adalah set). R3 valid: semua nilai atomic, tidak ada duplicate, dan NULL adalah nilai yang sah untuk atribut yang tidak berlaku (misal: umur yang tidak diketahui).</div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card" id="q3">
+      <div class="q-num">Soal 3 / 5</div>
+      <p style="font-size:14.5px;font-weight:600;margin-bottom:12px;">Pada relasi EMPLOYEE, atribut <strong>Super_ssn</strong> adalah foreign key yang mereferensikan <strong>EMPLOYEE.Ssn</strong> (self-referencing). Jika kita menghapus tuple EMPLOYEE dengan Ssn='333445555', dan ada 4 tuple WORKS_ON dengan Essn='333445555', apa yang terjadi dengan constraint?</p>
+      <button class="opt-btn" onclick="ans(this,'q3',false)">A. Tidak ada masalah — DELETE hanya memeriksa domain constraint</button>
+      <button class="opt-btn" onclick="ans(this,'q3',true)">B. Melanggar referential integrity — karena tuple WORKS_ON mereferensikan SSN yang dihapus via FK Essn</button>
+      <button class="opt-btn" onclick="ans(this,'q3',false)">C. Melanggar entity integrity — karena SSN tidak boleh dihapus</button>
+      <button class="opt-btn" onclick="ans(this,'q3',false)">D. Melanggar key constraint — karena SSN adalah primary key</button>
+      <div class="fb-box" id="fb-q3"></div>
+      <button class="reveal-btn" onclick="reveal('exp-q3',this)"><i data-lucide="eye" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> Reveal Explanation</button>
+      <div class="explanation" id="exp-q3"><strong style="color:var(--purple);">Metodologi:</strong> DELETE hanya bisa melanggar <strong>Referential Integrity</strong>. Ssn='333445555' direferensikan oleh: (1) WORKS_ON.Essn — 4 tuple, (2) mungkin EMPLOYEE.Super_ssn dari karyawan lain. Sehingga penghapusan melanggar referential integrity. Solusinya: RESTRICT (tolak), CASCADE (hapus WORKS_ON terkait), atau SET NULL (ubah Essn=NULL — tapi ini juga melanggar entity integrity WORKS_ON karena Essn adalah PK!).</div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card" id="q4">
+      <div class="q-num">Soal 4 / 5</div>
+      <p style="font-size:14.5px;font-weight:600;margin-bottom:12px;">Pada skema basis data ORDER (Order#, Odate, Cust#, Ord_Amt), ORDER_ITEM (Order#, Item#, Qty), ITEM (Item#, Unit_price), SHIPMENT (Order#, Warehouse#, Ship_date), WAREHOUSE (Warehouse#, City). <strong>Berapa banyak foreign key yang ada?</strong></p>
+      <button class="opt-btn" onclick="ans(this,'q4',false)">A. 3 foreign key</button>
+      <button class="opt-btn" onclick="ans(this,'q4',false)">B. 4 foreign key</button>
+      <button class="opt-btn" onclick="ans(this,'q4',true)">C. 5 foreign key</button>
+      <button class="opt-btn" onclick="ans(this,'q4',false)">D. 6 foreign key</button>
+      <div class="fb-box" id="fb-q4"></div>
+      <button class="reveal-btn" onclick="reveal('exp-q4',this)"><i data-lucide="eye" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> Reveal Explanation</button>
+      <div class="explanation" id="exp-q4"><strong style="color:var(--purple);">Metodologi — identifikasi FK satu per satu:</strong><br/>
+      1. <span class="tag tag-purple">ORDER.Cust# → CUSTOMER.Cust#</span><br/>
+      2. <span class="tag tag-purple">ORDER_ITEM.Order# → ORDER.Order#</span><br/>
+      3. <span class="tag tag-purple">ORDER_ITEM.Item# → ITEM.Item#</span><br/>
+      4. <span class="tag tag-purple">SHIPMENT.Order# → ORDER.Order#</span><br/>
+      5. <span class="tag tag-purple">SHIPMENT.Warehouse# → WAREHOUSE.Warehouse#</span><br/>
+      Total = <strong>5 foreign key</strong>. Strategi: setiap atribut yang bukan PK sendiri tapi merujuk ke PK relasi lain adalah FK.</div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card" id="q5">
+      <div class="q-num">Soal 5 / 5</div>
+      <p style="font-size:14.5px;font-weight:600;margin-bottom:12px;">Manakah pernyataan yang <strong>BENAR</strong> mengenai perbedaan antara Superkey, Candidate Key, dan Primary Key?</p>
+      <button class="opt-btn" onclick="ans(this,'q5',false)">A. Candidate key selalu lebih besar (mengandung lebih banyak atribut) daripada superkey</button>
+      <button class="opt-btn" onclick="ans(this,'q5',false)">B. Primary key boleh bernilai NULL jika ada candidate key lain</button>
+      <button class="opt-btn" onclick="ans(this,'q5',false)">C. Setiap relasi hanya boleh memiliki tepat satu candidate key</button>
+      <button class="opt-btn" onclick="ans(this,'q5',true)">D. Setiap candidate key adalah superkey, tapi tidak setiap superkey adalah candidate key</button>
+      <div class="fb-box" id="fb-q5"></div>
+      <button class="reveal-btn" onclick="reveal('exp-q5',this)"><i data-lucide="eye" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> Reveal Explanation</button>
+      <div class="explanation" id="exp-q5"><strong style="color:var(--purple);">Metodologi:</strong> Hierarki key: <em>Superkey ⊃ Candidate Key ⊃ Primary Key</em>.<br/>
+      (A) ❌ Justru sebaliknya — candidate key adalah <em>minimal</em> superkey, artinya lebih kecil/sama dengan superkey.<br/>
+      (B) ❌ Primary key TIDAK BOLEH NULL (Entity Integrity Constraint).<br/>
+      (C) ❌ Satu relasi bisa memiliki <em>beberapa</em> candidate key (contoh: CAR punya License_number DAN Engine_serial_number).<br/>
+      (D) ✅ BENAR — Candidate key adalah superkey yang minimal (tidak bisa dikurangi atributnya). Setiap CK memenuhi syarat superkey, tapi superkey yang bukan minimal bukan CK.</div>
+    </div>
+
+  </div>
+
+  <!-- Score Summary -->
+  <div id="score-summary" class="card mt-8" style="display:none;text-align:center;padding:30px;">
+    <div style="font-family:'DM Serif Display',serif;font-size:3rem;color:var(--accent);" id="final-score">0/5</div>
+    <p style="color:var(--muted);margin-top:4px;" id="final-msg">Selesai!</p>
+    <button onclick="resetQuiz()" style="margin-top:14px;background:var(--accent-dim);border:1px solid rgba(34,211,238,0.25);color:var(--accent);border-radius:8px;padding:9px 22px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:13.5px;">🔄 Ulangi Quiz</button>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- FOOTER -->
+<footer style="text-align:center;padding:10px 0 40px;color:var(--muted);font-size:12.5px;">
+  <p>CSGE602070 · Basis Data · Slide 5 — Relational Data Model & Constraints</p>
+  <p style="margin-top:3px;"><em>Database System</em>, 7th ed., Elmasri/Navathe (2015), Chapter 5</p>
+  <p style="margin-top:3px;color:rgba(34,211,238,0.3);">Universitas Indonesia · Fakultas Ilmu Komputer</p>
+</footer>
+
+</main>
+
+<script>
+lucide.createIcons();
+
+function goTo(id){ document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'}); }
+
+// Walkthrough toggle
+function toggleWT(el){
+  const body = el.querySelector('.wt-body');
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.wt-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('.wt-step').forEach(s=>s.classList.remove('active'));
+  if(!isOpen){ body.classList.add('open'); el.classList.add('active'); }
+}
+
+// Quiz state
+let answered={}, correct=0;
+
+function ans(btn, qid, isCorrect){
+  if(answered[qid]) return;
+  answered[qid]=true;
+  const card=document.getElementById(qid);
+  card.querySelectorAll('.opt-btn').forEach(b=>{ b.disabled=true; });
+  btn.classList.add(isCorrect?'correct':'wrong');
+  const fb=document.getElementById('fb-'+qid);
+  if(isCorrect){
+    correct++;
+    fb.className='fb-box show fb-correct';
+    fb.innerHTML='✅ <strong>Benar!</strong> Jawaban kamu tepat.';
+  } else {
+    fb.className='fb-box show fb-wrong';
+    fb.innerHTML='❌ <strong>Salah.</strong> Klik "Reveal Explanation" untuk memahami metodologi penyelesaiannya.';
+  }
+  updateProgress();
+}
+
+function updateProgress(){
+  const done=Object.keys(answered).length;
+  document.getElementById('prog-bar').style.width=(done/5*100)+'%';
+  document.getElementById('prog-label').textContent=done+' / 5 dijawab';
+  if(done===5) setTimeout(showSummary,500);
+}
+
+function showSummary(){
+  const s=document.getElementById('score-summary');
+  s.style.display='block';
+  document.getElementById('final-score').textContent=correct+'/5';
+  const msgs=['Perlu lebih banyak belajar lagi 💪','Ada beberapa konsep yang perlu diulang 📖','Cukup baik, terus semangat! 🎯','Bagus sekali, hampir sempurna 🌟','Sempurna! Kamu menguasai materi ini! 🏆'];
+  document.getElementById('final-msg').textContent=msgs[Math.min(correct,4)];
+  s.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function resetQuiz(){
+  answered={}; correct=0;
+  document.getElementById('prog-bar').style.width='0%';
+  document.getElementById('prog-label').textContent='0 / 5 dijawab';
+  document.getElementById('score-summary').style.display='none';
+  document.querySelectorAll('.opt-btn').forEach(b=>{ b.disabled=false; b.classList.remove('correct','wrong'); });
+  document.querySelectorAll('.fb-box').forEach(f=>{ f.className='fb-box'; f.innerHTML=''; });
+  document.querySelectorAll('.explanation').forEach(e=>e.classList.remove('open'));
+  document.querySelectorAll('.reveal-btn').forEach(b=>{ b.innerHTML='<i data-lucide="eye" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> Reveal Explanation'; });
+  lucide.createIcons();
+  document.getElementById('sec-quiz').scrollIntoView({behavior:'smooth'});
+}
+
+function reveal(expId, btn){
+  const exp=document.getElementById(expId);
+  const open=exp.classList.contains('open');
+  exp.classList.toggle('open');
+  btn.innerHTML=open
+    ?'<i data-lucide="eye" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> Reveal Explanation'
+    :'<i data-lucide="eye-off" style="width:12px;height:12px;display:inline;vertical-align:middle;"></i> Hide Explanation';
+  lucide.createIcons();
+}
+
+// Nav pill highlight on scroll
+const secs=['sec-concepts','sec-viz','sec-keys','sec-ops','sec-quiz'];
+const pills=document.querySelectorAll('.nav-pill');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  secs.forEach(id=>{ const el=document.getElementById(id); if(el&&el.getBoundingClientRect().top<130) cur=id; });
+  pills.forEach(p=>{ p.classList.remove('active'); if(p.getAttribute('onclick')&&p.getAttribute('onclick').includes(cur)) p.classList.add('active'); });
+});
+</script>
+</body>
+</html>

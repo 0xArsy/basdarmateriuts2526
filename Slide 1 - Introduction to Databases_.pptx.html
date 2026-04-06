@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Introduction to Databases – Interactive Learning</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);
+  --text:#e2e8f0;--muted:#94a3b8;--hint:#64748b;
+  --blue:#60a5fa;--green:#4ade80;--amber:#fbbf24;--red:#f87171;
+  --purple:#c084fc;--teal:#2dd4bf;--pink:#f472b6;--orange:#fb923c;
+}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+strong{font-weight:600;color:var(--text)}
+em{font-style:italic}
+.container{max-width:860px;margin:0 auto;padding:0 24px 80px}
+.hero{border-bottom:1px solid var(--border);padding:36px 24px 28px;background:linear-gradient(135deg,rgba(96,165,250,0.06),rgba(74,222,128,0.04));margin-bottom:8px}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hero-icon{width:36px;height:36px;border-radius:10px;background:rgba(96,165,250,0.15);display:flex;align-items:center;justify-content:center}
+.hero-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--hint);font-weight:500}
+.hero h1{font-size:28px;font-weight:700;color:#fff;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:14px}
+.hero-meta{display:flex;gap:20px;margin-top:18px;font-size:13px;color:var(--hint)}
+.hero-meta span{display:flex;align-items:center;gap:6px}
+section{margin-top:52px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.section-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.section-num.blue{background:rgba(96,165,250,0.2);color:var(--blue)}
+.section-num.purple{background:rgba(192,132,252,0.2);color:var(--purple)}
+.section-num.green{background:rgba(74,222,128,0.2);color:var(--green)}
+.section-header h2{font-size:20px;font-weight:600;color:#fff}
+.glass{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+.chip{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--muted)}
+.callout-box{border-radius:0 10px 10px 0;padding:14px 16px}
+.callout-box.blue{background:rgba(96,165,250,0.08);border-left:3px solid var(--blue)}
+.callout-box.red{background:rgba(248,113,113,0.08);border-left:3px solid var(--red)}
+.callout-box.green{background:rgba(74,222,128,0.06);border-left:3px solid var(--green)}
+.callout-label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.callout-label.blue{color:var(--blue)}
+.callout-label.red{color:var(--red)}
+.callout-label.green{color:var(--green)}
+.callout-body{font-size:13px;color:#cbd5e1;line-height:1.65}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:24px;overflow-x:auto;gap:0}
+.tab-btn{padding:10px 18px;font-size:13px;font-weight:500;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+.arch{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0}
+.arch-box{width:100%;max-width:360px;text-align:center;border-radius:10px;padding:9px 16px;font-size:13px}
+.arch-arrow{color:var(--hint);font-size:18px;line-height:1}
+.arch-split{display:flex;gap:10px;width:100%;max-width:360px}
+.arch-split .arch-box{flex:1}
+pre{background:#1a1d27;border:1px solid var(--border);border-radius:10px;padding:18px;overflow-x:auto;margin:0}
+code{font-family:'Courier New',Courier,monospace;font-size:12.5px;line-height:1.8}
+.kw{color:#c084fc}.str{color:#86efac}.cm{color:#6b7280}.fn{color:#60a5fa}.num{color:#fbbf24}.tbl{color:#fb923c}
+.code-label{font-size:11px;color:var(--hint);text-transform:uppercase;letter-spacing:.07em;font-weight:500;margin-bottom:8px;display:flex;justify-content:space-between}
+.wt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.wt-title-row{font-size:14px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
+.wt-btns{display:flex;gap:8px}
+.wt-btn{padding:5px 14px;font-size:12px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s}
+.wt-btn:hover{color:var(--text)}
+.wt-btn.primary{background:rgba(96,165,250,0.7);border-color:transparent;color:#fff}
+.wt-btn.primary:hover{background:var(--blue)}
+.wt-progress{display:flex;gap:4px;margin-bottom:16px}
+.wt-seg{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.1);transition:background .3s}
+.wt-step-num{font-size:11px;color:var(--hint);font-family:monospace;margin-bottom:6px}
+.wt-step-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:8px}
+.wt-step-body{font-size:13px;color:#cbd5e1;line-height:1.7}
+.quiz-block{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px}
+.quiz-q-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.quiz-num{width:24px;height:24px;border-radius:50%;background:rgba(96,165,250,0.15);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.quiz-q-text{font-size:14px;font-weight:500;color:#fff;line-height:1.6}
+.quiz-opts{margin-left:36px;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:none;color:#cbd5e1;font-size:13px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;transition:all .15s;line-height:1.5}
+.opt-btn:hover:not(:disabled){border-color:var(--blue);background:rgba(96,165,250,0.07)}
+.opt-btn:disabled{cursor:default}
+.opt-btn.correct{border-color:var(--green)!important;background:rgba(74,222,128,0.1)!important}
+.opt-btn.wrong{border-color:var(--red)!important;background:rgba(248,113,113,0.07)!important}
+.opt-letter{width:20px;height:20px;border-radius:5px;border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:monospace;flex-shrink:0;margin-top:1px}
+.feedback{margin:10px 0 0 36px;font-size:12px;display:none;align-items:center;gap:6px}
+.feedback.ok{color:var(--green);display:flex}
+.feedback.ng{color:var(--red);display:flex}
+.reveal-btn{margin:10px 0 0 36px;font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;transition:color .15s;padding:0}
+.reveal-btn:hover{color:#93c5fd}
+.reveal-panel{margin:10px 0 0 36px;max-height:0;overflow:hidden;transition:max-height .4s ease}
+.reveal-panel.open{max-height:500px}
+.score-pill{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted)}
+.score-pill span{color:#fff;font-weight:600}
+.results{margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;display:none}
+.results h3{font-weight:600;color:#fff;margin-bottom:12px}
+.results-bar-bg{height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;margin-bottom:10px}
+.results-bar{height:8px;background:var(--green);border-radius:4px;width:0;transition:width .6s ease}
+.results-text{font-size:13px;color:var(--muted)}
+.actor-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:8px}
+.actor-name{font-weight:600;margin-bottom:4px}
+.actor-desc{color:var(--muted);font-size:12px}
+.when-card{background:var(--surface);border-radius:12px;padding:16px}
+.when-card.green{border:1px solid rgba(74,222,128,0.25)}
+.when-card.amber{border:1px solid rgba(251,191,36,0.25)}
+.when-card.red{border:1px solid rgba(248,113,113,0.25)}
+.when-card-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-bottom:10px}
+.when-list{font-size:12px;color:var(--muted);list-style:none;display:flex;flex-direction:column;gap:6px}
+.icon{display:inline-flex;width:16px;height:16px;flex-shrink:0;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <div class="hero-icon">
+        <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
+      </div>
+      <span class="hero-label">CSF2600700 &middot; Basis Data &middot; Universitas Indonesia</span>
+    </div>
+    <h1>Introduction to Databases</h1>
+    <p>Interactive learning page &mdash; conceptual deep dive, logic visualization &amp; practice suite.</p>
+    <div class="hero-meta">
+      <span>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        5 Topics
+      </span>
+      <span>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Logic Walkthrough
+      </span>
+      <span>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        5 Practice Questions
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- SECTION 1 -->
+<section>
+  <div class="section-header">
+    <div class="section-num blue">1</div>
+    <h2>Conceptual Deep Dive</h2>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('def',this)">Definition</button>
+    <button class="tab-btn" onclick="showTab('props',this)">Properties</button>
+    <button class="tab-btn" onclick="showTab('dbms',this)">DBMS</button>
+    <button class="tab-btn" onclick="showTab('actors',this)">Actors</button>
+    <button class="tab-btn" onclick="showTab('when',this)">When to Use</button>
+  </div>
+
+  <!-- TAB: Definition -->
+  <div id="tab-def" class="tab-content active">
+    <div class="glass" style="margin-bottom:14px">
+      <h3 style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">What is a Database?</h3>
+      <p style="font-size:13px;color:#cbd5e1;line-height:1.7">A database is a <strong>collection of related data</strong> &mdash; known facts that can be recorded and that have implicit meaning. Think of it as a structured digital filing cabinet where every piece of information is interconnected and purposeful.</p>
+    </div>
+    <div class="callout-box blue" style="margin-bottom:14px">
+      <div class="callout-label blue">Key Terms</div>
+      <div class="grid2" style="gap:12px">
+        <div class="callout-body"><strong style="color:#fff">Database</strong><br/>An organised collection of interrelated data built for a specific purpose.</div>
+        <div class="callout-body"><strong style="color:#fff">Meta-data</strong><br/>Data about data &mdash; the schema stored in the catalog (column names, data types, constraints).</div>
+        <div class="callout-body"><strong style="color:#fff">Query</strong><br/>A request to retrieve specific data without modifying it.</div>
+        <div class="callout-body"><strong style="color:#fff">Transaction</strong><br/>A read/write operation executed as an atomic unit.</div>
+      </div>
+    </div>
+    <div class="callout-box red" style="margin-bottom:14px">
+      <div class="callout-label red">Common Pitfall</div>
+      <p class="callout-body">Not every collection of files is a database! A folder of random spreadsheets lacks the three essential properties: <em>miniworld representation</em>, <em>logical coherence</em>, and <em>specific purpose</em>. Simply storing data &ne; having a database.</p>
+    </div>
+    <div class="callout-box green" style="margin-bottom:20px">
+      <div class="callout-label green">Mental Model</div>
+      <p class="callout-body">Think of a university student record system. The &ldquo;miniworld&rdquo; is the university. The data (names, courses, grades) is logically coherent and built specifically to manage academic records &mdash; not just dumped in files.</p>
+    </div>
+    <div class="glass">
+      <h3 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:16px">Database System Architecture</h3>
+      <div class="arch">
+        <div class="arch-box" style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.25);color:#93c5fd">Users / Programmers</div>
+        <div class="arch-arrow">&darr;</div>
+        <div class="arch-box" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#cbd5e1">Application Programs / Queries</div>
+        <div class="arch-arrow">&darr;</div>
+        <div style="width:100%;max-width:360px;border:1px solid rgba(192,132,252,0.3);border-radius:12px;overflow:hidden">
+          <div style="background:rgba(192,132,252,0.12);color:#c084fc;font-size:11px;font-weight:600;padding:7px 14px;text-transform:uppercase;letter-spacing:.07em">DBMS Software</div>
+          <div style="border-top:1px solid rgba(255,255,255,0.06);padding:9px 16px;text-align:center;font-size:13px;color:var(--muted)">Software to Process Queries / Programs</div>
+          <div style="border-top:1px solid rgba(255,255,255,0.06);padding:9px 16px;text-align:center;font-size:13px;color:var(--muted)">Software to Access Stored Data</div>
+        </div>
+        <div class="arch-arrow">&darr;</div>
+        <div class="arch-split">
+          <div class="arch-box" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);color:#fcd34d;font-size:12px">Stored DB Definition (Meta-Data)</div>
+          <div class="arch-box" style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#86efac;font-size:12px">Stored Database</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Properties -->
+  <div id="tab-props" class="tab-content">
+    <div class="grid3" style="margin-bottom:16px">
+      <div class="glass">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(45,212,191,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px"><svg style="width:16px;height:16px;stroke:var(--teal)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <h4 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:6px">Miniworld (UoD)</h4>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">Represents some aspect of the real world. Changes in the miniworld are reflected in the database.</p>
+      </div>
+      <div class="glass">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(96,165,250,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px"><svg style="width:16px;height:16px;stroke:var(--blue)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+        <h4 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:6px">Logically Coherent</h4>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">Data has inherent meaning and relationships &mdash; not a random assortment of information.</p>
+      </div>
+      <div class="glass">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(192,132,252,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px"><svg style="width:16px;height:16px;stroke:var(--purple)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h4 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:6px">Specific Purpose</h4>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">Built for an intended user group and preconceived applications &mdash; not created by accident.</p>
+      </div>
+    </div>
+    <div class="callout-box blue" style="margin-bottom:14px">
+      <div class="callout-label blue">Key Term: Universe of Discourse (UoD)</div>
+      <p class="callout-body">The portion of the real world your database models. A library database&rsquo;s UoD includes books, members, loans &mdash; but <em>not</em> the weather outside. Anything outside the UoD should not appear in your schema.</p>
+    </div>
+    <div class="callout-box red">
+      <div class="callout-label red">Common Pitfall</div>
+      <p class="callout-body">Confusing <strong style="color:#fff">data</strong> with <strong style="color:#fff">information</strong>. Data are raw facts. Information is processed, contextualised data. A database stores data; queries transform it into information.</p>
+    </div>
+  </div>
+
+  <!-- TAB: DBMS -->
+  <div id="tab-dbms" class="tab-content">
+    <div class="glass" style="margin-bottom:14px">
+      <h3 style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">What is a DBMS?</h3>
+      <p style="font-size:13px;color:#cbd5e1;line-height:1.7">A <strong>Database Management System</strong> is a collection of programs that enables users to create and maintain a database. It acts as an intermediary between users/apps and the actual stored data.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+      <div class="chip" style="text-align:center">PostgreSQL</div><div class="chip" style="text-align:center">MySQL</div><div class="chip" style="text-align:center">MongoDB</div>
+      <div class="chip" style="text-align:center">SQL Server</div><div class="chip" style="text-align:center">Redis</div><div class="chip" style="text-align:center">SQLite</div>
+      <div class="chip" style="text-align:center">Oracle</div><div class="chip" style="text-align:center">Cassandra</div><div class="chip" style="text-align:center">Elasticsearch</div>
+    </div>
+    <div class="callout-box green" style="margin-bottom:14px">
+      <div class="callout-label green">Mental Model</div>
+      <p class="callout-body">A DBMS is like a <strong style="color:#fff">library management system</strong>. Books = data. Catalog = meta-data. Librarian = DBMS &mdash; enforcing rules on who borrows what, when, and how many at once.</p>
+    </div>
+    <div class="callout-box blue">
+      <div class="callout-label blue">DBMS Key Functions</div>
+      <div class="callout-body" style="display:flex;flex-direction:column;gap:6px">
+        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Define:</strong> Specify data types, structures, constraints</div>
+        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Construct:</strong> Store data on a storage medium</div>
+        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Manipulate:</strong> Query, update, generate reports</div>
+        <div><span style="color:var(--blue)">&rarr; </span><strong style="color:#fff">Share:</strong> Allow multiple users/apps simultaneously</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Actors -->
+  <div id="tab-actors" class="tab-content">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Two distinct groups interact with a database system: those <em>on the scene</em> (who use it) and those <em>behind the scene</em> (who build and maintain it).</p>
+    <div class="grid2">
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--hint);font-weight:500;margin-bottom:12px">Actors on the Scene</p>
+        <div class="actor-card"><div class="actor-name" style="color:var(--blue)">Database Administrator (DBA)</div><div class="actor-desc">Authorises access, monitors use, acquires hardware/software resources.</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--purple)">Database Designers</div><div class="actor-desc">Identify data to store; choose structures to represent it.</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--green)">End Users</div><div class="actor-desc">Naive / Casual / Sophisticated / Standalone &mdash; people who query and update data day-to-day.</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--amber)">System Analysts &amp; App Programmers</div><div class="actor-desc">Determine requirements and implement programs against the DBMS.</div></div>
+      </div>
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--hint);font-weight:500;margin-bottom:12px">Workers Behind the Scene</p>
+        <div class="actor-card"><div class="actor-name" style="color:var(--teal)">DBMS Designers &amp; Implementers</div><div class="actor-desc">Design and build the DBMS software itself (e.g., the team that built PostgreSQL).</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--pink)">Tools Developers</div><div class="actor-desc">Create optional tools for DB design, performance monitoring, import/export.</div></div>
+        <div class="actor-card"><div class="actor-name" style="color:var(--orange)">Operators &amp; Maintenance</div><div class="actor-desc">Run and maintain the hardware/software environment for the database system.</div></div>
+      </div>
+    </div>
+    <div class="callout-box blue" style="margin-top:14px">
+      <div class="callout-label blue">Key Distinction</div>
+      <p class="callout-body">Actors <em>use</em> the database. Workers <em>build and maintain</em> the infrastructure. A DBA sits on the boundary &mdash; they use DBMS tools to manage the system on behalf of users.</p>
+    </div>
+  </div>
+
+  <!-- TAB: When to Use -->
+  <div id="tab-when" class="tab-content">
+    <div class="grid3" style="margin-bottom:14px">
+      <div class="when-card green">
+        <div class="when-card-title" style="color:var(--green)">
+          <svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--green)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          USE a Database
+        </div>
+        <ul class="when-list"><li>Large business data needing frequent updates</li><li>Homogeneous records at scale</li><li>Long-term data relevance</li><li>Multi-user simultaneous access</li></ul>
+      </div>
+      <div class="when-card amber">
+        <div class="when-card-title" style="color:var(--amber)">
+          <svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--amber)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          DON&rsquo;T Need One
+        </div>
+        <ul class="when-list"><li>Simple, static, never-changing app</li><li>Strict real-time constraints</li><li>Embedded/limited storage systems</li><li>Single user, no concurrency</li></ul>
+      </div>
+      <div class="when-card red">
+        <div class="when-card-title" style="color:var(--red)">
+          <svg style="width:15px;height:15px;flex-shrink:0;stroke:var(--red)" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          CANNOT Use One
+        </div>
+        <ul class="when-list"><li>Data complexity exceeds DBMS modeling limits</li><li>Users need special ops DBMS can&rsquo;t handle</li></ul>
+      </div>
+    </div>
+    <div class="callout-box green">
+      <div class="callout-label green">Mental Model</div>
+      <p class="callout-body">Using a DBMS for a 50-row personal shopping list is like using an industrial freight truck to carry a bag of groceries &mdash; massive overhead for minimal benefit. Match the tool to the scale of the problem.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2 -->
+<section>
+  <div class="section-header">
+    <div class="section-num purple">2</div>
+    <h2>Algorithm &amp; Logic Walkthrough</h2>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Core SQL operations on the University Database from the slides, with a step-by-step walkthrough.</p>
+
+  <div style="margin-bottom:20px">
+    <div class="code-label"><span>University Database &mdash; Schema Definition (DDL)</span><span>SQL</span></div>
+    <pre><code><span class="cm">-- Create STUDENT table (meta-data / structure definition)</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">STUDENT</span> (
+  Name           <span class="fn">CHAR</span>(<span class="num">30</span>),
+  Student_number <span class="fn">CHAR</span>(<span class="num">4</span>),
+  Class          <span class="fn">INTEGER</span>(<span class="num">1</span>),
+  Major          Major_type
+);
+<span class="kw">CREATE TABLE</span> <span class="tbl">COURSE</span> (
+  Course_name    <span class="fn">CHAR</span>(<span class="num">10</span>),
+  Course_number  <span class="fn">CHAR</span>(<span class="num">8</span>),
+  Credit_hours   <span class="fn">INTEGER</span>,
+  Department     <span class="fn">CHAR</span>(<span class="num">4</span>)
+);
+<span class="kw">CREATE TABLE</span> <span class="tbl">GRADE_REPORT</span> (
+  Student_number     <span class="fn">CHAR</span>(<span class="num">4</span>),
+  Section_identifier <span class="fn">INTEGER</span>,
+  Grade              <span class="fn">CHAR</span>(<span class="num">1</span>)
+);</code></pre>
+  </div>
+
+  <div style="margin-bottom:20px">
+    <div class="code-label"><span>Sample Queries &amp; Updates (DML)</span><span>SQL</span></div>
+    <pre><code><span class="cm">-- Q1: Students in &apos;Database&apos; course Fall 2008 + their grades</span>
+<span class="kw">SELECT</span> s.Name, gr.Grade
+<span class="kw">FROM</span>   <span class="tbl">STUDENT</span>      s
+<span class="kw">JOIN</span>   <span class="tbl">GRADE_REPORT</span> gr  <span class="kw">ON</span> s.Student_number      = gr.Student_number
+<span class="kw">JOIN</span>   <span class="tbl">SECTION</span>      sec <span class="kw">ON</span> gr.Section_identifier = sec.Section_identifier
+<span class="kw">JOIN</span>   <span class="tbl">COURSE</span>       c   <span class="kw">ON</span> sec.Course_number     = c.Course_number
+<span class="kw">WHERE</span>  c.Course_name = <span class="str">&apos;Database&apos;</span>
+  <span class="kw">AND</span>  sec.Semester  = <span class="str">&apos;Fall&apos;</span>
+  <span class="kw">AND</span>  sec.Year      = <span class="num">08</span>;
+
+<span class="cm">-- Q2: Prerequisites of the &apos;Database&apos; course</span>
+<span class="kw">SELECT</span> p.Prerequisite_number
+<span class="kw">FROM</span>   <span class="tbl">PREREQUISITE</span> p
+<span class="kw">JOIN</span>   <span class="tbl">COURSE</span>       c <span class="kw">ON</span> p.Course_number = c.Course_number
+<span class="kw">WHERE</span>  c.Course_name = <span class="str">&apos;Database&apos;</span>;
+
+<span class="cm">-- U1: Update Smith&apos;s class to sophomore (2)</span>
+<span class="kw">UPDATE</span> <span class="tbl">STUDENT</span>
+<span class="kw">SET</span>    Class = <span class="num">2</span>
+<span class="kw">WHERE</span>  Name  = <span class="str">&apos;Smith&apos;</span>;</code></pre>
+  </div>
+
+  <div class="glass">
+    <div class="wt-header">
+      <div class="wt-title-row">
+        <svg style="width:16px;height:16px;stroke:var(--green);flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        Step-by-Step: Q1 JOIN Query
+      </div>
+      <div class="wt-btns">
+        <button class="wt-btn" onclick="prevStep()">&larr; Prev</button>
+        <button class="wt-btn primary" onclick="nextStep()">Next &rarr;</button>
+      </div>
+    </div>
+    <div class="wt-progress" id="wt-progress"></div>
+    <div id="wt-panel"></div>
+  </div>
+</section>
+
+<!-- SECTION 3 -->
+<section>
+  <div class="section-header" style="margin-bottom:8px">
+    <div class="section-num green">3</div>
+    <h2>Interactive Practice Suite</h2>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+    <p style="font-size:13px;color:var(--muted)">5 challenging questions. Select an answer for instant feedback.</p>
+    <div class="score-pill">Score: <span id="score-display">0</span> / 5</div>
+  </div>
+  <div id="quiz-container"></div>
+  <div class="results" id="results-panel">
+    <h3>Your Results</h3>
+    <div class="results-bar-bg"><div class="results-bar" id="score-bar"></div></div>
+    <p class="results-text" id="results-text"></p>
+  </div>
+</section>
+
+</div>
+
+<script>
+// ── TAB SWITCHER ──────────────────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(function(el){ el.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById('tab-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ── WALKTHROUGH ───────────────────────────────────────────────────────────
+var steps = [
+  { title: 'Start: What do we need?',
+    body: 'We want the <strong>name</strong> of each student and their <strong>grade</strong> for the Database course in Fall 2008. This data lives across 4 tables: STUDENT, GRADE_REPORT, SECTION, and COURSE.' },
+  { title: 'Step 1 &mdash; FROM &amp; first JOIN',
+    body: 'We start with <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">STUDENT s</code> and JOIN <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">GRADE_REPORT gr</code> on <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Student_number</code>. This pairs each student with their grade record(s).' },
+  { title: 'Step 2 &mdash; JOIN to SECTION',
+    body: 'JOIN <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">SECTION sec</code> on <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Section_identifier</code>. Now each row carries the semester, year, and course number for that section.' },
+  { title: 'Step 3 &mdash; JOIN to COURSE',
+    body: 'JOIN <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">COURSE c</code> on <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#86efac">Course_number</code>. We now have the human-readable course name alongside every student and grade &mdash; all four tables are linked.' },
+  { title: 'Step 4 &mdash; WHERE filter',
+    body: 'Filter to rows where <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Course_name = &apos;Database&apos;</code>, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Semester = &apos;Fall&apos;</code>, and <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">Year = 08</code>. This eliminates all unrelated courses and semesters.' },
+  { title: 'Step 5 &mdash; SELECT output',
+    body: 'Finally, <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;color:#fbbf24">SELECT s.Name, gr.Grade</code> projects only the two columns we care about. The result is a clean list of student names with grades for that specific course and semester.' }
+];
+var currentStep = 0;
+
+function renderWT() {
+  var prog = document.getElementById('wt-progress');
+  var segs = '';
+  for (var i = 0; i < steps.length; i++) {
+    var bg = i < currentStep ? '#4ade80' : i === currentStep ? '#60a5fa' : 'rgba(255,255,255,0.1)';
+    segs += '<div class="wt-seg" style="background:' + bg + '"></div>';
+  }
+  prog.innerHTML = segs;
+  var s = steps[currentStep];
+  document.getElementById('wt-panel').innerHTML =
+    '<div class="wt-step-num">Step ' + (currentStep + 1) + ' of ' + steps.length + '</div>' +
+    '<div class="wt-step-title">' + s.title + '</div>' +
+    '<div class="wt-step-body">' + s.body + '</div>';
+}
+function nextStep() { if (currentStep < steps.length - 1) { currentStep++; renderWT(); } }
+function prevStep() { if (currentStep > 0) { currentStep--; renderWT(); } }
+renderWT();
+
+// ── QUIZ ──────────────────────────────────────────────────────────────────
+var questions = [
+  {
+    q: 'Which of the following is NOT a required property of a database?',
+    opts: [
+      'It must represent some aspect of the real world (miniworld/UoD).',
+      'It must be logically coherent with inherent meaning.',
+      'It must be stored on a cloud server.',
+      'It must be built for a specific purpose.'
+    ],
+    correct: 2,
+    explanation: '<strong style="color:#fff">Option C is NOT required.</strong><br><br>The three essential properties are: (1) Miniworld representation, (2) Logical coherence, (3) Specific purpose. Where the database is physically stored is an implementation detail, not a definitional property.'
+  },
+  {
+    q: "To retrieve Smith's full course names from sections 112 and 119, which tables must you JOIN?",
+    opts: [
+      'STUDENT and GRADE_REPORT only.',
+      'STUDENT, GRADE_REPORT, and SECTION only.',
+      'STUDENT, GRADE_REPORT, SECTION, and COURSE.',
+      'COURSE and PREREQUISITE only.'
+    ],
+    correct: 2,
+    explanation: '<strong style="color:#fff">Option C is correct.</strong><br><br>Trace the foreign key chain: STUDENT &rarr; GRADE_REPORT (Student_number) &rarr; SECTION (Section_identifier) &rarr; COURSE (Course_number) &rarr; Course_name. Stopping at SECTION gives only a code like CS3380, not the human-readable name.'
+  },
+  {
+    q: 'Which actor determines end-user requirements but does NOT implement the programs themselves?',
+    opts: [
+      'Database Administrator (DBA)',
+      'Database Designer',
+      'System Analyst',
+      'Application Programmer'
+    ],
+    correct: 2,
+    explanation: '<strong style="color:#fff">Option C &mdash; System Analyst.</strong><br><br>System Analysts bridge business requirements and technical implementation. Application Programmers then write the actual code. DBAs manage access and resources. Designers choose data structures.'
+  },
+  {
+    q: 'A startup has 40 rows of customer data, one employee accesses it, and the structure will never change. Should they use a DBMS?',
+    opts: [
+      'Yes &mdash; all data should always be in a DBMS for safety.',
+      'No &mdash; the overhead of a DBMS is not justified here.',
+      'Yes &mdash; a DBMS is required for any business data.',
+      'No &mdash; CSV files are always superior to databases.'
+    ],
+    correct: 1,
+    explanation: '<strong style="color:#fff">Option B is correct.</strong><br><br>A DBMS is NOT warranted when the application is simple and static, there is no multi-user access, and DBMS overhead cannot be tolerated. A spreadsheet is perfectly appropriate here. Option D is wrong &mdash; databases ARE better at scale.'
+  },
+  {
+    q: 'What is the role of meta-data in a database system?',
+    opts: [
+      'It stores the actual user data such as student names and grades.',
+      'It is the query language used to retrieve data.',
+      'It stores the database definition &mdash; data types, structures, and constraints.',
+      'It is a backup copy of the stored database.'
+    ],
+    correct: 2,
+    explanation: '<strong style="color:#fff">Option C is correct.</strong><br><br>Meta-data is &ldquo;data about data.&rdquo; It lives in the database catalog or data dictionary and describes structure: table names, column names, data types, constraints, and relationships. The DBMS uses meta-data to validate queries and enforce integrity.'
+  }
+];
+
+var score = 0;
+var answered = [];
+for (var i = 0; i < questions.length; i++) answered.push(false);
+
+function buildQuiz() {
+  var html = '';
+  for (var qi = 0; qi < questions.length; qi++) {
+    var q = questions[qi];
+    html += '<div class="quiz-block" id="qblock-' + qi + '">' +
+      '<div class="quiz-q-header">' +
+        '<div class="quiz-num">Q' + (qi + 1) + '</div>' +
+        '<div class="quiz-q-text">' + q.q + '</div>' +
+      '</div>' +
+      '<div class="quiz-opts">';
+    for (var oi = 0; oi < q.opts.length; oi++) {
+      var letter = String.fromCharCode(65 + oi);
+      html += '<button class="opt-btn" id="opt-' + qi + '-' + oi + '" onclick="checkAnswer(' + qi + ',' + oi + ')">' +
+        '<span class="opt-letter">' + letter + '</span>' +
+        '<span>' + q.opts[oi] + '</span>' +
+      '</button>';
+    }
+    html += '</div>' +
+      '<div class="feedback" id="fb-' + qi + '"><span id="fb-text-' + qi + '"></span></div>' +
+      '<button class="reveal-btn" onclick="toggleReveal(' + qi + ')">' +
+        '<svg style="width:13px;height:13px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+        ' Reveal Explanation' +
+      '</button>' +
+      '<div class="reveal-panel" id="reveal-' + qi + '">' +
+        '<div class="callout-box blue" style="margin-top:0">' +
+          '<div class="callout-label blue">How to Solve This</div>' +
+          '<p class="callout-body">' + q.explanation + '</p>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  document.getElementById('quiz-container').innerHTML = html;
+}
+
+function checkAnswer(qi, oi) {
+  if (answered[qi]) return;
+  answered[qi] = true;
+  var q = questions[qi];
+  var isCorrect = (oi === q.correct);
+  if (isCorrect) score++;
+  document.getElementById('score-display').textContent = score;
+
+  for (var i = 0; i < q.opts.length; i++) {
+    var btn = document.getElementById('opt-' + qi + '-' + i);
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === oi && !isCorrect) btn.classList.add('wrong');
+  }
+
+  var fb = document.getElementById('fb-' + qi);
+  var txt = document.getElementById('fb-text-' + qi);
+  if (isCorrect) {
+    fb.className = 'feedback ok';
+    txt.textContent = 'Correct! Well done.';
+  } else {
+    fb.className = 'feedback ng';
+    txt.textContent = 'Incorrect. The correct answer is highlighted. Check the explanation below.';
+  }
+
+  var allDone = true;
+  for (var j = 0; j < answered.length; j++) { if (!answered[j]) { allDone = false; break; } }
+  if (allDone) showResults();
+}
+
+function toggleReveal(qi) {
+  document.getElementById('reveal-' + qi).classList.toggle('open');
+}
+
+function showResults() {
+  var panel = document.getElementById('results-panel');
+  panel.style.display = 'block';
+  var pct = Math.round((score / questions.length) * 100);
+  setTimeout(function() {
+    document.getElementById('score-bar').style.width = pct + '%';
+  }, 100);
+  var msgs = [
+    'Keep studying &mdash; review the concepts above!',
+    'Good effort! Check the explanations for missed questions.',
+    'Solid understanding!',
+    'Great work!',
+    'Perfect score! Excellent mastery.'
+  ];
+  var idx = score >= 5 ? 4 : score >= 4 ? 3 : score >= 3 ? 2 : score >= 2 ? 1 : 0;
+  document.getElementById('results-text').textContent =
+    'You scored ' + score + ' out of 5 (' + pct + '%). ' + msgs[idx];
+}
+
+buildQuiz();
+</script>
+</body>
+</html>

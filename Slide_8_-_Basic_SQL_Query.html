@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Slide 8 — Basic SQL Query | Basis Data</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00e5a0;
+    --accent2: #00b4ff;
+    --accent3: #ff6b6b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --keyword: #ff79c6;
+    --function: #50fa7b;
+    --string: #f1fa8c;
+    --type: #8be9fd;
+    --comment: #6272a4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+  }
+  h1,h2,h3,.heading { font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Grid pattern bg */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Glow */
+  .glow-green { box-shadow: 0 0 20px rgba(0,229,160,0.15); }
+  .glow-blue  { box-shadow: 0 0 20px rgba(0,180,255,0.15); }
+  .glow-red   { box-shadow: 0 0 20px rgba(255,107,107,0.15); }
+
+  /* Nav */
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(10,14,26,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+
+  /* Section title */
+  .section-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2);
+    color: var(--accent); border-radius: 999px;
+    font-size: 11px; font-family: 'Syne', sans-serif; letter-spacing: 2px; text-transform: uppercase;
+    padding: 4px 14px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: rgba(0,229,160,0.3); box-shadow: 0 0 30px rgba(0,229,160,0.06); }
+
+  /* Callout */
+  .callout-key {
+    background: rgba(0,180,255,0.06); border-left: 3px solid var(--accent2);
+    border-radius: 0 12px 12px 0; padding: 18px 20px;
+  }
+  .callout-warn {
+    background: rgba(255,107,107,0.06); border-left: 3px solid var(--accent3);
+    border-radius: 0 12px 12px 0; padding: 18px 20px;
+  }
+  .callout-tip {
+    background: rgba(0,229,160,0.06); border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0; padding: 18px 20px;
+  }
+
+  /* Code block */
+  .code-block {
+    background: #0d1117; border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px;
+    overflow-x: auto; position: relative;
+  }
+  .code-block pre { margin: 0; }
+  .kw  { color: var(--keyword); font-weight: 600; }
+  .fn  { color: var(--function); }
+  .str { color: var(--string); }
+  .tp  { color: var(--type); }
+  .cm  { color: var(--comment); font-style: italic; }
+  .num { color: #bd93f9; }
+  .op  { color: #ff79c6; }
+
+  /* Table */
+  .sql-table { border-collapse: collapse; width: 100%; }
+  .sql-table th { background: rgba(0,229,160,0.1); color: var(--accent); padding: 10px 14px; text-align: left; font-size: 13px; font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); }
+  .sql-table td { padding: 9px 14px; font-size: 13px; font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid rgba(30,45,69,0.5); }
+  .sql-table tr:hover td { background: rgba(0,229,160,0.03); }
+
+  /* Quiz */
+  .quiz-option {
+    width: 100%; text-align: left; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 18px; cursor: pointer; color: var(--text);
+    font-size: 14px; font-family: 'Inter', sans-serif;
+    transition: all 0.18s; margin-bottom: 8px; display: block;
+  }
+  .quiz-option:hover:not(:disabled) { border-color: rgba(0,229,160,0.4); background: rgba(0,229,160,0.05); }
+  .quiz-option.correct { border-color: var(--accent); background: rgba(0,229,160,0.1); color: var(--accent); }
+  .quiz-option.wrong   { border-color: var(--accent3); background: rgba(255,107,107,0.08); color: var(--accent3); }
+  .quiz-option:disabled { cursor: default; opacity: 0.8; }
+
+  .feedback-box { border-radius: 10px; padding: 14px 18px; margin-top: 12px; font-size: 14px; display: none; }
+  .feedback-box.correct { background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3); color: var(--accent); }
+  .feedback-box.wrong   { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.3); color: var(--accent3); }
+  .feedback-box.show { display: block; }
+
+  .explanation-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; margin-top: 12px;
+    display: none; font-size: 14px; line-height: 1.7;
+  }
+  .explanation-box.show { display: block; }
+
+  /* Step walkthrough */
+  .step-box {
+    border: 1px solid var(--border); border-radius: 12px;
+    background: var(--surface2); padding: 16px 20px; margin-top: 8px;
+    display: none; font-size: 14px;
+  }
+  .step-box.active { display: block; border-color: rgba(0,229,160,0.3); }
+  .step-btn {
+    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text); cursor: pointer;
+    font-size: 13px; font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+  }
+  .step-btn.active { background: rgba(0,229,160,0.12); border-color: var(--accent); color: var(--accent); }
+  .step-btn:hover { border-color: rgba(0,229,160,0.4); }
+
+  /* Cartesian visual */
+  .rel-table {
+    display: inline-block; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  }
+  .rel-table .header { background: rgba(0,229,160,0.08); padding: 8px 14px; color: var(--accent); font-weight: 600; }
+  .rel-table .row { padding: 6px 14px; border-top: 1px solid var(--border); }
+
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 1px; }
+  .badge-green { background: rgba(0,229,160,0.12); color: var(--accent); border: 1px solid rgba(0,229,160,0.25); }
+  .badge-blue  { background: rgba(0,180,255,0.12); color: var(--accent2); border: 1px solid rgba(0,180,255,0.25); }
+  .badge-red   { background: rgba(255,107,107,0.12); color: var(--accent3); border: 1px solid rgba(255,107,107,0.25); }
+
+  /* Progress bar */
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* Animate in */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease forwards; }
+
+  .reveal-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px;
+    background: rgba(0,180,255,0.08); border: 1px solid rgba(0,180,255,0.25);
+    color: var(--accent2); cursor: pointer; font-size: 13px;
+    transition: all 0.15s; margin-top: 10px;
+  }
+  .reveal-btn:hover { background: rgba(0,180,255,0.15); }
+</style>
+</head>
+<body class="grid-bg min-h-screen">
+
+<!-- NAV -->
+<nav class="px-6 py-3">
+  <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,229,160,0.15); border:1px solid rgba(0,229,160,0.3)">
+        <i data-lucide="database" style="width:16px;height:16px;color:var(--accent)"></i>
+      </div>
+      <span class="font-bold text-sm heading" style="color:var(--accent)">Basis Data</span>
+      <span class="text-xs" style="color:var(--muted)">/ Slide 8</span>
+    </div>
+    <div class="hidden md:flex gap-6 text-sm" style="color:var(--muted)">
+      <a href="#konsep" class="hover:text-white transition-colors">Konsep</a>
+      <a href="#visualisasi" class="hover:text-white transition-colors">Visualisasi</a>
+      <a href="#latihan" class="hover:text-white transition-colors">Latihan</a>
+    </div>
+    <div class="badge badge-green">CSGE602070</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="max-w-6xl mx-auto px-6 pt-16 pb-12">
+  <div class="fade-up text-center">
+    <div class="section-tag mb-6">
+      <i data-lucide="layers" style="width:12px;height:12px"></i>
+      Slide 8 — Basis Data
+    </div>
+    <h1 class="text-5xl md:text-7xl font-black mb-4 heading" style="letter-spacing:-2px">
+      Basic <span style="color:var(--accent)">SQL</span> Query
+    </h1>
+    <p class="text-lg max-w-xl mx-auto" style="color:var(--muted)">
+      Pelajari cara mengambil data dari database menggunakan <span class="mono" style="color:var(--accent2)">SELECT</span>, <span class="mono" style="color:var(--accent2)">JOIN</span>, <span class="mono" style="color:var(--accent2)">WHERE</span>, dan konsep lainnya.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3 mt-8">
+      <div class="badge badge-green">SELECT Statement</div>
+      <div class="badge badge-blue">Aliases</div>
+      <div class="badge badge-red">WHERE Clause</div>
+      <div class="badge badge-green">Cartesian Product</div>
+      <div class="badge badge-blue">JOIN</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 1: CONCEPTUAL DEEP DIVE ==================== -->
+<section id="konsep" class="max-w-6xl mx-auto px-6 py-12">
+  <div class="section-tag mb-4">
+    <i data-lucide="brain" style="width:12px;height:12px"></i>
+    Conceptual Deep Dive
+  </div>
+  <h2 class="text-3xl font-black heading mb-10">Pemahaman Mendalam</h2>
+
+  <!-- Mental Model: SELECT -->
+  <div class="card mb-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.2)">
+        <i data-lucide="search" style="width:18px;height:18px;color:var(--accent)"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold heading">1. SELECT Statement</h3>
+        <p class="text-sm" style="color:var(--muted)">Operasi dasar pengambilan data</p>
+      </div>
+    </div>
+
+    <p class="mb-6 leading-relaxed" style="color:#94a3b8">
+      <strong style="color:var(--text)">Mental Model:</strong> Bayangkan kamu punya lemari arsip besar (database). <span class="mono" style="color:var(--accent2)">SELECT</span> adalah cara kamu membuka laci, memilih folder tertentu, dan mengambil dokumen yang kamu butuhkan berdasarkan kriteria yang kamu tentukan.
+    </p>
+
+    <!-- Syntax Box -->
+    <div class="code-block mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold" style="color:var(--muted);letter-spacing:1px">SINTAKS DASAR</span>
+        <span class="badge badge-blue">SQL</span>
+      </div>
+      <pre class="mono text-sm leading-loose"><code><span class="kw">SELECT</span>   <span class="cm">&lt;attribute list&gt;</span>    <span class="cm">-- Kolom yang ingin ditampilkan</span>
+<span class="kw">FROM</span>     <span class="cm">&lt;table list&gt;</span>        <span class="cm">-- Tabel sumber data</span>
+<span class="kw">WHERE</span>    <span class="cm">&lt;condition&gt;</span>;        <span class="cm">-- Kondisi filter (opsional)</span></code></pre>
+    </div>
+
+    <!-- Operator Grid -->
+    <h4 class="font-bold mb-3 text-sm" style="color:var(--muted);letter-spacing:1px;text-transform:uppercase">Operator Perbandingan Logika</h4>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+      <div class="p-3 rounded-lg text-center" style="background:var(--surface2);border:1px solid var(--border)">
+        <div class="mono text-2xl font-bold mb-1" style="color:var(--accent)">=</div>
+        <div class="text-xs" style="color:var(--muted)">Sama dengan</div>
+      </div>
+      <div class="p-3 rounded-lg text-center" style="background:var(--surface2);border:1px solid var(--border)">
+        <div class="mono text-2xl font-bold mb-1" style="color:var(--accent2)">&gt;</div>
+        <div class="text-xs" style="color:var(--muted)">Lebih dari</div>
+      </div>
+      <div class="p-3 rounded-lg text-center" style="background:var(--surface2);border:1px solid var(--border)">
+        <div class="mono text-2xl font-bold mb-1" style="color:var(--accent2)">&lt;</div>
+        <div class="text-xs" style="color:var(--muted)">Kurang dari</div>
+      </div>
+      <div class="p-3 rounded-lg text-center" style="background:var(--surface2);border:1px solid var(--border)">
+        <div class="mono text-2xl font-bold mb-1" style="color:var(--accent)">&gt;=</div>
+        <div class="text-xs" style="color:var(--muted)">Lebih dari atau sama</div>
+      </div>
+      <div class="p-3 rounded-lg text-center" style="background:var(--surface2);border:1px solid var(--border)">
+        <div class="mono text-2xl font-bold mb-1" style="color:var(--accent)">&lt;=</div>
+        <div class="text-xs" style="color:var(--muted)">Kurang dari atau sama</div>
+      </div>
+      <div class="p-3 rounded-lg text-center" style="background:var(--surface2);border:1px solid var(--border)">
+        <div class="mono text-2xl font-bold mb-1" style="color:var(--accent3)">&lt;&gt;</div>
+        <div class="text-xs" style="color:var(--muted)">Tidak sama dengan</div>
+      </div>
+    </div>
+
+    <!-- Callouts -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="callout-key">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="key" style="width:14px;height:14px;color:var(--accent2)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent2)">Key Term: Tuple</span>
+        </div>
+        <p class="text-sm leading-relaxed" style="color:#94a3b8">
+          <strong style="color:var(--text)">Tuple</strong> adalah satu baris data dalam tabel. SQL membolehkan dua tuple yang identik ada dalam satu tabel — berbeda dengan model relasional formal yang harus unik. Gunakan constraint <span class="mono" style="color:var(--accent2)">PRIMARY KEY</span> pada DDL untuk mencegahnya.
+        </p>
+      </div>
+      <div class="callout-warn">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="triangle-alert" style="width:14px;height:14px;color:var(--accent3)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent3)">Common Pitfall: Duplikasi Data</span>
+        </div>
+        <p class="text-sm leading-relaxed" style="color:#94a3b8">
+          Tanpa constraint, SQL tidak otomatis menolak duplikasi baris! Jika kamu menyisipkan data yang sama dua kali, keduanya akan tersimpan. Selalu definisikan <span class="mono" style="color:var(--accent3)">PRIMARY KEY</span> saat membuat tabel.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cartesian Product -->
+  <div class="card mb-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.2)">
+        <i data-lucide="grid-3x3" style="width:18px;height:18px;color:var(--accent2)"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold heading">2. Cartesian Product (Cross Product)</h3>
+        <p class="text-sm" style="color:var(--muted)">Operasi penggabungan semua kombinasi tuple</p>
+      </div>
+    </div>
+
+    <p class="mb-4 leading-relaxed" style="color:#94a3b8">
+      <strong style="color:var(--text)">Mental Model:</strong> Bayangkan dua set kartu: Kartu A berisi {♠, ♥, ♣} dan Kartu B berisi {1, 2}. Cartesian Product menghasilkan <em>semua kemungkinan pasangan</em>: {♠1, ♠2, ♥1, ♥2, ♣1, ♣2}.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-6 mb-6 items-center text-center">
+      <div>
+        <div class="rel-table mx-auto" style="min-width:140px">
+          <div class="header">R1 (3 baris)</div>
+          <div class="row"><span style="color:var(--accent2)">A</span> &nbsp;&nbsp; <span style="color:var(--accent)">B</span> &nbsp;&nbsp; <span style="color:#bd93f9">C</span></div>
+          <div class="row">a1 &nbsp; b1 &nbsp; c1</div>
+          <div class="row">a2 &nbsp; b2 &nbsp; c2</div>
+          <div class="row">a3 &nbsp; b3 &nbsp; c3</div>
+        </div>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="text-4xl font-black" style="color:var(--accent)">×</div>
+        <div class="rel-table mt-3" style="min-width:100px">
+          <div class="header">R2 (2 baris)</div>
+          <div class="row"><span style="color:var(--accent2)">X</span> &nbsp;&nbsp; <span style="color:var(--accent)">Y</span></div>
+          <div class="row">x1 &nbsp; y1</div>
+          <div class="row">x2 &nbsp; y2</div>
+        </div>
+        <div class="text-2xl font-black mt-3" style="color:var(--accent)">=</div>
+        <div class="badge badge-red mt-2">3 × 2 = 6 baris</div>
+      </div>
+      <div>
+        <div class="rel-table mx-auto" style="min-width:200px">
+          <div class="header">R3 = R1 × R2 (6 baris)</div>
+          <div class="row">a1 b1 c1 x1 y1</div>
+          <div class="row">a1 b1 c1 x2 y2</div>
+          <div class="row">a2 b2 c2 x1 y1</div>
+          <div class="row">a2 b2 c2 x2 y2</div>
+          <div class="row">a3 b3 c3 x1 y1</div>
+          <div class="row">a3 b3 c3 x2 y2</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block mb-4">
+      <pre class="mono text-sm"><code><span class="cm">-- Cartesian Product di SQL:</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> R1, R2;
+<span class="cm">-- Tanpa WHERE = semua kombinasi (berbahaya jika tabel besar!)</span></code></pre>
+    </div>
+
+    <div class="callout-warn">
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="triangle-alert" style="width:14px;height:14px;color:var(--accent3)"></i>
+        <span class="font-bold text-sm" style="color:var(--accent3)">Common Pitfall: Lupa WHERE pada Multiple Table</span>
+      </div>
+      <p class="text-sm leading-relaxed" style="color:#94a3b8">
+        Jika kamu menulis <span class="mono" style="color:var(--accent3)">FROM R1, R2</span> tanpa <span class="mono" style="color:var(--accent3)">WHERE</span>, SQL akan menghasilkan Cartesian Product penuh. Jika R1 punya 1000 baris dan R2 punya 1000 baris, hasilnya adalah <strong style="color:var(--accent3)">1.000.000 baris</strong>!
+      </p>
+    </div>
+  </div>
+
+  <!-- JOIN -->
+  <div class="card mb-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.2)">
+        <i data-lucide="link" style="width:18px;height:18px;color:var(--accent)"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold heading">3. Join</h3>
+        <p class="text-sm" style="color:var(--muted)">Menggabungkan tuple terkait dari dua relasi</p>
+      </div>
+    </div>
+
+    <p class="mb-4 leading-relaxed" style="color:#94a3b8">
+      <strong style="color:var(--text)">Mental Model:</strong> JOIN seperti mencocokkan dua daftar hadir: daftar karyawan dan daftar departemen. Kamu hanya pasangkan baris yang memiliki nilai departemen yang <em>sama</em>, bukan semua kemungkinan pasangan.
+    </p>
+
+    <div class="callout-tip mb-4">
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="lightbulb" style="width:14px;height:14px;color:var(--accent)"></i>
+        <span class="font-bold text-sm" style="color:var(--accent)">Key Term: Join Condition</span>
+      </div>
+      <p class="text-sm leading-relaxed" style="color:#94a3b8">
+        Join condition didefinisikan di dalam klausa <span class="mono" style="color:var(--accent)">WHERE</span>. Ini memfilter hasil Cartesian Product sehingga hanya tuple yang memenuhi kondisi yang digabungkan. Biasanya menghubungkan <strong>Primary Key</strong> dengan <strong>Foreign Key</strong>.
+      </p>
+    </div>
+
+    <div class="code-block mb-4">
+      <pre class="mono text-sm leading-loose"><code><span class="cm">-- JOIN antara EMPLOYEE dan DEPARTMENT</span>
+<span class="kw">SELECT</span> Fname, Lname, Dname
+<span class="kw">FROM</span> EMPLOYEE, DEPARTMENT
+<span class="kw">WHERE</span> Dno <span class="op">=</span> Dnumber;  <span class="cm">-- Join condition: FK = PK</span>
+
+<span class="cm">-- Contoh: semua karyawan dept Research</span>
+<span class="kw">SELECT</span> Fname, Lname, Address
+<span class="kw">FROM</span> EMPLOYEE, DEPARTMENT
+<span class="kw">WHERE</span> Dname <span class="op">=</span> <span class="str">'Research'</span> <span class="kw">AND</span> Dnumber <span class="op">=</span> Dno;</code></pre>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="callout-key">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="key" style="width:14px;height:14px;color:var(--accent2)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent2)">Key Term: Multi-Table Join</span>
+        </div>
+        <p class="text-sm leading-relaxed" style="color:#94a3b8">
+          Kamu bisa join lebih dari dua tabel. Tambahkan kondisi untuk setiap pasangan tabel yang dihubungkan:
+          <br><span class="mono" style="color:var(--accent2);font-size:12px">WHERE A.key = B.ref AND B.key = C.ref</span>
+        </p>
+      </div>
+      <div class="callout-warn">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="triangle-alert" style="width:14px;height:14px;color:var(--accent3)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent3)">Common Pitfall: Ambiguous Column</span>
+        </div>
+        <p class="text-sm leading-relaxed" style="color:#94a3b8">
+          Jika dua tabel punya kolom dengan nama sama (misal: <span class="mono" style="color:var(--accent3)">Name</span>), kamu HARUS kualifikasi dengan nama tabel: <span class="mono" style="color:var(--accent3)">EMPLOYEE.Name</span>, <span class="mono" style="color:var(--accent3)">DEPARTMENT.Name</span>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aliases -->
+  <div class="card mb-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(189,147,249,0.1);border:1px solid rgba(189,147,249,0.2)">
+        <i data-lucide="tag" style="width:18px;height:18px;color:#bd93f9"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold heading">4. Aliases</h3>
+        <p class="text-sm" style="color:var(--muted)">Nama alternatif untuk tabel atau kolom</p>
+      </div>
+    </div>
+
+    <p class="mb-4 leading-relaxed" style="color:#94a3b8">
+      <strong style="color:var(--text)">Mental Model:</strong> Alias seperti nama panggilan. Kamu bisa refer ke tabel <code class="mono" style="color:#bd93f9">EMPLOYEE</code> sebagai <code class="mono" style="color:#bd93f9">E</code> agar lebih singkat — atau bahkan memakai tabel yang sama dua kali dengan nama berbeda untuk self-join.
+    </p>
+
+    <div class="code-block mb-4">
+      <pre class="mono text-sm leading-loose"><code><span class="cm">-- Query 8: Karyawan dan nama supervisornya (self-join)</span>
+<span class="kw">SELECT</span> E.Fname, E.Lname, S.Fname, S.Lname
+<span class="kw">FROM</span> EMPLOYEE E, EMPLOYEE S
+<span class="kw">WHERE</span> S.Ssn <span class="op">=</span> E.Super_ssn;
+
+<span class="cm">-- Alternatif dengan keyword AS</span>
+<span class="kw">SELECT</span> E.Fname, E.Lname, S.Fname, S.Lname
+<span class="kw">FROM</span> EMPLOYEE <span class="kw">AS</span> E, EMPLOYEE <span class="kw">AS</span> S
+<span class="kw">WHERE</span> E.Super_ssn <span class="op">=</span> S.Ssn;</code></pre>
+    </div>
+
+    <div class="callout-tip">
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="lightbulb" style="width:14px;height:14px;color:var(--accent)"></i>
+        <span class="font-bold text-sm" style="color:var(--accent)">Key Term: Self-Join</span>
+      </div>
+      <p class="text-sm leading-relaxed" style="color:#94a3b8">
+        <strong style="color:var(--text)">Self-join</strong> terjadi saat kamu perlu menggabungkan sebuah tabel dengan dirinya sendiri. Ini terjadi pada relasi hirarki (supervisor-bawahan). Alias <strong>wajib</strong> digunakan agar SQL bisa membedakan kedua "salinan" tabel tersebut.
+      </p>
+    </div>
+  </div>
+
+  <!-- WHERE Clause Lanjutan -->
+  <div class="card mb-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.2)">
+        <i data-lucide="filter" style="width:18px;height:18px;color:var(--accent3)"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold heading">5. WHERE Clause Lanjutan</h3>
+        <p class="text-sm" style="color:var(--muted)">LIKE, BETWEEN, DISTINCT, ORDER BY</p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <h4 class="font-bold mb-3 text-sm" style="color:var(--accent2);letter-spacing:1px">LIKE — Pattern Matching</h4>
+        <div class="callout-key mb-3">
+          <p class="text-sm" style="color:#94a3b8"><span class="mono" style="color:var(--accent2)">%</span> = mengganti nol atau lebih karakter apapun</p>
+          <p class="text-sm mt-1" style="color:#94a3b8"><span class="mono" style="color:var(--accent2)">_</span> = mengganti tepat satu karakter</p>
+        </div>
+        <div class="code-block">
+          <pre class="mono text-xs leading-relaxed"><code><span class="cm">-- Alamat yang mengandung 'Houston,TX'</span>
+<span class="kw">WHERE</span> Address <span class="kw">LIKE</span> <span class="str">'%Houston,TX%'</span>
+
+<span class="cm">-- Nama yang diawali 'Jo'</span>
+<span class="kw">WHERE</span> Fname <span class="kw">LIKE</span> <span class="str">'Jo%'</span>
+
+<span class="cm">-- Nama dengan tepat 4 karakter</span>
+<span class="kw">WHERE</span> Fname <span class="kw">LIKE</span> <span class="str">'____'</span></code></pre>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-bold mb-3 text-sm" style="color:var(--accent);letter-spacing:1px">BETWEEN & DISTINCT & ORDER BY</h4>
+        <div class="code-block">
+          <pre class="mono text-xs leading-relaxed"><code><span class="cm">-- BETWEEN: gaji antara 30000-40000</span>
+<span class="kw">WHERE</span> Salary <span class="kw">BETWEEN</span> <span class="num">30000</span> <span class="kw">AND</span> <span class="num">40000</span>
+
+<span class="cm">-- DISTINCT: hapus duplikat hasil</span>
+<span class="kw">SELECT DISTINCT</span> Salary <span class="kw">FROM</span> EMPLOYEE
+
+<span class="cm">-- ORDER BY: urutkan hasil</span>
+<span class="kw">ORDER BY</span> Lname <span class="kw">ASC</span>, Salary <span class="kw">DESC</span>
+
+<span class="cm">-- Asterisk: semua kolom</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> EMPLOYEE <span class="kw">WHERE</span> Dno <span class="op">=</span> <span class="num">5</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="callout-key">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="key" style="width:14px;height:14px;color:var(--accent2)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent2)">Key Term: Set Operations</span>
+        </div>
+        <p class="text-sm leading-relaxed" style="color:#94a3b8">
+          <strong style="color:var(--text)">UNION</strong> — gabungan, duplikat dihapus<br>
+          <strong style="color:var(--text)">EXCEPT</strong> — perbedaan dua set<br>
+          <strong style="color:var(--text)">INTERSECT</strong> — irisan dua set<br>
+          Tambahkan <span class="mono" style="color:var(--accent2)">ALL</span> untuk menjaga duplikat.
+        </p>
+      </div>
+      <div class="callout-warn">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="triangle-alert" style="width:14px;height:14px;color:var(--accent3)"></i>
+          <span class="font-bold text-sm" style="color:var(--accent3)">Common Pitfall: WHERE = TRUE</span>
+        </div>
+        <p class="text-sm leading-relaxed" style="color:#94a3b8">
+          Jika kamu tidak menuliskan klausa <span class="mono" style="color:var(--accent3)">WHERE</span>, kondisinya dianggap <span class="mono" style="color:var(--accent3)">TRUE</span> — artinya semua baris dipilih. Pada query multi-tabel, ini menghasilkan <strong>Cartesian Product penuh!</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 2: ALGORITHM & LOGIC VISUALIZATION ==================== -->
+<section id="visualisasi" class="max-w-6xl mx-auto px-6 py-12">
+  <div class="section-tag mb-4">
+    <i data-lucide="cpu" style="width:12px;height:12px"></i>
+    Algorithm & Logic Visualization
+  </div>
+  <h2 class="text-3xl font-black heading mb-10">Visualisasi & Walkthrough</h2>
+
+  <!-- Query Walkthrough: Q0 -->
+  <div class="card mb-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="badge badge-green">Q0</div>
+      <h3 class="font-bold heading">Retrieve Birth Date & Address of John B. Smith</h3>
+    </div>
+
+    <div class="code-block mb-4">
+      <pre class="mono text-sm leading-relaxed"><code><span class="kw">SELECT</span>   Bdate, Address
+<span class="kw">FROM</span>     EMPLOYEE
+<span class="kw">WHERE</span>    Fname <span class="op">=</span> <span class="str">'John'</span>
+  <span class="kw">AND</span>    Minit <span class="op">=</span> <span class="str">'B'</span>
+  <span class="kw">AND</span>    Lname <span class="op">=</span> <span class="str">'Smith'</span>;</code></pre>
+    </div>
+
+    <h4 class="font-bold text-sm mb-3" style="color:var(--muted);letter-spacing:1px">WALKTHROUGH — Klik setiap langkah:</h4>
+    <div class="flex flex-wrap gap-2 mb-4" id="steps-q0">
+      <button class="step-btn active" onclick="showStep('q0',0)">① FROM</button>
+      <button class="step-btn" onclick="showStep('q0',1)">② WHERE</button>
+      <button class="step-btn" onclick="showStep('q0',2)">③ SELECT</button>
+      <button class="step-btn" onclick="showStep('q0',3)">④ Hasil</button>
+    </div>
+    <div id="q0-0" class="step-box active">
+      <div class="flex items-center gap-2 mb-2"><span class="badge badge-blue">FROM</span></div>
+      <p class="text-sm" style="color:#94a3b8">SQL mengakses tabel <strong style="color:var(--accent2)">EMPLOYEE</strong>. Pada tahap ini, semua baris dari tabel dimuat sebagai kandidat — belum ada filter.</p>
+    </div>
+    <div id="q0-1" class="step-box">
+      <div class="flex items-center gap-2 mb-2"><span class="badge badge-red">WHERE</span></div>
+      <p class="text-sm" style="color:#94a3b8">Tiga kondisi dievaluasi dengan operator <span class="mono" style="color:var(--accent)">AND</span>: Fname = 'John' <strong>DAN</strong> Minit = 'B' <strong>DAN</strong> Lname = 'Smith'. Hanya baris yang <em>memenuhi ketiga kondisi sekaligus</em> yang dipertahankan.</p>
+    </div>
+    <div id="q0-2" class="step-box">
+      <div class="flex items-center gap-2 mb-2"><span class="badge badge-green">SELECT</span></div>
+      <p class="text-sm" style="color:#94a3b8">Dari baris yang lolos filter, hanya kolom <strong style="color:var(--accent)">Bdate</strong> dan <strong style="color:var(--accent)">Address</strong> yang ditampilkan. Kolom lain diabaikan dari output.</p>
+    </div>
+    <div id="q0-3" class="step-box">
+      <div class="flex items-center gap-2 mb-2"><span class="badge badge-green">HASIL</span></div>
+      <div class="overflow-x-auto mt-2">
+        <table class="sql-table">
+          <thead><tr><th>Bdate</th><th>Address</th></tr></thead>
+          <tbody>
+            <tr><td>1965-01-09</td><td>731 Fondren, Houston, TX</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Query Walkthrough: Q2 -->
+  <div class="card mb-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="badge badge-blue">Q2</div>
+      <h3 class="font-bold heading">Projects in Stafford — Multi-Table Join</h3>
+    </div>
+
+    <div class="code-block mb-4">
+      <pre class="mono text-sm leading-relaxed"><code><span class="cm">-- Setiap proyek di Stafford: nomor proyek, nomor dept, nama manajer, alamat, dan tanggal lahir</span>
+<span class="kw">SELECT</span>   Pnumber, Dnum, Lname, Address, Bdate
+<span class="kw">FROM</span>     PROJECT, DEPARTMENT, EMPLOYEE
+<span class="kw">WHERE</span>    Dnum <span class="op">=</span> Dnumber          <span class="cm">-- Join PROJECT ↔ DEPARTMENT</span>
+  <span class="kw">AND</span>    Mgr_ssn <span class="op">=</span> Ssn          <span class="cm">-- Join DEPARTMENT ↔ EMPLOYEE (manajer)</span>
+  <span class="kw">AND</span>    Plocation <span class="op">=</span> <span class="str">'Stafford'</span>; <span class="cm">-- Filter tambahan</span></code></pre>
+    </div>
+
+    <h4 class="font-bold text-sm mb-3" style="color:var(--muted);letter-spacing:1px">WALKTHROUGH:</h4>
+    <div class="flex flex-wrap gap-2 mb-4" id="steps-q2">
+      <button class="step-btn active" onclick="showStep('q2',0)">① FROM 3 Tabel</button>
+      <button class="step-btn" onclick="showStep('q2',1)">② Join Conditions</button>
+      <button class="step-btn" onclick="showStep('q2',2)">③ Filter Stafford</button>
+      <button class="step-btn" onclick="showStep('q2',3)">④ Hasil</button>
+    </div>
+    <div id="q2-0" class="step-box active">
+      <div class="flex items-center gap-2 mb-2"><span class="badge badge-blue">FROM</span></div>
+      <p class="text-sm" style="color:#94a3b8">SQL membuat Cartesian Product dari tiga tabel: <strong>PROJECT × DEPARTMENT × EMPLOYEE</strong>. Jika masing-masing punya 10, 3, dan 8 baris, hasilnya adalah 10×3×8 = <strong style="color:var(--accent3)">240 kombinasi</strong> sementara sebelum difilter.</p>
+    </div>
+    <div id="q2-1" class="step-box">
+      <div class="flex items-center gap-2 mb-2"><span class="badge badge-red">JOIN</span></div>
+      <p class="text-sm" style="color:#94a3b8">Kondisi pertama <span class="mono" style="color:var(--accent)">Dnum = Dnumber</span> menghubungkan PROJECT dengan DEPARTMENT. Kondisi kedua <span class="mono" style="color:var(--accent)">Mgr_ssn = Ssn</span> menghubungkan DEPARTMENT dengan karyawan yang menjadi manajernya.</p>
+    </div>
+    <div id="q2-2" class="step-box">
+      <div class="flex items-center gap-2 mb-2"><span class="badge badge-red">FILTER</span></div>
+      <p class="text-sm" style="color:#94a3b8">Kondisi ketiga <span class="mono" style="color:var(--accent)">Plocation = 'Stafford'</span> lebih lanjut memfilter hanya proyek yang berlokasi di Stafford. Ini adalah selection condition (bukan join condition).</p>
+    </div>
+    <div id="q2-3" class="step-box">
+      <div class="flex items-center gap-2 mb-2"><span class="badge badge-green">HASIL</span></div>
+      <div class="overflow-x-auto mt-2">
+        <table class="sql-table">
+          <thead><tr><th>Pnumber</th><th>Dnum</th><th>Lname</th><th>Address</th><th>Bdate</th></tr></thead>
+          <tbody>
+            <tr><td>10</td><td>4</td><td>Wallace</td><td>291 Berry, Bellaire, TX</td><td>1941-06-20</td></tr>
+            <tr><td>30</td><td>4</td><td>Wallace</td><td>291 Berry, Bellaire, TX</td><td>1941-06-20</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Self-Join Walkthrough -->
+  <div class="card mb-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="badge badge-red">Q8</div>
+      <h3 class="font-bold heading">Self-Join — Karyawan dan Supervisor</h3>
+    </div>
+    <div class="code-block mb-4">
+      <pre class="mono text-sm leading-relaxed"><code><span class="cm">-- Tampilkan nama karyawan dan nama supervisor langsungnya</span>
+<span class="kw">SELECT</span>   E.Fname, E.Lname, S.Fname, S.Lname
+<span class="kw">FROM</span>     EMPLOYEE <span class="kw">AS</span> E, EMPLOYEE <span class="kw">AS</span> S
+<span class="kw">WHERE</span>    E.Super_ssn <span class="op">=</span> S.Ssn;</code></pre>
+    </div>
+    <div class="callout-tip">
+      <div class="flex items-center gap-2 mb-1">
+        <i data-lucide="lightbulb" style="width:14px;height:14px;color:var(--accent)"></i>
+        <span class="font-bold text-sm" style="color:var(--accent)">Cara Kerjanya</span>
+      </div>
+      <p class="text-sm leading-relaxed" style="color:#94a3b8">
+        Tabel EMPLOYEE dipakai dua kali: <strong>E</strong> untuk karyawan biasa, <strong>S</strong> untuk supervisor. Kondisi <span class="mono" style="color:var(--accent)">E.Super_ssn = S.Ssn</span> memastikan kita mencocokkan setiap karyawan E dengan supervisornya di "salinan S". Alias wajib ada agar SQL tidak bingung membedakan keduanya.
+      </p>
+    </div>
+  </div>
+
+  <!-- UNION example -->
+  <div class="card">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="badge badge-blue">Q4A</div>
+      <h3 class="font-bold heading">UNION — Gabungkan Dua Result Set</h3>
+    </div>
+    <div class="code-block">
+      <pre class="mono text-sm leading-relaxed"><code><span class="cm">-- Nomor proyek yang melibatkan karyawan dengan Lname = 'Smith'</span>
+<span class="cm">-- (sebagai pekerja ATAU sebagai manajer departemen pengendali)</span>
+
+<span class="op">(</span><span class="kw">SELECT DISTINCT</span> Pnumber
+ <span class="kw">FROM</span> PROJECT, DEPARTMENT, EMPLOYEE
+ <span class="kw">WHERE</span> Dnum <span class="op">=</span> Dnumber <span class="kw">AND</span> Mgr_ssn <span class="op">=</span> Ssn
+   <span class="kw">AND</span> Lname <span class="op">=</span> <span class="str">'Smith'</span><span class="op">)</span>
+
+<span class="kw">UNION</span>  <span class="cm">-- Duplikat otomatis dihapus</span>
+
+<span class="op">(</span><span class="kw">SELECT DISTINCT</span> Pnumber
+ <span class="kw">FROM</span> PROJECT, WORKS_ON, EMPLOYEE
+ <span class="kw">WHERE</span> Pnumber <span class="op">=</span> Pno <span class="kw">AND</span> Essn <span class="op">=</span> Ssn
+   <span class="kw">AND</span> Lname <span class="op">=</span> <span class="str">'Smith'</span><span class="op">)</span>;</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 3: INTERACTIVE PRACTICE SUITE ==================== -->
+<section id="latihan" class="max-w-6xl mx-auto px-6 py-12">
+  <div class="section-tag mb-4">
+    <i data-lucide="zap" style="width:12px;height:12px"></i>
+    Interactive Practice Suite
+  </div>
+  <h2 class="text-3xl font-black heading mb-4">Latihan Interaktif</h2>
+
+  <!-- Progress -->
+  <div class="mb-8">
+    <div class="flex justify-between text-sm mb-2" style="color:var(--muted)">
+      <span>Progress</span>
+      <span id="progress-text">0 / 5 selesai</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="card mb-6" id="quiz-1">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="badge badge-green">Soal 1</div>
+      <span class="text-sm" style="color:var(--muted)">Konsep Dasar SELECT</span>
+    </div>
+    <p class="font-semibold mb-4">Manakah query yang benar untuk menampilkan semua nama depan (Fname) dan nama belakang (Lname) karyawan yang bekerja di departemen nomor 5?</p>
+    <div id="opts-1">
+      <button class="quiz-option" onclick="answer(1,'A')">A. <span class="mono">SELECT * FROM EMPLOYEE WHERE Dno = 5;</span></button>
+      <button class="quiz-option" onclick="answer(1,'B')">B. <span class="mono">SELECT Fname, Lname FROM EMPLOYEE WHERE Dno = 5;</span></button>
+      <button class="quiz-option" onclick="answer(1,'C')">C. <span class="mono">SELECT Fname, Lname FROM EMPLOYEE WHERE Dno &lt;&gt; 5;</span></button>
+      <button class="quiz-option" onclick="answer(1,'D')">D. <span class="mono">SELECT Fname, Lname WHERE Dno = 5;</span></button>
+    </div>
+    <div class="feedback-box" id="fb-1"></div>
+    <button class="reveal-btn" onclick="toggleExplanation(1)">
+      <i data-lucide="book-open" style="width:14px;height:14px"></i>
+      Reveal Explanation
+    </button>
+    <div class="explanation-box" id="exp-1">
+      <p class="font-bold mb-2" style="color:var(--accent)">✓ Jawaban: B</p>
+      <p class="mb-2" style="color:#94a3b8"><strong style="color:var(--text)">Metodologi:</strong> Analisis setiap opsi:</p>
+      <ul class="text-sm space-y-2" style="color:#94a3b8">
+        <li>• <strong>A</strong> benar dari sisi WHERE, tapi menggunakan <span class="mono">*</span> (semua kolom), bukan hanya Fname & Lname.</li>
+        <li>• <strong>B ✓</strong> Benar — SELECT menyebut dua kolom yang diminta, FROM EMPLOYEE adalah tabel yang tepat, WHERE Dno = 5 adalah filter yang benar.</li>
+        <li>• <strong>C</strong> Menggunakan <span class="mono">&lt;&gt;</span> berarti "tidak sama dengan 5" — kebalikan dari yang diminta.</li>
+        <li>• <strong>D</strong> Sintaks tidak valid: tidak ada klausa FROM.</li>
+      </ul>
+      <p class="text-xs mt-3" style="color:var(--muted)">Struktur wajib: SELECT [kolom] FROM [tabel] WHERE [kondisi]</p>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="card mb-6" id="quiz-2">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="badge badge-blue">Soal 2</div>
+      <span class="text-sm" style="color:var(--muted)">Cartesian Product</span>
+    </div>
+    <p class="font-semibold mb-4">Tabel A memiliki 4 baris dan Tabel B memiliki 6 baris. Jika dieksekusi query <span class="mono text-sm" style="color:var(--accent2)">SELECT * FROM A, B;</span>, berapa banyak baris yang dihasilkan?</p>
+    <div id="opts-2">
+      <button class="quiz-option" onclick="answer(2,'A')">A. 10 baris</button>
+      <button class="quiz-option" onclick="answer(2,'B')">B. 2 baris</button>
+      <button class="quiz-option" onclick="answer(2,'C')">C. 24 baris</button>
+      <button class="quiz-option" onclick="answer(2,'D')">D. 6 baris</button>
+    </div>
+    <div class="feedback-box" id="fb-2"></div>
+    <button class="reveal-btn" onclick="toggleExplanation(2)">
+      <i data-lucide="book-open" style="width:14px;height:14px"></i>
+      Reveal Explanation
+    </button>
+    <div class="explanation-box" id="exp-2">
+      <p class="font-bold mb-2" style="color:var(--accent)">✓ Jawaban: C — 24 baris</p>
+      <p class="mb-2" style="color:#94a3b8"><strong style="color:var(--text)">Metodologi Cartesian Product:</strong></p>
+      <p class="text-sm mb-3" style="color:#94a3b8">Rumus: <span class="mono" style="color:var(--accent)">|A × B| = |A| × |B|</span></p>
+      <p class="text-sm mb-2" style="color:#94a3b8">Setiap baris di A dipasangkan dengan setiap baris di B:<br>4 baris × 6 baris = <strong style="color:var(--accent)">24 kombinasi</strong></p>
+      <p class="text-sm" style="color:#94a3b8">Query tanpa WHERE pada multi-tabel = Cartesian Product penuh. Ini mengapa selalu disarankan menambahkan JOIN condition pada WHERE clause!</p>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card mb-6" id="quiz-3">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="badge badge-red">Soal 3</div>
+      <span class="text-sm" style="color:var(--muted)">Aliases & Self-Join</span>
+    </div>
+    <p class="font-semibold mb-4">Mengapa aliases <span class="mono text-sm" style="color:var(--accent3)">E</span> dan <span class="mono text-sm" style="color:var(--accent3)">S</span> diperlukan dalam query berikut?<br>
+    <span class="mono text-sm block mt-2 p-3 rounded" style="background:var(--surface2);color:var(--text)">SELECT E.Fname, S.Fname FROM EMPLOYEE E, EMPLOYEE S WHERE E.Super_ssn = S.Ssn;</span></p>
+    <div id="opts-3">
+      <button class="quiz-option" onclick="answer(3,'A')">A. Untuk mempercepat eksekusi query</button>
+      <button class="quiz-option" onclick="answer(3,'B')">B. Agar SQL bisa membedakan dua referensi ke tabel EMPLOYEE yang sama (karyawan vs supervisor)</button>
+      <button class="quiz-option" onclick="answer(3,'C')">C. Karena nama tabel EMPLOYEE terlalu panjang</button>
+      <button class="quiz-option" onclick="answer(3,'D')">D. Hanya gaya penulisan, tidak ada pengaruh fungsional</button>
+    </div>
+    <div class="feedback-box" id="fb-3"></div>
+    <button class="reveal-btn" onclick="toggleExplanation(3)">
+      <i data-lucide="book-open" style="width:14px;height:14px"></i>
+      Reveal Explanation
+    </button>
+    <div class="explanation-box" id="exp-3">
+      <p class="font-bold mb-2" style="color:var(--accent)">✓ Jawaban: B</p>
+      <p class="mb-2" style="color:#94a3b8"><strong style="color:var(--text)">Metodologi:</strong> Ini adalah kasus Self-Join.</p>
+      <p class="text-sm mb-3" style="color:#94a3b8">Ketika kamu menulis <span class="mono" style="color:var(--accent)">FROM EMPLOYEE E, EMPLOYEE S</span>, SQL secara konseptual membuat dua "salinan" tabel EMPLOYEE:</p>
+      <ul class="text-sm space-y-1" style="color:#94a3b8">
+        <li>• <strong>E</strong> = salinan untuk karyawan biasa</li>
+        <li>• <strong>S</strong> = salinan untuk supervisor</li>
+      </ul>
+      <p class="text-sm mt-2" style="color:#94a3b8">Tanpa alias, SQL tidak bisa memahami mana kolom Ssn yang dimaksud — milik karyawan atau milik supervisor? Alias membuatnya eksplisit: <span class="mono" style="color:var(--accent)">E.Super_ssn</span> vs <span class="mono" style="color:var(--accent)">S.Ssn</span>.</p>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="card mb-6" id="quiz-4">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="badge badge-green">Soal 4</div>
+      <span class="text-sm" style="color:var(--muted)">LIKE & Pattern Matching</span>
+    </div>
+    <p class="font-semibold mb-3">Berdasarkan tabel EMPLOYEE berikut, query mana yang menghasilkan karyawan dengan alamat yang <strong>mengandung kata "Houston"</strong>?</p>
+    <div class="overflow-x-auto mb-4">
+      <table class="sql-table">
+        <thead><tr><th>Fname</th><th>Address</th></tr></thead>
+        <tbody>
+          <tr><td>John</td><td>731 Fondren, Houston, TX</td></tr>
+          <tr><td>Franklin</td><td>638 Voss, Houston, TX</td></tr>
+          <tr><td>Joyce</td><td>5631 Rice, Houston, TX</td></tr>
+          <tr><td>Jennifer</td><td>291 Berry, Bellaire, TX</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="opts-4">
+      <button class="quiz-option" onclick="answer(4,'A')">A. <span class="mono">WHERE Address = 'Houston'</span></button>
+      <button class="quiz-option" onclick="answer(4,'B')">B. <span class="mono">WHERE Address LIKE 'Houston'</span></button>
+      <button class="quiz-option" onclick="answer(4,'C')">C. <span class="mono">WHERE Address LIKE '%Houston%'</span></button>
+      <button class="quiz-option" onclick="answer(4,'D')">D. <span class="mono">WHERE Address LIKE '_Houston_'</span></button>
+    </div>
+    <div class="feedback-box" id="fb-4"></div>
+    <button class="reveal-btn" onclick="toggleExplanation(4)">
+      <i data-lucide="book-open" style="width:14px;height:14px"></i>
+      Reveal Explanation
+    </button>
+    <div class="explanation-box" id="exp-4">
+      <p class="font-bold mb-2" style="color:var(--accent)">✓ Jawaban: C</p>
+      <p class="mb-2" style="color:#94a3b8"><strong style="color:var(--text)">Metodologi Pattern Matching:</strong></p>
+      <ul class="text-sm space-y-2" style="color:#94a3b8">
+        <li>• <strong>A</strong> — <span class="mono">=</span> mencari string yang persis "Houston" saja. Tidak cocok karena alamat punya karakter lain di depan dan belakang.</li>
+        <li>• <strong>B</strong> — <span class="mono">LIKE 'Houston'</span> tanpa wildcard sama seperti <span class="mono">=</span>. Tetap tidak cocok.</li>
+        <li>• <strong>C ✓</strong> — <span class="mono">'%Houston%'</span>: <span class="mono">%</span> di depan berarti "ada karakter apapun sebelumnya", <span class="mono">%</span> di belakang berarti "ada karakter apapun sesudahnya". Ini menangkap "731 Fondren, <strong>Houston</strong>, TX" dst.</li>
+        <li>• <strong>D</strong> — <span class="mono">'_Houston_'</span>: underscore hanya mengganti 1 karakter. "731 Fondren, Houston, TX" punya banyak karakter di sekitar "Houston".</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="card mb-6" id="quiz-5">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="badge badge-red">Soal 5</div>
+      <span class="text-sm" style="color:var(--muted)">Latihan Lanjutan — Latihan Slide</span>
+    </div>
+    <p class="font-semibold mb-3">Merujuk pada tabel EMPLOYEE dan DEPARTMENT di slide latihan (emp berisi emp_no, emp_fname, emp_lname, dept_no; dept berisi dept_no, dept_name, location), manakah query yang benar untuk menjawab: <strong>"Di departemen manakah pegawai bernama depan Matthew bekerja?"</strong></p>
+    <div id="opts-5">
+      <button class="quiz-option" onclick="answer(5,'A')">A. <span class="mono text-xs">SELECT dept_name FROM EMPLOYEE, DEPARTMENT WHERE emp_fname = 'Matthew';</span></button>
+      <button class="quiz-option" onclick="answer(5,'B')">B. <span class="mono text-xs">SELECT dept_name FROM EMPLOYEE, DEPARTMENT WHERE emp_fname = 'Matthew' AND EMPLOYEE.dept_no = DEPARTMENT.dept_no;</span></button>
+      <button class="quiz-option" onclick="answer(5,'C')">C. <span class="mono text-xs">SELECT dept_name FROM DEPARTMENT WHERE emp_fname = 'Matthew';</span></button>
+      <button class="quiz-option" onclick="answer(5,'D')">D. <span class="mono text-xs">SELECT * FROM EMPLOYEE WHERE emp_fname = 'Matthew';</span></button>
+    </div>
+    <div class="feedback-box" id="fb-5"></div>
+    <button class="reveal-btn" onclick="toggleExplanation(5)">
+      <i data-lucide="book-open" style="width:14px;height:14px"></i>
+      Reveal Explanation
+    </button>
+    <div class="explanation-box" id="exp-5">
+      <p class="font-bold mb-2" style="color:var(--accent)">✓ Jawaban: B</p>
+      <p class="mb-2" style="color:#94a3b8"><strong style="color:var(--text)">Metodologi:</strong> Pertanyaan ini membutuhkan data dari DUA tabel berbeda — nama departemen ada di DEPARTMENT, nama karyawan ada di EMPLOYEE.</p>
+      <ul class="text-sm space-y-2" style="color:#94a3b8">
+        <li>• <strong>A</strong> — Query multi-tabel tanpa join condition = Cartesian Product! Ini akan menghasilkan semua kombinasi dept_name dengan Matthew, termasuk yang tidak relevan.</li>
+        <li>• <strong>B ✓</strong> — Benar. Ada selection condition <span class="mono" style="color:var(--accent)">emp_fname = 'Matthew'</span> DAN join condition <span class="mono" style="color:var(--accent)">EMPLOYEE.dept_no = DEPARTMENT.dept_no</span>. Ini menghubungkan karyawan Matthew ke departemennya yang benar.</li>
+        <li>• <strong>C</strong> — DEPARTMENT tidak punya kolom emp_fname. Query ini akan error.</li>
+        <li>• <strong>D</strong> — Hanya menampilkan data karyawan, tidak ada dept_name dari tabel DEPARTMENT.</li>
+      </ul>
+      <p class="text-sm mt-2 font-bold" style="color:var(--accent)">Dari data slide: Matthew bekerja di dept_no = d3, yaitu departemen "Marketing" yang berlokasi di Dallas.</p>
+    </div>
+  </div>
+
+  <!-- Score Summary -->
+  <div class="card mt-8" id="score-summary" style="display:none">
+    <div class="text-center">
+      <div class="text-5xl font-black heading mb-2" style="color:var(--accent)" id="final-score">0/5</div>
+      <p class="text-lg mb-1" style="color:var(--text)" id="score-msg">Selesai!</p>
+      <p class="text-sm" style="color:var(--muted)">Ulangi materi pada bagian yang masih belum dipahami di atas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t mt-8" style="border-color:var(--border)">
+  <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div>
+      <div class="font-bold heading mb-1" style="color:var(--accent)">Basis Data — Slide 8</div>
+      <div class="text-sm" style="color:var(--muted)">CSGE602070 · Universitas Indonesia · Basic SQL Query</div>
+    </div>
+    <div class="flex gap-3">
+      <div class="badge badge-green">SELECT</div>
+      <div class="badge badge-blue">JOIN</div>
+      <div class="badge badge-red">WHERE</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Init Lucide
+lucide.createIcons();
+
+// ---- Walkthrough ----
+function showStep(quiz, idx) {
+  const btns = document.querySelectorAll(`#steps-${quiz} .step-btn`);
+  // find all step boxes
+  let i = 0;
+  while(true) {
+    const box = document.getElementById(`${quiz}-${i}`);
+    if (!box) break;
+    box.classList.remove('active');
+    i++;
+  }
+  btns.forEach((b,j) => {
+    b.classList.remove('active');
+    if (j === idx) b.classList.add('active');
+  });
+  const target = document.getElementById(`${quiz}-${idx}`);
+  if (target) target.classList.add('active');
+}
+
+// ---- Quiz Logic ----
+const answers = { 1:'B', 2:'C', 3:'B', 4:'C', 5:'B' };
+const answered = {};
+let score = 0;
+const total = 5;
+
+function answer(q, choice) {
+  if (answered[q]) return;
+  answered[q] = true;
+  score += (choice === answers[q]) ? 1 : 0;
+
+  const opts = document.querySelectorAll(`#opts-${q} .quiz-option`);
+  opts.forEach(btn => {
+    btn.disabled = true;
+    const letter = btn.textContent.trim().charAt(0);
+    if (letter === answers[q]) btn.classList.add('correct');
+    else if (letter === choice && choice !== answers[q]) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById(`fb-${q}`);
+  if (choice === answers[q]) {
+    fb.textContent = '✓ Benar! Jawaban kamu tepat.';
+    fb.className = 'feedback-box correct show';
+  } else {
+    fb.textContent = `✗ Belum tepat. Jawaban yang benar adalah ${answers[q]}. Lihat penjelasan di bawah.`;
+    fb.className = 'feedback-box wrong show';
+  }
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = Object.keys(answered).length;
+  const pct = (done / total) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${done} / ${total} selesai`;
+
+  if (done === total) {
+    const summary = document.getElementById('score-summary');
+    summary.style.display = 'block';
+    document.getElementById('final-score').textContent = `${score}/${total}`;
+    const msgs = ['Terus belajar! Ulangi materi di atas. 📖', 'Lumayan! Ada beberapa konsep yang perlu diperdalam. 💡', 'Bagus! Hampir sempurna. ⭐', 'Sempurna! Kamu sudah menguasai Basic SQL Query! 🎉'];
+    const idx = score <= 1 ? 0 : score <= 3 ? 1 : score === 4 ? 2 : 3;
+    document.getElementById('score-msg').textContent = msgs[idx];
+    summary.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function toggleExplanation(q) {
+  const exp = document.getElementById(`exp-${q}`);
+  exp.classList.toggle('show');
+}
+</script>
+</body>
+</html>

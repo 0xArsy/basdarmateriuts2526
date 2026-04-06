@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pemodelan Basis Data dengan EER Part 1</title>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.383.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d27;
+    --bg-card: #1e2130;
+    --bg-card-hover: #252840;
+    --border: #2a2d3e;
+    --border-accent: #3d4160;
+    --text-primary: #e8eaf0;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --accent-blue: #60a5fa;
+    --accent-green: #34d399;
+    --accent-amber: #fbbf24;
+    --accent-purple: #a78bfa;
+    --accent-coral: #fb7185;
+    --accent-teal: #2dd4bf;
+    --accent-orange: #fb923c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg-primary); color: var(--text-primary); font-family: system-ui, -apple-system, sans-serif; line-height: 1.7; font-size: 16px; }
+  .section-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .callout-key { background: #1e3a5f; border-left: 3px solid #3b82f6; border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1rem 0; }
+  .callout-pitfall { background: #450a0a; border-left: 3px solid #ef4444; border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1rem 0; }
+  .callout-tip { background: #064e3b; border-left: 3px solid #10b981; border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1rem 0; }
+  .callout-warning { background: #451a03; border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1rem 0; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .badge-blue { background: #1e3a5f; color: var(--accent-blue); }
+  .badge-green { background: #064e3b; color: var(--accent-green); }
+  .badge-amber { background: #451a03; color: var(--accent-amber); }
+  .badge-purple { background: #2e1065; color: var(--accent-purple); }
+  .badge-coral { background: #4c0519; color: var(--accent-coral); }
+  .badge-teal { background: #042f2e; color: var(--accent-teal); }
+  .badge-orange { background: #431407; color: var(--accent-orange); }
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .concept-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; transition: border-color 0.2s, background 0.2s; }
+  .concept-card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  pre { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.6; margin: 1rem 0; }
+  code { font-family: 'Courier New', monospace; font-size: 13px; }
+  .kw { color: #ff79c6; } .cm { color: #6272a4; font-style: italic; } .st { color: #f1fa8c; } .nm { color: #bd93f9; } .fn { color: #50fa7b; }
+  .entity-box { display: inline-block; background: #1a2744; border: 2px solid #3b82f6; border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: #93c5fd; font-family: monospace; }
+  .superclass-box { display: inline-block; background: #1a2744; border: 2px solid #60a5fa; border-radius: 6px; padding: 4px 14px; font-size: 13px; font-weight: 700; color: #60a5fa; font-family: monospace; }
+  .subclass-box { display: inline-block; background: #1a2d1a; border: 2px solid #34d399; border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: #6ee7b7; font-family: monospace; }
+  .quiz-btn { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text-primary); cursor: pointer; text-align: left; width: 100%; font-size: 14px; transition: all 0.2s; margin-bottom: 0.5rem; display: block; }
+  .quiz-btn:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .quiz-btn.correct { background: #064e3b; border-color: #10b981; color: #d1fae5; }
+  .quiz-btn.incorrect { background: #450a0a; border-color: #ef4444; color: #fee2e2; }
+  .quiz-btn.show-correct { background: #064e3b; border-color: #10b981; color: #d1fae5; }
+  .quiz-btn:disabled { cursor: not-allowed; }
+  .feedback-box { display: none; border-radius: 8px; padding: 0.75rem 1rem; margin-top: 0.75rem; font-size: 14px; }
+  .feedback-box.correct { display: block; background: #064e3b; border: 1px solid #10b981; color: #d1fae5; }
+  .feedback-box.incorrect { display: block; background: #450a0a; border: 1px solid #ef4444; color: #fee2e2; }
+  .explanation-box { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; font-size: 14px; color: var(--text-secondary); }
+  .reveal-btn { background: transparent; border: 1px solid var(--border-accent); border-radius: 8px; padding: 0.5rem 1rem; color: var(--accent-purple); cursor: pointer; font-size: 13px; margin-top: 0.75rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .reveal-btn:hover { background: #2e1065; }
+  .nav-tab { padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; color: var(--text-secondary); border: 1px solid transparent; white-space: nowrap; }
+  .nav-tab.active { background: var(--bg-card); border-color: var(--border); color: var(--text-primary); }
+  .nav-tab:hover:not(.active) { color: var(--text-primary); }
+  .section-content { display: none; }
+  .section-content.active { display: block; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 999px; margin: 1rem 0; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #3b82f6, #a78bfa); transition: width 0.4s ease; }
+  .step-item { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-start; }
+  .step-num { width: 32px; height: 32px; border-radius: 50%; background: #1e3a5f; border: 1.5px solid #3b82f6; color: var(--accent-blue); font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .score-display { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; margin-bottom: 1rem; }
+  h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+  h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem; }
+  h3 { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; }
+  p { color: var(--text-secondary); margin-bottom: 0.75rem; }
+  ul { color: var(--text-secondary); padding-left: 1.25rem; }
+  li { margin-bottom: 0.35rem; }
+  strong { color: var(--text-primary); font-weight: 600; }
+  .constraint-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .constraint-table th { background: var(--bg-secondary); border: 1px solid var(--border); padding: 0.6rem 0.8rem; text-align: left; color: var(--text-secondary); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .constraint-table td { border: 1px solid var(--border); padding: 0.6rem 0.8rem; color: var(--text-primary); }
+  .constraint-table tr:hover td { background: var(--bg-card-hover); }
+  .eer-symbol { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-weight: 700; font-size: 14px; border: 2px solid; }
+  .sym-d { background: #2e1065; border-color: #a78bfa; color: #c4b5fd; }
+  .sym-o { background: #1a2d1a; border-color: #34d399; color: #6ee7b7; }
+  .header-gradient { background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%); border-bottom: 1px solid var(--border); }
+  @media (max-width: 768px) { .concept-grid { grid-template-columns: 1fr; } }
+  .eer-vs-er { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+  .inheritance-flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .arrow-down { width: 2px; height: 30px; background: #3b82f6; position: relative; }
+  .arrow-down::after { content: ''; position: absolute; bottom: 0; left: -5px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #3b82f6; }
+  .spec-circle { width: 28px; height: 28px; border-radius: 50%; background: #1e2130; border: 2px solid #6b7280; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+  .subline-single { border-top: 2px solid #6b7280; }
+  .subline-double { border-top: 4px double #ef4444; }
+</style>
+</head>
+<body>
+
+<div class="header-gradient px-6 py-5 mb-6">
+  <div style="max-width: 900px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem;">
+      <div style="background: #2e1065; border-radius: 8px; padding: 8px; display: flex;">
+        <i data-lucide="layers" style="width: 22px; height: 22px; color: #a78bfa;"></i>
+      </div>
+      <div>
+        <div style="font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase;">CSGE602070 · Basis Data · Slide 4</div>
+        <h1 style="font-size: 1.35rem; margin: 0;">Pemodelan Basis Data dengan EER <span style="color: var(--accent-purple); font-size: 1rem;">(Part 1)</span></h1>
+      </div>
+    </div>
+    <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Enhanced Entity Relationship · Superclass/Subclass · Spesialisasi &amp; Generalisasi</p>
+  </div>
+</div>
+
+<div style="max-width: 900px; margin: 0 auto; padding: 0 1.5rem 4rem;">
+
+  <!-- Nav Tabs -->
+  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; padding-bottom: 4px;">
+    <button class="nav-tab active" onclick="showSection('conceptual', this)">
+      <i data-lucide="brain" style="display: inline; width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i> Conceptual Deep Dive
+    </button>
+    <button class="nav-tab" onclick="showSection('visualization', this)">
+      <i data-lucide="git-branch" style="display: inline; width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i> Visualisasi &amp; Logika
+    </button>
+    <button class="nav-tab" onclick="showSection('practice', this)">
+      <i data-lucide="pencil" style="display: inline; width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i> Practice Suite
+    </button>
+  </div>
+
+  <!-- ===== SECTION 1: CONCEPTUAL ===== -->
+  <div id="section-conceptual" class="section-content active">
+
+    <!-- Latar Belakang EER -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-purple">Latar Belakang</span>
+        <h2 style="margin: 0;">Mengapa Perlu Enhanced ER?</h2>
+      </div>
+      <p>Model ER standar sudah cukup untuk aplikasi bisnis tradisional. Namun sejak akhir 1970-an, muncul kebutuhan untuk memodelkan data yang lebih kompleks — terutama untuk aplikasi CAD, CAM, dan GIS — yang mendorong lahirnya EER.</p>
+
+      <div class="eer-vs-er">
+        <div class="concept-card">
+          <span class="badge badge-teal" style="margin-bottom: 0.5rem;">ER (Basic)</span>
+          <p style="font-size: 13px; margin: 0;">Cukup untuk aplikasi bisnis &amp; industri umum. Mendukung entity, attribute, relationship.</p>
+        </div>
+        <div class="concept-card" style="border-color: #a78bfa;">
+          <span class="badge badge-purple" style="margin-bottom: 0.5rem;">EER (Enhanced)</span>
+          <p style="font-size: 13px; margin: 0;">ER + Subclass/Superclass + Specialization/Generalization + Categories + Attribute Inheritance.</p>
+        </div>
+      </div>
+
+      <div class="callout-key">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="key" style="width: 15px; height: 15px; color: var(--accent-blue);"></i>
+          <strong style="color: var(--accent-blue); font-size: 13px;">KEY CONCEPT — EER Formula</strong>
+        </div>
+        <p style="margin: 0; font-size: 14px; font-family: monospace; background: #0d1117; padding: 0.75rem; border-radius: 6px; color: var(--accent-green);">
+          EER = Semua Konsep ER + { Subclass/Superclass, Specialization/Generalization, Categories, Attribute Inheritance }
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 13px; margin-bottom: 0;">EER mengandung konsep OOP seperti <strong>inheritance</strong> — subclass mewarisi attribute &amp; relationship dari superclass-nya.</p>
+      </div>
+    </div>
+
+    <!-- Superclass / Subclass -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Topik 2</span>
+        <h2 style="margin: 0;">Superclass &amp; Subclass</h2>
+      </div>
+
+      <p>Dalam EER, sebuah entity type dapat dikategorikan ke dalam kelompok-kelompok yang lebih spesifik.</p>
+
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; align-items: flex-start;">
+        <div style="flex: 1; min-width: 200px;">
+          <div class="concept-card" style="border-color: #60a5fa; text-align: center;">
+            <div class="superclass-box" style="margin-bottom: 0.75rem;">EMPLOYEE</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Superclass — entity type umum</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; color: var(--text-muted); font-size: 20px; padding-top: 1.5rem;">→</div>
+        <div style="flex: 2; min-width: 240px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div class="concept-card" style="text-align: center; padding: 0.75rem;">
+              <div class="subclass-box">SECRETARY</div>
+              <p style="font-size: 11px; color: var(--text-muted); margin: 0.25rem 0 0;">Typing_speed</p>
+            </div>
+            <div class="concept-card" style="text-align: center; padding: 0.75rem;">
+              <div class="subclass-box">ENGINEER</div>
+              <p style="font-size: 11px; color: var(--text-muted); margin: 0.25rem 0 0;">Eng_type</p>
+            </div>
+            <div class="concept-card" style="text-align: center; padding: 0.75rem;">
+              <div class="subclass-box">TECHNICIAN</div>
+              <p style="font-size: 11px; color: var(--text-muted); margin: 0.25rem 0 0;">Tgrade</p>
+            </div>
+            <div class="concept-card" style="text-align: center; padding: 0.75rem;">
+              <div class="subclass-box">MANAGER</div>
+              <p style="font-size: 11px; color: var(--text-muted); margin: 0.25rem 0 0;">(no extra attr)</p>
+            </div>
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0;">Subclass-subclass — entity spesifik</p>
+        </div>
+      </div>
+
+      <div class="callout-key">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="key" style="width: 15px; height: 15px; color: var(--accent-blue);"></i>
+          <strong style="color: var(--accent-blue); font-size: 13px;">IS-A RELATIONSHIP</strong>
+        </div>
+        <p style="font-size: 14px; margin: 0;">Superclass/Subclass relationship juga disebut <strong>IS-A relationship</strong>:</p>
+        <ul style="font-size: 14px; margin: 0.5rem 0 0;">
+          <li>SECRETARY <strong>IS AN</strong> EMPLOYEE ✓</li>
+          <li>TECHNICIAN <strong>IS AN</strong> EMPLOYEE ✓</li>
+          <li>EMPLOYEE <strong>IS A</strong> SECRETARY ✗ (tidak berlaku sebaliknya!)</li>
+        </ul>
+      </div>
+
+      <div class="callout-pitfall">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="alert-triangle" style="width: 15px; height: 15px; color: #ef4444;"></i>
+          <strong style="color: #ef4444; font-size: 13px;">COMMON PITFALL — Arah IS-A</strong>
+        </div>
+        <p style="font-size: 14px; margin: 0;">IS-A <strong>tidak bersifat simetris</strong>. Setiap SECRETARY adalah EMPLOYEE, tapi tidak setiap EMPLOYEE adalah SECRETARY. Sebuah entity di subclass adalah anggota superclass, tapi tidak sebaliknya.</p>
+      </div>
+    </div>
+
+    <!-- Type Inheritance -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-amber">Inheritance</span>
+        <h2 style="margin: 0;">Type Inheritance</h2>
+      </div>
+      <p>Konsep paling penting dalam EER: subclass <strong>mewarisi (inherits)</strong> semua attribute dan relationship dari superclass-nya.</p>
+
+      <div style="background: #0d1117; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin: 1rem 0; font-size: 14px;">
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <div style="display: inline-block; background: #1e3a5f; border: 2px solid #60a5fa; border-radius: 8px; padding: 0.75rem 1.5rem;">
+            <strong style="color: var(--accent-blue); font-family: monospace;">EMPLOYEE</strong>
+            <div style="color: var(--text-muted); font-size: 12px; margin-top: 0.25rem;">Nama, NIP</div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 2px; height: 24px; background: #3b82f6;"></div>
+            <div style="display: inline-block; background: #1a2d1a; border: 2px solid #34d399; border-radius: 8px; padding: 0.75rem 1.25rem;">
+              <strong style="color: var(--accent-green); font-family: monospace;">SECRETARY</strong>
+              <div style="color: var(--text-muted); font-size: 12px; margin-top: 0.25rem;"><em>Nama, NIP</em> (inherited)</div>
+              <div style="color: var(--accent-green); font-size: 12px; font-weight: 600;">+ Kecepatan_mengetik</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 2px; height: 24px; background: #3b82f6;"></div>
+            <div style="display: inline-block; background: #1a2d1a; border: 2px solid #34d399; border-radius: 8px; padding: 0.75rem 1.25rem;">
+              <strong style="color: var(--accent-green); font-family: monospace;">PART-TIMER</strong>
+              <div style="color: var(--text-muted); font-size: 12px; margin-top: 0.25rem;"><em>Nama, NIP</em> (inherited)</div>
+              <div style="color: var(--accent-green); font-size: 12px; font-weight: 600;">+ Jumlah_jam_kerja</div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 1rem; margin-bottom: 0;">Attribute dalam <em>italic</em> diwarisi dari superclass; yang bold hijau adalah attribute khusus subclass</p>
+      </div>
+
+      <div class="callout-tip">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="lightbulb" style="width: 15px; height: 15px; color: var(--accent-green);"></i>
+          <strong style="color: var(--accent-green); font-size: 13px;">MENTAL MODEL — OOP Analogy</strong>
+        </div>
+        <p style="font-size: 14px; margin: 0;">Bayangkan ini seperti <strong>class inheritance dalam Java/Python</strong>: EMPLOYEE adalah base class, SECRETARY adalah subclass yang meng-extend EMPLOYEE. SECRETARY otomatis punya semua field milik EMPLOYEE, ditambah field tambahan milik sendiri.</p>
+      </div>
+    </div>
+
+    <!-- Spesialisasi -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Topik 3</span>
+        <h2 style="margin: 0;">Spesialisasi</h2>
+      </div>
+      <p>Spesialisasi adalah proses <strong>top-down</strong> — mulai dari superclass, lalu mendefinisikan subclass-subclass berdasarkan karakteristik yang membedakan.</p>
+
+      <div class="concept-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+        <div class="concept-card">
+          <span class="badge badge-blue" style="margin-bottom: 0.5rem;">Spesialisasi 1</span>
+          <h3>Berdasarkan Job Type</h3>
+          <p style="font-size: 13px; margin: 0;">EMPLOYEE → SECRETARY, ENGINEER, TECHNICIAN</p>
+          <p style="font-size: 12px; color: var(--text-muted); margin: 0.25rem 0 0;">Defining attribute: <code style="background:#0d1117; padding:1px 4px; border-radius:3px;">job_type</code></p>
+        </div>
+        <div class="concept-card">
+          <span class="badge badge-amber" style="margin-bottom: 0.5rem;">Spesialisasi 2</span>
+          <h3>Berdasarkan Metode Bayar</h3>
+          <p style="font-size: 13px; margin: 0;">EMPLOYEE → SALARIED_EMPLOYEE, HOURLY_EMPLOYEE</p>
+          <p style="font-size: 12px; color: var(--text-muted); margin: 0.25rem 0 0;">Defining attribute: <code style="background:#0d1117; padding:1px 4px; border-radius:3px;">pay_method</code></p>
+        </div>
+      </div>
+
+      <div class="callout-key">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="key" style="width: 15px; height: 15px; color: var(--accent-blue);"></i>
+          <strong style="color: var(--accent-blue); font-size: 13px;">MANFAAT SPESIALISASI</strong>
+        </div>
+        <ul style="font-size: 14px; margin: 0;">
+          <li>Mendefinisikan <strong>himpunan subclass</strong> dari suatu entity type</li>
+          <li>Menggambarkan <strong>attribute spesifik</strong> untuk tiap subclass (tidak semua attribute cocok untuk semua employee)</li>
+          <li>Menggambarkan <strong>relationship spesifik</strong> antara subclass dengan entity lain (mis: hanya HOURLY_EMPLOYEE yang BELONGS_TO TRADE_UNION)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Generalisasi -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-green">Topik 3B</span>
+        <h2 style="margin: 0;">Generalisasi</h2>
+      </div>
+      <p>Generalisasi adalah proses <strong>bottom-up</strong> — kebalikan dari spesialisasi. Dimulai dari beberapa entity yang punya attribute sama, lalu digabung menjadi superclass.</p>
+
+      <div style="background: #0d1117; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin: 1rem 0;">
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center; font-size: 13px;">
+          <div>
+            <p style="color: var(--text-muted); font-size: 11px; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Sebelum Generalisasi</p>
+            <div style="background: #1a2744; border: 1px solid #3b82f6; border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem;">
+              <strong style="color: #93c5fd; font-family: monospace; font-size: 12px;">CAR</strong>
+              <div style="color: var(--text-muted); font-size: 11px; margin-top: 0.25rem;">Vehicle_id, License_plate_no, Price, Max_speed, No_of_passengers</div>
+            </div>
+            <div style="background: #1a2744; border: 1px solid #3b82f6; border-radius: 6px; padding: 0.75rem;">
+              <strong style="color: #93c5fd; font-family: monospace; font-size: 12px;">TRUCK</strong>
+              <div style="color: var(--text-muted); font-size: 11px; margin-top: 0.25rem;">Vehicle_id, License_plate_no, Price, No_of_axles, Tonnage</div>
+            </div>
+          </div>
+          <div style="text-align: center; color: var(--accent-purple); font-size: 1.5rem;">→</div>
+          <div>
+            <p style="color: var(--text-muted); font-size: 11px; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Setelah Generalisasi</p>
+            <div style="background: #1e3a5f; border: 2px solid #60a5fa; border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem;">
+              <strong style="color: #60a5fa; font-family: monospace; font-size: 12px;">VEHICLE (superclass)</strong>
+              <div style="color: var(--text-muted); font-size: 11px; margin-top: 0.25rem;">Vehicle_id, License_plate_no, Price</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <div style="background: #1a2d1a; border: 1px solid #34d399; border-radius: 6px; padding: 0.5rem;">
+                <strong style="color: #6ee7b7; font-family: monospace; font-size: 11px;">CAR</strong>
+                <div style="color: var(--text-muted); font-size: 10px; margin-top: 0.15rem;">Max_speed, No_of_passengers</div>
+              </div>
+              <div style="background: #1a2d1a; border: 1px solid #34d399; border-radius: 6px; padding: 0.5rem;">
+                <strong style="color: #6ee7b7; font-family: monospace; font-size: 11px;">TRUCK</strong>
+                <div style="color: var(--text-muted); font-size: 10px; margin-top: 0.15rem;">No_of_axles, Tonnage</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout-warning">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="info" style="width: 15px; height: 15px; color: var(--accent-amber);"></i>
+          <strong style="color: var(--accent-amber); font-size: 13px;">SPESIALISASI vs GENERALISASI — Hanya Perspektif!</strong>
+        </div>
+        <p style="font-size: 14px; margin: 0;">Hasil akhir di EER diagram sama persis. Yang berbeda hanya <strong>proses berpikir</strong>: Spesialisasi = top-down (dari general ke specific). Generalisasi = bottom-up (dari specific ke general). Notasinya tidak perlu dibedakan karena seringkali subjektif.</p>
+      </div>
+    </div>
+
+    <!-- Constraints -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-coral">Constraints</span>
+        <h2 style="margin: 0;">Constraints Spesialisasi &amp; Generalisasi</h2>
+      </div>
+      <p>Ada dua dimensi constraint yang menentukan bagaimana subclass berinteraksi:</p>
+
+      <div class="concept-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+        <div class="concept-card" style="border-color: #a78bfa;">
+          <span class="badge badge-purple" style="margin-bottom: 0.75rem;">Disjointness Constraint</span>
+          <div style="margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+              <span class="eer-symbol sym-d">d</span>
+              <strong>Disjoint</strong>
+            </div>
+            <p style="font-size: 13px; margin: 0; color: var(--text-secondary);">Satu entity hanya bisa masuk ke <strong>satu</strong> subclass. Tidak bisa jadi SECRETARY sekaligus TECHNICIAN.</p>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+              <span class="eer-symbol sym-o">o</span>
+              <strong>Overlap</strong>
+            </div>
+            <p style="font-size: 13px; margin: 0; color: var(--text-secondary);">Satu entity bisa masuk ke <strong>lebih dari satu</strong> subclass. Bisa jadi TECHNICIAN sekaligus ENGINEER.</p>
+          </div>
+        </div>
+        <div class="concept-card" style="border-color: #ef4444;">
+          <span class="badge badge-coral" style="margin-bottom: 0.75rem;">Completeness Constraint</span>
+          <div style="margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+              <div style="width: 24px; height: 10px; border-top: 4px double #ef4444;"></div>
+              <strong>Total</strong>
+            </div>
+            <p style="font-size: 13px; margin: 0; color: var(--text-secondary);">Setiap entity di superclass <strong>harus</strong> masuk minimal satu subclass. Dilambangkan dengan garis ganda.</p>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+              <div style="width: 24px; height: 10px; border-top: 2px solid #6b7280;"></div>
+              <strong>Parsial</strong>
+            </div>
+            <p style="font-size: 13px; margin: 0; color: var(--text-secondary);">Entity <strong>boleh tidak</strong> masuk ke subclass manapun. Dilambangkan dengan garis tunggal.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 1rem;">4 Kombinasi Constraint</h3>
+      <table class="constraint-table" style="margin-top: 0.75rem;">
+        <thead>
+          <tr>
+            <th>Tipe</th>
+            <th>Disjoint?</th>
+            <th>Total?</th>
+            <th>Artinya</th>
+            <th>Contoh</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-purple">Disjoint Total</span></td>
+            <td><span class="eer-symbol sym-d" style="width:20px;height:20px;font-size:11px;">d</span></td>
+            <td>Garis ══</td>
+            <td>Setiap employee HARUS menjadi salah satu (tidak lebih) dari SECRETARY/TECHNICIAN/ENGINEER</td>
+            <td>Tidak ada ACCOUNTANT, semua masuk salah satu dari 3 subclass</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">Disjoint Parsial</span></td>
+            <td><span class="eer-symbol sym-d" style="width:20px;height:20px;font-size:11px;">d</span></td>
+            <td>Garis ─</td>
+            <td>Satu subclass per entity, tapi boleh tidak masuk subclass manapun</td>
+            <td>ACCOUNTANT tidak masuk SECRETARY/TECHNICIAN/ENGINEER, tapi itu OK</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-amber">Overlap Total</span></td>
+            <td><span class="eer-symbol sym-o" style="width:20px;height:20px;font-size:11px;">o</span></td>
+            <td>Garis ══</td>
+            <td>Setiap entity HARUS masuk minimal satu subclass, boleh lebih dari satu</td>
+            <td>PART minimal terdaftar sebagai MANUFACTURED_PART atau PURCHASED_PART atau keduanya</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-teal">Overlap Parsial</span></td>
+            <td><span class="eer-symbol sym-o" style="width:20px;height:20px;font-size:11px;">o</span></td>
+            <td>Garis ─</td>
+            <td>Boleh masuk ke banyak subclass, boleh juga tidak masuk manapun</td>
+            <td>Employee bisa TECHNICIAN sekaligus ENGINEER, atau MANAGER saja</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout-pitfall" style="margin-top: 1rem;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="alert-triangle" style="width: 15px; height: 15px; color: #ef4444;"></i>
+          <strong style="color: #ef4444; font-size: 13px;">COMMON PITFALL — Membedakan Disjoint vs Overlap</strong>
+        </div>
+        <p style="font-size: 14px; margin: 0;">Banyak mahasiswa terbalik antara disjoint dan overlap. <strong>Cara mudah:</strong> Tanya "Bisa tidak satu entity ada di dua subclass sekaligus?" — Jika TIDAK → <strong>Disjoint (d)</strong>. Jika YA → <strong>Overlap (o)</strong>. Sementara untuk Total/Parsial: "Harus tidak setiap entity masuk minimal satu subclass?" — Jika HARUS → <strong>Total (garis ganda)</strong>.</p>
+      </div>
+    </div>
+
+    <!-- Predicate-defined Subclass -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-orange">Constraints Lanjutan</span>
+        <h2 style="margin: 0;">Predicate-Defined Subclass</h2>
+      </div>
+      <p>Keanggotaan subclass bisa ditentukan secara otomatis berdasarkan <strong>kondisi (predicate)</strong> dari attribute superclass.</p>
+
+      <div class="callout-key">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+          <i data-lucide="key" style="width: 15px; height: 15px; color: var(--accent-blue);"></i>
+          <strong style="color: var(--accent-blue); font-size: 13px;">CARA KERJA PREDICATE-DEFINED SUBCLASS</strong>
+        </div>
+        <ul style="font-size: 14px; margin: 0;">
+          <li><strong>Defining Attribute:</strong> Attribute pada superclass yang menjadi dasar pengelompokan (misal: <code style="background:#0d1117;padding:1px 4px;border-radius:3px;">Job_type</code>)</li>
+          <li><strong>Predicate Condition:</strong> Kondisi yang harus terpenuhi agar entity masuk ke subclass tertentu (misal: <code style="background:#0d1117;padding:1px 4px;border-radius:3px;">Job_type = 'Secretary'</code>)</li>
+          <li><strong>Predicate-defined Subclass:</strong> Subclass yang keanggotaannya ditentukan oleh predicate tadi secara otomatis</li>
+        </ul>
+        <p style="margin: 0.5rem 0 0; font-size: 14px;">Contoh: Jika <code style="background:#0d1117;padding:1px 4px;border-radius:3px;">Employee.Job_type = 'Secretary'</code>, maka entity tersebut otomatis masuk subclass SECRETARY.</p>
+      </div>
+
+      <p style="font-size: 14px;">Jika keanggotaan ditentukan pengguna (bukan attribute), disebut <strong>user-defined subclass</strong>.</p>
+    </div>
+
+  </div>
+
+  <!-- ===== SECTION 2: VISUALIZATION ===== -->
+  <div id="section-visualization" class="section-content">
+
+    <!-- EER Notation Walkthrough -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-purple">Walkthrough</span>
+        <h2 style="margin: 0;">Notasi EER — Langkah demi Langkah</h2>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+        <button onclick="prevWalk()" id="wbtn-prev" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:0.5rem 1rem;color:var(--text-secondary);cursor:pointer;">← Sebelumnya</button>
+        <span id="walk-indicator" style="font-size:13px;color:var(--text-muted);">Langkah 1 dari 5</span>
+        <button onclick="nextWalk()" id="wbtn-next" style="background:#1e3a5f;border:1px solid #3b82f6;border-radius:8px;padding:0.5rem 1rem;color:var(--accent-blue);cursor:pointer;">Berikutnya →</button>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="walk-progress" style="width:20%;"></div></div>
+      <div id="walk-content"></div>
+    </div>
+
+    <!-- EER Diagram: EMPLOYEE Specialization -->
+    <div class="section-card">
+      <h2>EER Diagram: Spesialisasi EMPLOYEE (Figure 4.1)</h2>
+      <p style="font-size: 13px; color: var(--text-muted);">Diagram EER lengkap menunjukkan tiga spesialisasi berbeda dari EMPLOYEE.</p>
+
+      <div style="background: #0d1117; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; overflow-x: auto;">
+        <svg viewBox="0 0 820 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-height:500px;">
+          <!-- EMPLOYEE (superclass) -->
+          <rect x="330" y="30" width="130" height="36" rx="4" fill="#1a2744" stroke="#60a5fa" stroke-width="2"/>
+          <text x="395" y="53" text-anchor="middle" fill="#93c5fd" font-size="13" font-weight="700" font-family="monospace">EMPLOYEE</text>
+
+          <!-- Attributes of EMPLOYEE -->
+          <ellipse cx="210" cy="30" rx="28" ry="16" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="210" y="35" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Fname</text>
+          <line x1="238" y1="35" x2="330" y2="46" stroke="#2d4a2d" stroke-width="1"/>
+
+          <ellipse cx="280" cy="10" rx="22" ry="14" fill="#1a2744" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="280" y="8" text-anchor="middle" fill="#6ee7b7" font-size="9" font-family="monospace" text-decoration="underline">Ssn</text>
+          <line x1="282" y1="24" x2="342" y2="30" stroke="#2d4a2d" stroke-width="1"/>
+
+          <ellipse cx="395" cy="8" rx="26" ry="14" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="395" y="13" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Name</text>
+          <line x1="395" y1="22" x2="395" y2="30" stroke="#2d4a2d" stroke-width="1"/>
+
+          <ellipse cx="510" cy="10" rx="32" ry="14" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="510" y="15" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="monospace">Birth_date</text>
+          <line x1="502" y1="24" x2="455" y2="30" stroke="#2d4a2d" stroke-width="1"/>
+
+          <!-- LEFT specialization circle (d) - job type -->
+          <circle cx="270" cy="110" r="14" fill="#1e2130" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="270" y="115" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="700" font-family="monospace">d</text>
+          <!-- line from EMPLOYEE to circle -->
+          <line x1="340" y1="66" x2="270" y2="96" stroke="#6b7280" stroke-width="1.5"/>
+          <!-- Job_type label -->
+          <text x="235" y="88" fill="#f59e0b" font-size="10" font-family="sans-serif">Job_type</text>
+
+          <!-- LEFT specialization subclasses -->
+          <!-- SECRETARY -->
+          <line x1="255" y1="122" x2="150" y2="200" stroke="#6b7280" stroke-width="1.5"/>
+          <rect x="95" y="200" width="110" height="32" rx="3" fill="#1a2d1a" stroke="#34d399" stroke-width="2"/>
+          <text x="150" y="221" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="600" font-family="monospace">SECRETARY</text>
+          <ellipse cx="90" cy="250" rx="32" ry="15" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="90" y="255" text-anchor="middle" fill="#6ee7b7" font-size="9" font-family="monospace">Typing_speed</text>
+          <line x1="107" y1="241" x2="115" y2="232" stroke="#2d4a2d" stroke-width="1"/>
+
+          <!-- TECHNICIAN -->
+          <line x1="270" y1="124" x2="270" y2="200" stroke="#6b7280" stroke-width="1.5"/>
+          <rect x="215" y="200" width="110" height="32" rx="3" fill="#1a2d1a" stroke="#34d399" stroke-width="2"/>
+          <text x="270" y="221" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="600" font-family="monospace">TECHNICIAN</text>
+          <ellipse cx="245" cy="255" rx="22" ry="14" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="245" y="260" text-anchor="middle" fill="#6ee7b7" font-size="9" font-family="monospace">Tgrade</text>
+          <line x1="248" y1="241" x2="255" y2="232" stroke="#2d4a2d" stroke-width="1"/>
+
+          <!-- ENGINEER -->
+          <line x1="281" y1="120" x2="385" y2="200" stroke="#6b7280" stroke-width="1.5"/>
+          <rect x="335" y="200" width="100" height="32" rx="3" fill="#1a2d1a" stroke="#34d399" stroke-width="2"/>
+          <text x="385" y="221" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="600" font-family="monospace">ENGINEER</text>
+          <ellipse cx="430" cy="255" rx="28" ry="14" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="430" y="260" text-anchor="middle" fill="#6ee7b7" font-size="9" font-family="monospace">Eng_type</text>
+          <line x1="415" y1="241" x2="400" y2="232" stroke="#2d4a2d" stroke-width="1"/>
+
+          <!-- partial specialization indicator (single line from EMPLOYEE to LEFT circle) -->
+          <!-- label partial -->
+          <text x="162" y="85" fill="#60a5fa" font-size="9" font-family="sans-serif">partial</text>
+
+          <!-- MANAGER (center) -->
+          <line x1="395" y1="66" x2="395" y2="200" stroke="#6b7280" stroke-width="1.5"/>
+          <rect x="345" y="200" width="0" height="0" rx="0" fill="none"/>
+          <!-- separate MANAGER below EMPLOYEE center -->
+          <rect x="455" y="200" width="90" height="32" rx="3" fill="#1a2d1a" stroke="#34d399" stroke-width="2"/>
+          <text x="500" y="221" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="600" font-family="monospace">MANAGER</text>
+
+          <!-- RIGHT specialization circle (d) - pay method  -->
+          <circle cx="555" cy="110" r="14" fill="#1e2130" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="555" y="115" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="700" font-family="monospace">d</text>
+          <!-- TOTAL specialization: double line from EMPLOYEE to RIGHT circle -->
+          <line x1="455" y1="62" x2="548" y2="96" stroke="#ef4444" stroke-width="1.5"/>
+          <line x1="457" y1="66" x2="550" y2="100" stroke="#ef4444" stroke-width="1.5"/>
+          <!-- label total -->
+          <text x="488" y="78" fill="#ef4444" font-size="9" font-family="sans-serif">total</text>
+          <!-- Pay_scale attr on circle -->
+          <ellipse cx="620" cy="140" rx="28" ry="14" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="620" y="145" text-anchor="middle" fill="#6ee7b7" font-size="9" font-family="monospace">Pay_scale</text>
+          <line x1="592" y1="138" x2="569" y2="120" stroke="#2d4a2d" stroke-width="1"/>
+
+          <!-- SALARIED_EMPLOYEE -->
+          <line x1="546" y1="123" x2="500" y2="200" stroke="#6b7280" stroke-width="1.5"/>
+          <rect x="450" y="200" width="0" height="0"/>
+          <!-- reuse the right side -->
+          <rect x="590" y="200" width="160" height="32" rx="3" fill="#1a2d1a" stroke="#34d399" stroke-width="2"/>
+          <text x="670" y="221" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="600" font-family="monospace">SALARIED_EMPLOYEE</text>
+          <line x1="560" y1="124" x2="648" y2="200" stroke="#6b7280" stroke-width="1.5"/>
+
+          <!-- HOURLY_EMPLOYEE -->
+          <rect x="590" y="280" width="150" height="32" rx="3" fill="#1a2d1a" stroke="#34d399" stroke-width="2"/>
+          <text x="665" y="301" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="600" font-family="monospace">HOURLY_EMPLOYEE</text>
+          <line x1="565" y1="122" x2="665" y2="280" stroke="#6b7280" stroke-width="1.5"/>
+
+          <!-- MANAGES diamond -->
+          <polygon points="500,310 540,330 500,350 460,330" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="500" y="334" text-anchor="middle" fill="#c4b5fd" font-size="10" font-family="monospace">MANAGES</text>
+          <line x1="500" y1="310" x2="500" y2="232" stroke="#7c3aed" stroke-width="1.5"/>
+          <rect x="460" y="360" width="80" height="30" rx="3" fill="#1a2744" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="500" y="379" text-anchor="middle" fill="#93c5fd" font-size="11" font-family="monospace">PROJECT</text>
+          <line x1="500" y1="350" x2="500" y2="360" stroke="#7c3aed" stroke-width="1.5"/>
+
+          <!-- BELONGS_TO diamond -->
+          <polygon points="665,360 705,380 665,400 625,380" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="665" y="384" text-anchor="middle" fill="#c4b5fd" font-size="9" font-family="monospace">BELONGS_TO</text>
+          <line x1="665" y1="360" x2="665" y2="312" stroke="#7c3aed" stroke-width="1.5"/>
+          <rect x="615" y="410" width="100" height="30" rx="3" fill="#1a2744" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="665" y="429" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="monospace">TRADE_UNION</text>
+          <line x1="665" y1="400" x2="665" y2="410" stroke="#7c3aed" stroke-width="1.5"/>
+
+          <!-- Legend -->
+          <rect x="10" y="430" width="290" height="60" rx="6" fill="#0d1117" stroke="#2a2d3e" stroke-width="1"/>
+          <text x="20" y="448" fill="#6b7280" font-size="10" font-family="sans-serif">LEGEND</text>
+          <circle cx="28" cy="462" r="9" fill="#1e2130" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="28" y="466" text-anchor="middle" fill="#a78bfa" font-size="10" font-weight="700">d</text>
+          <text x="44" y="466" fill="#9ca3af" font-size="10" font-family="sans-serif">Disjoint</text>
+          <circle cx="100" cy="462" r="9" fill="#1e2130" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="100" y="466" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="700">o</text>
+          <text x="116" y="466" fill="#9ca3af" font-size="10" font-family="sans-serif">Overlap</text>
+          <line x1="170" y1="458" x2="195" y2="458" stroke="#ef4444" stroke-width="3"/>
+          <line x1="170" y1="463" x2="195" y2="463" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="200" y="466" fill="#9ca3af" font-size="10" font-family="sans-serif">Total</text>
+          <line x1="240" y1="460" x2="265" y2="460" stroke="#6b7280" stroke-width="1.5"/>
+          <text x="270" y="466" fill="#9ca3af" font-size="10" font-family="sans-serif">Partial</text>
+          <!-- row 2 -->
+          <rect x="20" y="472" width="14" height="10" rx="2" fill="#1a2d1a" stroke="#34d399" stroke-width="1.5"/>
+          <text x="40" y="480" fill="#9ca3af" font-size="10" font-family="sans-serif">Subclass</text>
+          <rect x="100" y="472" width="14" height="10" rx="2" fill="#1a2744" stroke="#60a5fa" stroke-width="2"/>
+          <text x="120" y="480" fill="#9ca3af" font-size="10" font-family="sans-serif">Superclass</text>
+          <polygon points="175,474 183,479 175,484 167,479" fill="#1f1535" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="190" y="480" fill="#9ca3af" font-size="10" font-family="sans-serif">Relationship</text>
+        </svg>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">Figure 4.1 — EER Diagram untuk studi kasus EMPLOYEE dengan tiga spesialisasi</p>
+    </div>
+
+    <!-- Code Representation -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-green">Pseudo-Schema</span>
+        <h2 style="margin: 0;">EER sebagai Pseudo-Schema</h2>
+      </div>
+      <p style="font-size: 14px;">Representasi spesialisasi EMPLOYEE dalam bentuk pseudocode schema — memperlihatkan inheritance secara eksplisit.</p>
+      <pre><code><span class="cm">-- SUPERCLASS</span>
+<span class="kw">SUPERCLASS</span> <span class="fn">EMPLOYEE</span> {
+  <span class="nm">Ssn</span>        <span class="cm">-- key attribute</span>
+  <span class="nm">Name</span>       <span class="cm">-- composite: (Fname, Minit, Lname)</span>
+  <span class="nm">Birth_date</span>
+  <span class="nm">Address</span>
+  <span class="nm">Job_type</span>   <span class="cm">-- defining attribute untuk spesialisasi 1</span>
+}
+
+<span class="cm">-- SPESIALISASI 1: berdasarkan job_type (DISJOINT, PARTIAL)</span>
+<span class="kw">SUBCLASS</span> <span class="fn">SECRETARY</span> <span class="kw">ISA</span> EMPLOYEE
+  <span class="kw">PREDICATE</span>: Job_type = <span class="st">'Secretary'</span>
+  <span class="nm">Typing_speed</span>  <span class="cm">-- attribute khusus subclass</span>
+
+<span class="kw">SUBCLASS</span> <span class="fn">TECHNICIAN</span> <span class="kw">ISA</span> EMPLOYEE
+  <span class="kw">PREDICATE</span>: Job_type = <span class="st">'Technician'</span>
+  <span class="nm">Tgrade</span>
+
+<span class="kw">SUBCLASS</span> <span class="fn">ENGINEER</span> <span class="kw">ISA</span> EMPLOYEE
+  <span class="kw">PREDICATE</span>: Job_type = <span class="st">'Engineer'</span>
+  <span class="nm">Eng_type</span>
+
+<span class="cm">-- SPESIALISASI 2: berdasarkan pay method (DISJOINT, TOTAL)</span>
+<span class="kw">SUBCLASS</span> <span class="fn">SALARIED_EMPLOYEE</span> <span class="kw">ISA</span> EMPLOYEE
+  <span class="nm">Salary</span>
+  <span class="kw">RELATIONSHIP</span>: MANAGES → PROJECT <span class="cm">(1:N)</span>
+
+<span class="kw">SUBCLASS</span> <span class="fn">HOURLY_EMPLOYEE</span> <span class="kw">ISA</span> EMPLOYEE
+  <span class="nm">Pay_scale</span>
+  <span class="kw">RELATIONSHIP</span>: BELONGS_TO → TRADE_UNION <span class="cm">(N:1)</span>
+
+<span class="cm">-- Inheritance: semua subclass otomatis punya Ssn, Name, Birth_date, Address</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: PRACTICE ===== -->
+  <div id="section-practice" class="section-content">
+
+    <div class="score-display">
+      <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 0.25rem;">Skor Kamu</div>
+      <div style="font-size: 28px; font-weight: 700; color: var(--accent-green);" id="score-display">0 / 5</div>
+      <div style="font-size: 12px; color: var(--text-muted);" id="score-sub">Belum ada soal yang dijawab</div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 1</span>
+        <span class="badge badge-purple">IS-A Relationship</span>
+      </div>
+      <h3>Manakah pernyataan IS-A yang SALAH dalam EER?</h3>
+      <div id="q1-options" style="margin-top:1rem;">
+        <button class="quiz-btn" onclick="checkAns(1,'A',false)">A. SECRETARY IS AN EMPLOYEE</button>
+        <button class="quiz-btn" onclick="checkAns(1,'B',false)">B. ENGINEER IS AN EMPLOYEE</button>
+        <button class="quiz-btn" onclick="checkAns(1,'C',true)">C. EMPLOYEE IS A SECRETARY</button>
+        <button class="quiz-btn" onclick="checkAns(1,'D',false)">D. TECHNICIAN IS AN EMPLOYEE</button>
+      </div>
+      <div id="q1-feedback" class="feedback-box"></div>
+      <button class="reveal-btn" id="q1-reveal" onclick="toggleExp(1)"><i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation</button>
+      <div id="q1-explanation" class="explanation-box">
+        <strong style="color:var(--accent-purple);">Metodologi:</strong><br><br>
+        IS-A relationship bersifat <strong>satu arah (asimetris)</strong>. Dalam hierarki superclass-subclass:<br><br>
+        <strong>Subclass IS-A Superclass</strong> → Selalu benar karena subclass adalah "jenis khusus" dari superclass.<br>
+        <strong>Superclass IS-A Subclass</strong> → Selalu salah karena tidak setiap anggota superclass memiliki karakteristik subclass.<br><br>
+        Analogi: "Anjing adalah hewan" ✓ benar, tapi "hewan adalah anjing" ✗ salah (karena kucing, sapi, dll juga hewan).<br><br>
+        EMPLOYEE mencakup SECRETARY, ENGINEER, TECHNICIAN, dan mungkin ACCOUNTANT — tidak bisa diklaim semua EMPLOYEE adalah SECRETARY.
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 2</span>
+        <span class="badge badge-amber">Constraint Type</span>
+      </div>
+      <h3>Sebuah universitas memiliki entity DOSEN dengan subclass DOSEN_TETAP dan DOSEN_TIDAK_TETAP. Setiap dosen HARUS masuk ke salah satu kategori, dan tidak bisa masuk keduanya sekaligus. Constraint apa yang tepat?</h3>
+      <div id="q2-options" style="margin-top:1rem;">
+        <button class="quiz-btn" onclick="checkAns(2,'A',false)">A. Overlap, Parsial</button>
+        <button class="quiz-btn" onclick="checkAns(2,'B',false)">B. Overlap, Total</button>
+        <button class="quiz-btn" onclick="checkAns(2,'C',false)">C. Disjoint, Parsial</button>
+        <button class="quiz-btn" onclick="checkAns(2,'D',true)">D. Disjoint, Total</button>
+      </div>
+      <div id="q2-feedback" class="feedback-box"></div>
+      <button class="reveal-btn" id="q2-reveal" onclick="toggleExp(2)"><i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation</button>
+      <div id="q2-explanation" class="explanation-box">
+        <strong style="color:var(--accent-purple);">Metodologi — 2 Pertanyaan Kunci:</strong><br><br>
+        <strong>Pertanyaan 1: "Bisa tidak satu dosen ada di DUA subclass sekaligus?"</strong><br>
+        Soal: "tidak bisa masuk keduanya sekaligus" → <strong>TIDAK bisa overlap</strong> → Jawaban: <strong>Disjoint (d)</strong><br><br>
+        <strong>Pertanyaan 2: "Harus tidak setiap dosen masuk minimal satu subclass?"</strong><br>
+        Soal: "setiap dosen HARUS masuk ke salah satu kategori" → <strong>HARUS masuk minimal satu</strong> → Jawaban: <strong>Total (garis ganda)</strong><br><br>
+        Kombinasi → <strong>Disjoint, Total</strong> → Simbol: circle (d) + double line dari superclass.
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 3</span>
+        <span class="badge badge-green">Inheritance</span>
+      </div>
+      <h3>EMPLOYEE memiliki attribute: Ssn, Name, Salary, Address. Subclass ENGINEER memiliki attribute tambahan: Eng_type. Attribute apa saja yang dimiliki oleh entity "Budi" yang merupakan anggota ENGINEER?</h3>
+      <div id="q3-options" style="margin-top:1rem;">
+        <button class="quiz-btn" onclick="checkAns(3,'A',false)">A. Hanya Eng_type (attribute khusus ENGINEER)</button>
+        <button class="quiz-btn" onclick="checkAns(3,'B',false)">B. Ssn, Name, Salary, Address (hanya dari superclass)</button>
+        <button class="quiz-btn" onclick="checkAns(3,'C',true)">C. Ssn, Name, Salary, Address, Eng_type (semua dari superclass + khusus ENGINEER)</button>
+        <button class="quiz-btn" onclick="checkAns(3,'D',false)">D. Ssn, Name, Eng_type (key superclass + attribute subclass)</button>
+      </div>
+      <div id="q3-feedback" class="feedback-box"></div>
+      <button class="reveal-btn" id="q3-reveal" onclick="toggleExp(3)"><i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation</button>
+      <div id="q3-explanation" class="explanation-box">
+        <strong style="color:var(--accent-purple);">Metodologi — Prinsip Type Inheritance:</strong><br><br>
+        Dalam EER, <strong>subclass mewarisi SEMUA attribute dan relationship dari superclass</strong>. Tidak ada pengecualian — seluruh attribute superclass diwarisi.<br><br>
+        ENGINEER mewarisi dari EMPLOYEE: <strong>Ssn, Name, Salary, Address</strong><br>
+        ENGINEER juga punya attribute sendiri: <strong>Eng_type</strong><br><br>
+        Total attribute Budi sebagai ENGINEER = Ssn + Name + Salary + Address + Eng_type<br><br>
+        Analoginya: dalam Python, class Engineer(Employee) otomatis punya semua method dan attribute Employee, ditambah yang didefinisikan di Engineer.
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 4</span>
+        <span class="badge badge-coral">Spec vs Gen</span>
+      </div>
+      <h3>Seorang analis menemukan dua entity SAVINGS_ACCOUNT dan CHECKING_ACCOUNT yang sama-sama memiliki attribute: account_number, balance, owner_name. Ia kemudian membuat entity baru ACCOUNT sebagai induk keduanya. Proses apakah ini?</h3>
+      <div id="q4-options" style="margin-top:1rem;">
+        <button class="quiz-btn" onclick="checkAns(4,'A',false)">A. Spesialisasi — top-down, dari ACCOUNT ke subclass</button>
+        <button class="quiz-btn" onclick="checkAns(4,'B',true)">B. Generalisasi — bottom-up, dari dua entity ke superclass baru</button>
+        <button class="quiz-btn" onclick="checkAns(4,'C',false)">C. Spesialisasi karena melibatkan attribute inheritance</button>
+        <button class="quiz-btn" onclick="checkAns(4,'D',false)">D. Bukan spesialisasi maupun generalisasi karena ACCOUNT baru dibuat</button>
+      </div>
+      <div id="q4-feedback" class="feedback-box"></div>
+      <button class="reveal-btn" id="q4-reveal" onclick="toggleExp(4)"><i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation</button>
+      <div id="q4-explanation" class="explanation-box">
+        <strong style="color:var(--accent-purple);">Metodologi — Arah Proses:</strong><br><br>
+        Kunci membedakan Spesialisasi vs Generalisasi adalah <strong>titik mulai dan arah berpikir</strong>:<br><br>
+        <strong>Spesialisasi (Top-Down):</strong> Mulai dari entitas umum → definisikan subclass yang lebih spesifik. "EMPLOYEE apa saja jenisnya?"<br><br>
+        <strong>Generalisasi (Bottom-Up):</strong> Mulai dari entitas-entitas spesifik → identifikasi kesamaan → buat superclass. "SAVINGS_ACCOUNT dan CHECKING_ACCOUNT punya attribute sama, jadikan ACCOUNT."<br><br>
+        Kasus ini: analis mulai dari dua entity yang sudah ada (SAVINGS dan CHECKING) → buat superclass baru (ACCOUNT) = <strong>Generalisasi</strong>.<br><br>
+        Catatan: Hasil diagram EER-nya sama persis — yang berbeda hanya perspektif proses.
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="section-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+        <span class="badge badge-blue">Soal 5</span>
+        <span class="badge badge-orange">Predicate-Defined</span>
+      </div>
+      <h3>Dalam EER, subclass STUDENT ditentukan oleh kondisi: <code style="background:#0d1117;padding:2px 6px;border-radius:4px;">person_type = 'student'</code>. Artinya, setiap orang yang memiliki nilai tersebut otomatis masuk subclass STUDENT. Ini adalah contoh:</h3>
+      <div id="q5-options" style="margin-top:1rem;">
+        <button class="quiz-btn" onclick="checkAns(5,'A',true)">A. Predicate-defined subclass dengan defining attribute person_type</button>
+        <button class="quiz-btn" onclick="checkAns(5,'B',false)">B. User-defined subclass karena pengguna menentukan siapa yang masuk</button>
+        <button class="quiz-btn" onclick="checkAns(5,'C',false)">C. Weak entity karena bergantung pada kondisi</button>
+        <button class="quiz-btn" onclick="checkAns(5,'D',false)">D. Overlap specialization karena bisa juga mahasiswa dan dosen</button>
+      </div>
+      <div id="q5-feedback" class="feedback-box"></div>
+      <button class="reveal-btn" id="q5-reveal" onclick="toggleExp(5)"><i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation</button>
+      <div id="q5-explanation" class="explanation-box">
+        <strong style="color:var(--accent-purple);">Metodologi — Jenis Penentuan Subclass:</strong><br><br>
+        Ada dua cara menentukan keanggotaan subclass:<br><br>
+        <strong>1. Predicate-Defined Subclass:</strong> Keanggotaan ditentukan <strong>otomatis berdasarkan kondisi (predicate)</strong> dari attribute superclass.<br>
+        - Defining Attribute: <code style="background:#0d1117;padding:1px 4px;border-radius:3px;">person_type</code> (attribute pada superclass PERSON)<br>
+        - Predicate Condition: <code style="background:#0d1117;padding:1px 4px;border-radius:3px;">person_type = 'student'</code><br>
+        - Sistem otomatis memasukkan entity ke STUDENT jika kondisi terpenuhi<br><br>
+        <strong>2. User-Defined Subclass:</strong> Pengguna/admin yang secara manual memutuskan entity mana yang masuk subclass — tidak berdasarkan attribute.<br><br>
+        Soal dengan jelas menyebutkan kondisi otomatis berdasarkan nilai attribute → <strong>Predicate-Defined Subclass</strong>.
+      </div>
+    </div>
+
+  </div><!-- end practice -->
+</div><!-- end main container -->
+
+<script>
+  lucide.createIcons();
+  let scores = { answered: 0, correct: 0, total: 5 };
+
+  function showSection(name, tabEl) {
+    document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    tabEl.classList.add('active');
+  }
+
+  function checkAns(qNum, choice, isCorrect) {
+    const container = document.getElementById('q' + qNum + '-options');
+    if (container.dataset.answered) return;
+    container.dataset.answered = 'true';
+    const buttons = container.querySelectorAll('.quiz-btn');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      if (btn.textContent.trim().startsWith(choice + '.')) btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+    });
+    if (!isCorrect) {
+      buttons.forEach(btn => {
+        if (btn.onclick && btn.onclick.toString().includes('true')) btn.classList.add('show-correct');
+      });
+    }
+    const fb = document.getElementById('q' + qNum + '-feedback');
+    fb.classList.add(isCorrect ? 'correct' : 'incorrect');
+    fb.innerHTML = isCorrect ? '<strong>✓ Benar!</strong> Jawaban tepat. Buka penjelasan untuk pemahaman lebih dalam.' : '<strong>✗ Belum tepat.</strong> Jawaban benar sudah ditandai hijau. Buka penjelasan untuk memahami alasannya.';
+    scores.answered++;
+    if (isCorrect) scores.correct++;
+    updateScore();
+  }
+
+  function updateScore() {
+    document.getElementById('score-display').textContent = scores.correct + ' / ' + scores.total;
+    const pct = Math.round((scores.correct / scores.total) * 100);
+    let msg = scores.answered < scores.total ? (scores.answered + ' dari ' + scores.total + ' soal dijawab') : pct === 100 ? 'Sempurna! Kamu menguasai EER!' : pct >= 80 ? 'Bagus sekali!' : pct >= 60 ? 'Cukup baik. Pelajari ulang konsep yang salah.' : 'Baca ulang materi dan coba lagi.';
+    document.getElementById('score-sub').textContent = msg;
+    document.getElementById('score-display').style.color = pct >= 80 ? '#34d399' : pct >= 60 ? '#fbbf24' : '#fb7185';
+  }
+
+  function toggleExp(qNum) {
+    const box = document.getElementById('q' + qNum + '-explanation');
+    const btn = document.getElementById('q' + qNum + '-reveal');
+    if (box.style.display === 'block') { box.style.display = 'none'; btn.innerHTML = '<i data-lucide="eye" style="width:14px;height:14px;"></i> Reveal Explanation'; }
+    else { box.style.display = 'block'; btn.innerHTML = '<i data-lucide="eye-off" style="width:14px;height:14px;"></i> Hide Explanation'; }
+    lucide.createIcons();
+  }
+
+  const walkthroughData = [
+    {
+      title: 'Langkah 1 — Identifikasi Superclass',
+      badge: 'Superclass', badgeClass: 'badge-blue',
+      content: `<div style="font-size:14px;color:var(--text-secondary);">
+        <p>Mulai dengan mengidentifikasi entity utama yang akan menjadi superclass. Superclass adalah entity yang paling umum/generik.</p>
+        <div style="text-align:center;margin:1rem 0;"><span class="superclass-box" style="font-size:16px;padding:8px 20px;">EMPLOYEE</span></div>
+        <p>Pertanyaan: <em>"Apakah ada kelompok-kelompok berbeda dalam entity ini yang memiliki data atau relasi khusus?"</em></p>
+        <p>Jawaban: Ya! SECRETARY, ENGINEER, TECHNICIAN — masing-masing punya attribute khusus.</p>
+      </div>`
+    },
+    {
+      title: 'Langkah 2 — Tentukan Defining Attribute',
+      badge: 'Predicate', badgeClass: 'badge-amber',
+      content: `<div style="font-size:14px;color:var(--text-secondary);">
+        <p>Cari attribute pada superclass yang bisa menjadi dasar pengelompokan (defining attribute).</p>
+        <pre style="font-size:12px;"><code><span class="kw">EMPLOYEE</span>.Job_type = <span class="st">'Secretary'</span>   <span class="cm">→ masuk SECRETARY</span>
+<span class="kw">EMPLOYEE</span>.Job_type = <span class="st">'Engineer'</span>    <span class="cm">→ masuk ENGINEER</span>
+<span class="kw">EMPLOYEE</span>.Job_type = <span class="st">'Technician'</span>  <span class="cm">→ masuk TECHNICIAN</span></code></pre>
+        <p>Jika tidak ada defining attribute, keanggotaan ditentukan manual oleh pengguna (user-defined subclass).</p>
+      </div>`
+    },
+    {
+      title: 'Langkah 3 — Tentukan Disjointness',
+      badge: 'Disjoint/Overlap', badgeClass: 'badge-purple',
+      content: `<div style="font-size:14px;color:var(--text-secondary);">
+        <p>Tanyakan: <em>"Bisakah satu entity masuk ke lebih dari satu subclass?"</em></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1rem 0;">
+          <div style="background:#2e1065;border:1px solid #a78bfa;border-radius:8px;padding:0.75rem;text-align:center;">
+            <span class="eer-symbol sym-d" style="margin-bottom:0.5rem;display:inline-flex;">d</span>
+            <p style="font-size:13px;margin:0;color:#c4b5fd;"><strong>DISJOINT</strong><br>Tidak bisa di dua subclass sekaligus</p>
+          </div>
+          <div style="background:#1a2d1a;border:1px solid #34d399;border-radius:8px;padding:0.75rem;text-align:center;">
+            <span class="eer-symbol sym-o" style="margin-bottom:0.5rem;display:inline-flex;">o</span>
+            <p style="font-size:13px;margin:0;color:#6ee7b7;"><strong>OVERLAP</strong><br>Bisa masuk beberapa subclass</p>
+          </div>
+        </div>
+        <p>Contoh EMPLOYEE per job_type: <strong>Disjoint</strong> — tidak mungkin seseorang jadi SECRETARY sekaligus ENGINEER (berdasarkan job_type).</p>
+      </div>`
+    },
+    {
+      title: 'Langkah 4 — Tentukan Completeness',
+      badge: 'Total/Parsial', badgeClass: 'badge-coral',
+      content: `<div style="font-size:14px;color:var(--text-secondary);">
+        <p>Tanyakan: <em>"Apakah SETIAP entity di superclass HARUS masuk ke minimal satu subclass?"</em></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1rem 0;">
+          <div style="background:#450a0a;border:1px solid #ef4444;border-radius:8px;padding:0.75rem;">
+            <strong style="color:#ef4444;font-size:13px;">TOTAL (garis ganda ══)</strong>
+            <p style="font-size:12px;margin:0.25rem 0 0;color:var(--text-secondary);">Setiap EMPLOYEE HARUS masuk minimal satu dari {SALARIED, HOURLY}</p>
+          </div>
+          <div style="background:#1a2744;border:1px solid #3b82f6;border-radius:8px;padding:0.75rem;">
+            <strong style="color:#60a5fa;font-size:13px;">PARSIAL (garis tunggal ─)</strong>
+            <p style="font-size:12px;margin:0.25rem 0 0;color:var(--text-secondary);">Beberapa EMPLOYEE mungkin bukan SECRETARY/ENGINEER/TECHNICIAN (misal: ACCOUNTANT)</p>
+          </div>
+        </div>
+      </div>`
+    },
+    {
+      title: 'Langkah 5 — Gambar dan Tambahkan Attribute Khusus',
+      badge: 'Final Diagram', badgeClass: 'badge-green',
+      content: `<div style="font-size:14px;color:var(--text-secondary);">
+        <p>Setelah menentukan semua constraint, gambar diagram dan tambahkan attribute khusus masing-masing subclass.</p>
+        <div style="background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:1rem;margin:0.75rem 0;font-size:13px;">
+          <div style="text-align:center;margin-bottom:0.75rem;"><span class="superclass-box">EMPLOYEE</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;text-align:center;">
+            <div><span class="subclass-box">SECRETARY</span><div style="color:var(--text-muted);font-size:11px;margin-top:0.25rem;">+ Typing_speed</div></div>
+            <div><span class="subclass-box">TECHNICIAN</span><div style="color:var(--text-muted);font-size:11px;margin-top:0.25rem;">+ Tgrade</div></div>
+            <div><span class="subclass-box">ENGINEER</span><div style="color:var(--text-muted);font-size:11px;margin-top:0.25rem;">+ Eng_type</div></div>
+          </div>
+        </div>
+        <p>Semua subclass otomatis mewarisi: Ssn, Name, Birth_date, Address dari EMPLOYEE. Hanya perlu menuliskan attribute <strong>tambahan</strong> di subclass.</p>
+      </div>`
+    }
+  ];
+
+  let walkStep = 0;
+  function renderWalk() {
+    const s = walkthroughData[walkStep];
+    document.getElementById('walk-indicator').textContent = 'Langkah ' + (walkStep + 1) + ' dari ' + walkthroughData.length;
+    document.getElementById('walk-progress').style.width = ((walkStep + 1) / walkthroughData.length * 100) + '%';
+    document.getElementById('wbtn-prev').disabled = walkStep === 0;
+    document.getElementById('wbtn-prev').style.opacity = walkStep === 0 ? '0.4' : '1';
+    document.getElementById('wbtn-next').disabled = walkStep === walkthroughData.length - 1;
+    document.getElementById('wbtn-next').style.opacity = walkStep === walkthroughData.length - 1 ? '0.4' : '1';
+    document.getElementById('walk-content').innerHTML = `
+      <div class="section-card" style="margin-bottom:0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;">
+          <span class="badge ${s.badgeClass}">${s.badge}</span>
+          <h3 style="margin:0;">${s.title}</h3>
+        </div>
+        ${s.content}
+      </div>`;
+    lucide.createIcons();
+  }
+  function nextWalk() { if (walkStep < walkthroughData.length - 1) { walkStep++; renderWalk(); } }
+  function prevWalk() { if (walkStep > 0) { walkStep--; renderWalk(); } }
+  renderWalk();
+</script>
+</body>
+</html>

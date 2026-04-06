@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Database Concept & Architecture — CSGE602070</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.383.0/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #22d3ee;
+    --accent2: #4ade80;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --danger: #f87171;
+    --correct: #4ade80;
+    --wrong: #f87171;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(34,211,238,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'Space Mono', monospace; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,13,20,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Section markers */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: .7;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .card:hover { border-color: rgba(34,211,238,.3); box-shadow: 0 0 24px rgba(34,211,238,.05); }
+
+  /* Callouts */
+  .callout-key {
+    background: linear-gradient(135deg, rgba(34,211,238,.07), rgba(34,211,238,.03));
+    border: 1px solid rgba(34,211,238,.25);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .callout-pitfall {
+    background: linear-gradient(135deg, rgba(248,113,113,.07), rgba(248,113,113,.03));
+    border: 1px solid rgba(248,113,113,.25);
+    border-left: 3px solid var(--danger);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .callout-tip {
+    background: linear-gradient(135deg, rgba(245,158,11,.07), rgba(245,158,11,.03));
+    border: 1px solid rgba(245,158,11,.25);
+    border-left: 3px solid var(--accent3);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+
+  /* Code blocks */
+  pre {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .kw { color: #79c0ff; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .cm { color: #6e7681; font-style: italic; }
+  .op { color: #ff7b72; }
+  .val { color: #f9c74f; }
+
+  /* Timeline / History */
+  .timeline-item { position: relative; padding-left: 32px; }
+  .timeline-item::before {
+    content: '';
+    position: absolute; left: 8px; top: 6px; bottom: -12px;
+    width: 1px; background: var(--border);
+  }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-dot {
+    position: absolute; left: 0; top: 6px;
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Quiz */
+  .quiz-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+  }
+  .quiz-option:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(34,211,238,.07);
+  }
+  .quiz-option.correct {
+    border-color: var(--correct) !important;
+    background: rgba(74,222,128,.12) !important;
+    color: var(--correct);
+  }
+  .quiz-option.wrong {
+    border-color: var(--wrong) !important;
+    background: rgba(248,113,113,.12) !important;
+    color: var(--wrong);
+  }
+  .quiz-option.dimmed { opacity: .45; cursor: not-allowed; }
+
+  .feedback-box {
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    display: none;
+    margin-top: 10px;
+  }
+  .feedback-correct { background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.3); color: var(--correct); }
+  .feedback-wrong { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--wrong); }
+
+  .reveal-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 14px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+    transition: all .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .reveal-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .explanation {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.75;
+  }
+
+  /* Tabs */
+  .tab-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab-btn.active { background: var(--accent); color: #000; font-weight: 600; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Schema diagram */
+  .schema-box {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    transition: all .2s;
+  }
+  .schema-box:hover { border-color: var(--accent); }
+  .schema-arrow {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 20px;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: .03em;
+  }
+  .badge-cyan { background: rgba(34,211,238,.12); color: var(--accent); border: 1px solid rgba(34,211,238,.25); }
+  .badge-green { background: rgba(74,222,128,.12); color: var(--accent2); border: 1px solid rgba(74,222,128,.25); }
+  .badge-amber { background: rgba(245,158,11,.12); color: var(--accent3); border: 1px solid rgba(245,158,11,.25); }
+
+  /* Progress bar */
+  #quiz-progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  #quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+
+  /* Walkthrough steps */
+  .walk-step {
+    display: none;
+    animation: fadeInUp .3s ease;
+  }
+  .walk-step.active { display: block; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Glow accent line at top */
+  .glow-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: .5;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 640px) {
+    .hide-sm { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP GLOW -->
+<div class="glow-line"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-7 h-7 rounded-md bg-cyan-400/10 border border-cyan-400/30 flex items-center justify-center">
+        <i data-lucide="database" class="w-3.5 h-3.5 text-cyan-400"></i>
+      </div>
+      <span class="font-bold text-sm" style="font-family:'Syne',sans-serif">DB Concept & Architecture</span>
+      <span class="badge badge-cyan hide-sm">CSGE602070</span>
+    </div>
+    <div class="flex items-center gap-1 text-xs mono text-slate-500">
+      <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+      <span class="hide-sm">Slide 02</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="relative max-w-5xl mx-auto px-4 pt-14 pb-10">
+  <div class="absolute top-8 right-0 w-72 h-72 rounded-full opacity-5 blur-3xl" style="background:radial-gradient(circle, #22d3ee, transparent)"></div>
+  <p class="section-label mb-3">Basis Data — Week 2</p>
+  <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4" style="letter-spacing:-.02em">
+    Database Concept<br><span class="text-cyan-400">&amp; Architecture</span>
+  </h1>
+  <p class="text-slate-400 max-w-xl text-base leading-relaxed">
+    A complete interactive breakdown of data models, schema architecture, DBMS components, and system designs — from theory to practice.
+  </p>
+  <!-- Quick nav pills -->
+  <div class="flex flex-wrap gap-2 mt-7">
+    <a href="#data-models" class="badge badge-cyan">1. Data Models</a>
+    <a href="#schema" class="badge badge-green">2. Schema</a>
+    <a href="#dbms-components" class="badge badge-amber">3. DBMS Components</a>
+    <a href="#dbms-architecture" class="badge badge-cyan">4. DBMS Architecture</a>
+    <a href="#practice" class="badge badge-green">5. Practice Quiz</a>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-4 pb-24 space-y-16 relative z-10">
+
+  <!-- ============================
+       SECTION 1: DATA MODELS
+       ============================ -->
+  <section id="data-models">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-8 rounded-lg bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+      </div>
+      <div>
+        <p class="section-label">Section 01</p>
+        <h2 class="text-2xl font-bold">Data Models</h2>
+      </div>
+    </div>
+
+    <!-- Key Term callouts -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="callout-key">
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="font-semibold mb-1">Data Model</p>
+        <p class="text-sm text-slate-400">A set of concepts describing the <strong class="text-slate-200">structure</strong> of a database and the <strong class="text-slate-200">constraints</strong> it must obey. Think of it as the blueprint language for a database.</p>
+      </div>
+      <div class="callout-key">
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="font-semibold mb-1">Data Model Operation</p>
+        <p class="text-sm text-slate-400">Operations for specifying database <strong class="text-slate-200">retrievals</strong> and <strong class="text-slate-200">updates</strong>. Can be basic (built-in) or user-defined.</p>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i> Categories of Data Models</h3>
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-cyan">High-Level</span>
+        </div>
+        <p class="font-semibold mb-2 text-cyan-400">Conceptual / Semantic</p>
+        <p class="text-sm text-slate-400 mb-3">Close to how <em>humans</em> perceive data. Uses entities, attributes, and relationships.</p>
+        <p class="text-xs mono text-slate-500">Example: Entity-Relationship (ER) Model</p>
+      </div>
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-amber">Mid-Level</span>
+        </div>
+        <p class="font-semibold mb-2 text-amber-400">Implementation / Representational</p>
+        <p class="text-sm text-slate-400 mb-3">Balances user views with computer storage details.</p>
+        <p class="text-xs mono text-slate-500">Examples: Relational, Network, Hierarchical</p>
+      </div>
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-green">Low-Level</span>
+        </div>
+        <p class="font-semibold mb-2 text-green-400">Physical / Internal</p>
+        <p class="text-sm text-slate-400 mb-3">Describes how data is <em>physically stored</em> in the computer.</p>
+        <p class="text-xs mono text-slate-500">Examples: Tree structures, Graphs, B+-trees</p>
+      </div>
+    </div>
+
+    <!-- Pitfall -->
+    <div class="callout-pitfall mb-8">
+      <p class="text-xs font-bold text-red-400 mono mb-2">⚠ COMMON PITFALL</p>
+      <p class="text-sm text-slate-300">Students often confuse the <strong class="text-red-400">ER Model</strong> (conceptual — for design) with the <strong class="text-red-400">Relational Model</strong> (implementation — for actual database). ER diagrams are the <em>design tool</em>; relational tables are the <em>implementation</em>.</p>
+    </div>
+
+    <!-- History Timeline -->
+    <h3 class="text-lg font-bold mb-5 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-cyan-400"></i> History of Data Models</h3>
+    <div class="card p-6 space-y-6">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-sm font-bold text-cyan-300">1964–65 — Network Model</span>
+            <span class="badge badge-cyan">Graphs</span>
+          </div>
+          <p class="text-sm text-slate-400">Implemented by Honeywell (IDS System). Adopted by CODASYL 1971. Data stored as interconnected graphs. Used in IDMS, DMS 1100, IMAGE.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-sm font-bold text-cyan-300">~1965 — Hierarchical Model</span>
+            <span class="badge badge-green">Trees</span>
+          </div>
+          <p class="text-sm text-slate-400">IBM + North American Rockwell. Led to IMS family. Data structured as hierarchical trees — parent/child relationships only.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="border-color:var(--accent2)"></div>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-sm font-bold text-cyan-300">1970 — Relational Model</span>
+            <span class="badge badge-green">Tables</span>
+          </div>
+          <p class="text-sm text-slate-400">Proposed by E.F. Codd (IBM). First commercial system 1981-82. Now dominant — Oracle, DB2, SQL Server, PostgreSQL.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="border-color:var(--accent3)"></div>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-sm font-bold text-cyan-300">1980s–90s — Object-Oriented Model</span>
+            <span class="badge badge-amber">Objects</span>
+          </div>
+          <p class="text-sm text-slate-400">Persistent O-O languages: C++ (OBJECTSTORE), Smalltalk (GEMSTONE). Also O2, ORION (ITASCA), IRIS.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="border-color:#a78bfa"></div>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-sm font-bold text-cyan-300">Recent — Object-Relational Model</span>
+            <span class="badge" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.25)">Hybrid</span>
+          </div>
+          <p class="text-sm text-slate-400">Started with Informix Universal Server. Exemplified in Oracle 10g, DB2, SQL Server. Combines OOP concepts with relational tables.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Relational Model Deep Dive -->
+    <h3 class="text-lg font-bold mt-8 mb-4 flex items-center gap-2"><i data-lucide="table-2" class="w-4 h-4 text-cyan-400"></i> Relational Model — Key Concepts</h3>
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="card p-5 space-y-3">
+        <p class="font-semibold text-cyan-400">Relation = Table of Values</p>
+        <div class="space-y-2 text-sm text-slate-400">
+          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>A <strong class="text-slate-200">Relation</strong> is a mathematical concept based on <em>sets</em></span></div>
+          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>A relation can be thought of as a <strong class="text-slate-200">set of rows (tuples)</strong></span></div>
+          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>Each column is called an <strong class="text-slate-200">Attribute</strong></span></div>
+          <div class="flex gap-2"><i data-lucide="arrow-right" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cyan-400"></i><span>Each row can be given a unique <strong class="text-slate-200">identifier (key)</strong></span></div>
+        </div>
+      </div>
+      <div class="card p-5">
+        <p class="font-semibold text-green-400 mb-3">Example: STUDENT Table</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs mono">
+            <thead>
+              <tr class="border-b border-slate-700">
+                <th class="text-left py-1.5 pr-3 text-cyan-400">Name</th>
+                <th class="text-left py-1.5 pr-3 text-cyan-400">StudentNumber</th>
+                <th class="text-left py-1.5 pr-3 text-cyan-400">Class</th>
+                <th class="text-left py-1.5 text-cyan-400">Major</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-400">
+              <tr class="border-b border-slate-800"><td class="py-1 pr-3">Smith</td><td class="pr-3">17</td><td class="pr-3">1</td><td>CS</td></tr>
+              <tr><td class="py-1 pr-3">Brown</td><td class="pr-3">8</td><td class="pr-3">2</td><td>CS</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-slate-500 mt-3">← Each row is a <em>tuple</em>; each column is an <em>attribute</em>.</p>
+      </div>
+    </div>
+
+    <!-- ER Model -->
+    <div class="callout-tip">
+      <p class="text-xs font-bold text-amber-400 mono mb-2">💡 ENTITY-RELATIONSHIP (ER) MODEL</p>
+      <p class="text-sm text-slate-300 mb-2">Proposed by P. Chen (1976). A <strong class="text-amber-300">conceptual modeling</strong> tool for database requirements. Basic building blocks: <strong class="text-amber-300">Entities</strong> (real-world objects) and <strong class="text-amber-300">Relationships</strong> (associations between entities). Well-suited for relational database development.</p>
+      <p class="text-xs text-slate-500 mono">Note: ER model did NOT originally include inheritance.</p>
+    </div>
+  </section>
+
+
+  <!-- ============================
+       SECTION 2: SCHEMA
+       ============================ -->
+  <section id="schema">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-8 rounded-lg bg-green-400/10 border border-green-400/20 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="layout-template" class="w-4 h-4 text-green-400"></i>
+      </div>
+      <div>
+        <p class="section-label" style="color:var(--accent2)">Section 02</p>
+        <h2 class="text-2xl font-bold">Schema</h2>
+      </div>
+    </div>
+
+    <!-- Schema terms -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="callout-key">
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="font-semibold mb-1">Database Schema</p>
+        <p class="text-sm text-slate-400">The <strong class="text-slate-200">description</strong> of a database — its structure and constraints. Also called the database <em>intension</em>. Changes <em>infrequently</em>.</p>
+      </div>
+      <div class="callout-key">
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="font-semibold mb-1">Database State / Snapshot</p>
+        <p class="text-sm text-slate-400">The <strong class="text-slate-200">actual data</strong> stored at a particular moment. Also called <em>extension</em>. Changes every time data is updated.</p>
+      </div>
+      <div class="callout-key">
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">KEY TERM</p>
+        <p class="font-semibold mb-1">Schema Diagram</p>
+        <p class="text-sm text-slate-400">A diagrammatic display of some aspects of a database schema — shows table names and attributes without actual data.</p>
+      </div>
+      <div class="callout-pitfall">
+        <p class="text-xs font-bold text-red-400 mono mb-2">⚠ PITFALL</p>
+        <p class="font-semibold mb-1">Schema vs State Confusion</p>
+        <p class="text-sm text-slate-400">Schema = <em>blueprint</em> (stable, rarely changes). State = <em>actual data</em> (changes constantly). Don't confuse structure with content!</p>
+      </div>
+    </div>
+
+    <!-- Three-Schema Architecture -->
+    <h3 class="text-lg font-bold mb-5 flex items-center gap-2"><i data-lucide="server" class="w-4 h-4 text-green-400"></i> Three-Schema Architecture</h3>
+    <p class="text-sm text-slate-400 mb-6">Proposed to support <strong class="text-slate-200">program-data independence</strong> and <strong class="text-slate-200">multiple views</strong> of data. Defines three distinct levels of abstraction:</p>
+
+    <!-- Interactive schema diagram -->
+    <div class="card p-6 mb-6">
+      <!-- Tabs -->
+      <div class="flex gap-2 mb-6 flex-wrap">
+        <button class="tab-btn active" onclick="switchTab('schema', 'diagram', this)">Visual Diagram</button>
+        <button class="tab-btn" onclick="switchTab('schema', 'explain', this)">Detailed Explanation</button>
+        <button class="tab-btn" onclick="switchTab('schema', 'example', this)">Unified Example</button>
+      </div>
+
+      <!-- Diagram tab -->
+      <div id="schema-diagram" class="tab-content active">
+        <div class="flex flex-col items-center gap-2">
+          <!-- External level -->
+          <div class="w-full max-w-lg">
+            <p class="text-xs mono text-slate-500 mb-2 text-center">EXTERNAL LEVEL — User Views</p>
+            <div class="flex gap-3 justify-center">
+              <div class="schema-box text-center px-5 py-3 flex-1">
+                <p class="text-xs mono text-cyan-400">External Schema 1</p>
+                <p class="text-xs text-slate-500 mt-1">User view A</p>
+              </div>
+              <div class="schema-box text-center px-5 py-3 flex-1">
+                <p class="text-xs mono text-cyan-400">External Schema 2</p>
+                <p class="text-xs text-slate-500 mt-1">User view B</p>
+              </div>
+            </div>
+            <p class="text-xs text-center text-slate-600 mt-1">↕ external/conceptual mapping</p>
+          </div>
+
+          <!-- Conceptual -->
+          <div class="w-full max-w-xs">
+            <div class="schema-box text-center py-4" style="border-color:rgba(74,222,128,.4)">
+              <p class="text-xs mono text-green-400">CONCEPTUAL SCHEMA</p>
+              <p class="text-xs text-slate-500 mt-1">Logical structure & constraints</p>
+            </div>
+            <p class="text-xs text-center text-slate-600 mt-1">↕ conceptual/internal mapping</p>
+          </div>
+
+          <!-- Internal -->
+          <div class="w-full max-w-xs">
+            <div class="schema-box text-center py-4" style="border-color:rgba(245,158,11,.4)">
+              <p class="text-xs mono text-amber-400">INTERNAL SCHEMA</p>
+              <p class="text-xs text-slate-500 mt-1">Physical storage structures</p>
+            </div>
+            <p class="text-xs text-center text-slate-600 mt-1">↓</p>
+          </div>
+
+          <!-- Storage -->
+          <div class="w-full max-w-xs">
+            <div class="text-center py-3 rounded-lg border border-dashed border-slate-700">
+              <i data-lucide="hard-drive" class="w-5 h-5 mx-auto text-slate-500 mb-1"></i>
+              <p class="text-xs mono text-slate-500">STORED DATABASE</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explain tab -->
+      <div id="schema-explain" class="tab-content">
+        <div class="space-y-4">
+          <div class="card p-5">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl font-black text-slate-700 mono">1</span>
+              <div>
+                <p class="font-semibold text-amber-400 mb-1">Internal Schema (Physical Level)</p>
+                <p class="text-sm text-slate-400">Describes <strong class="text-slate-200">how data is physically stored</strong> — file structures, indexes, access paths. Uses a physical data model (B+-trees, hash indexes, block sizes).</p>
+                <pre class="mt-3 text-xs"><span class="cm">-- Example Internal Schema elements:</span>
+<span class="kw">Cluster Index</span> <span class="op">on</span> SSN;
+<span class="kw">B+-tree</span> <span class="op">on</span> Age;
+<span class="val">Block size</span> = <span class="str">100</span>;</pre>
+              </div>
+            </div>
+          </div>
+          <div class="card p-5">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl font-black text-slate-700 mono">2</span>
+              <div>
+                <p class="font-semibold text-green-400 mb-1">Conceptual Schema (Logical Level)</p>
+                <p class="text-sm text-slate-400">Describes the <strong class="text-slate-200">entire database structure and constraints</strong> for all users. Hides physical storage details. Focuses on <em>what</em> data means.</p>
+                <pre class="mt-3 text-xs"><span class="cm">-- Example Conceptual Schema:</span>
+EMPLOYEE(<span class="fn">SSN</span>, <span class="fn">EN</span>, <span class="fn">DNO</span>, <span class="fn">SALARY</span>, <span class="fn">EXP_YEAR</span>, <span class="fn">BDATE</span>)
+CUSTOMER(<span class="fn">Name</span>, <span class="fn">Addr</span>, <span class="fn">Sex</span>, <span class="fn">Age</span>)</pre>
+              </div>
+            </div>
+          </div>
+          <div class="card p-5">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl font-black text-slate-700 mono">3</span>
+              <div>
+                <p class="font-semibold text-cyan-400 mb-1">External Schema (View Level)</p>
+                <p class="text-sm text-slate-400">Describes <strong class="text-slate-200">user-specific views</strong> derived from the conceptual schema. Different user groups see different subsets.</p>
+                <pre class="mt-3 text-xs"><span class="cm">-- Derive a user view from conceptual:</span>
+<span class="kw">CREATE</span> MALE_CUSTOMER(<span class="fn">Name</span>, <span class="fn">Addr</span>)
+  <span class="kw">AS VIEW OF</span> CUSTOMER(<span class="fn">Name</span>, <span class="fn">Addr</span>, <span class="fn">Sex</span>, <span class="fn">Age</span>)
+  <span class="kw">WHERE</span> Sex = <span class="str">'M'</span>;</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example tab -->
+      <div id="schema-example" class="tab-content">
+        <p class="text-sm text-slate-400 mb-4">Query: <em>"List employees with more than 5 years experience"</em></p>
+        <pre><span class="cm">-- External Schema (what users query):</span>
+<span class="kw">SELECT</span> e.ENAME, e.DEPT, e.EXP
+<span class="kw">FROM</span>   EMP e
+<span class="kw">WHERE</span>  e.EXP <span class="op">></span> <span class="val">5</span>;
+
+<span class="cm">-- This view is derived from the Conceptual Schema:</span>
+EMPLOYEE(<span class="fn">SSN</span>, <span class="fn">EN</span>, <span class="fn">DNO</span>, <span class="fn">SALARY</span>, <span class="fn">EXP_YEAR</span>, <span class="fn">BDATE</span>)
+
+<span class="cm">-- Which sits on the Internal Schema:</span>
+<span class="kw">Cluster Index</span> <span class="op">on</span> SSN;
+<span class="kw">B+-tree indexes</span> <span class="op">on</span> DNO, EXP_YEAR, STARTDATE;</pre>
+      </div>
+    </div>
+
+    <!-- Data Independence -->
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="shield" class="w-4 h-4 text-green-400"></i> Data Independence</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="card p-5">
+        <p class="font-semibold text-green-400 mb-2">Logical Data Independence</p>
+        <p class="text-sm text-slate-400 mb-3">Ability to change the <strong class="text-slate-200">conceptual schema</strong> without affecting external schemas or application programs.</p>
+        <div class="text-xs mono text-slate-500 bg-slate-900 rounded p-3">
+          External schemas unchanged<br>
+          ← — — — <span class="text-green-400">LOGICAL boundary</span> — — —<br>
+          Conceptual schema can change
+        </div>
+      </div>
+      <div class="card p-5">
+        <p class="font-semibold text-amber-400 mb-2">Physical Data Independence</p>
+        <p class="text-sm text-slate-400 mb-3">Ability to change the <strong class="text-slate-200">internal schema</strong> without affecting the conceptual schema.</p>
+        <div class="text-xs mono text-slate-500 bg-slate-900 rounded p-3">
+          Conceptual schema unchanged<br>
+          ← — — <span class="text-amber-400">PHYSICAL boundary</span> — — —<br>
+          Internal schema can change
+        </div>
+      </div>
+    </div>
+    <div class="callout-tip mt-4">
+      <p class="text-xs font-bold text-amber-400 mono mb-2">💡 MENTAL MODEL</p>
+      <p class="text-sm text-slate-300">Think of it like a building: the <strong class="text-amber-300">External schema</strong> = what tenants see (rooms/offices), <strong class="text-amber-300">Conceptual schema</strong> = the architectural floor plan, <strong class="text-amber-300">Internal schema</strong> = the electrical wiring and plumbing. Changing the plumbing doesn't change the floor plan or what tenants see.</p>
+    </div>
+  </section>
+
+
+  <!-- ============================
+       SECTION 3: DBMS COMPONENTS
+       ============================ -->
+  <section id="dbms-components">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-8 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="cpu" class="w-4 h-4 text-amber-400"></i>
+      </div>
+      <div>
+        <p class="section-label" style="color:var(--accent3)">Section 03</p>
+        <h2 class="text-2xl font-bold">DBMS Components</h2>
+      </div>
+    </div>
+
+    <!-- Languages -->
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="code-2" class="w-4 h-4 text-amber-400"></i> DBMS Languages</h3>
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-cyan">DDL</span>
+          <span class="text-sm font-semibold">Data Definition Language</span>
+        </div>
+        <p class="text-sm text-slate-400 mb-4">Used to <strong class="text-slate-200">define the schema</strong> — structure and constraints. Used by DBA and database designers.</p>
+        <div class="flex gap-2 flex-wrap">
+          <span class="badge badge-green">CREATE</span>
+          <span class="badge badge-amber">ALTER</span>
+          <span class="badge" style="background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.25)">DROP</span>
+        </div>
+        <p class="text-xs text-slate-500 mt-3 mono">Also: SDL (Storage Def Language) for internal schema; VDL (View Def Language) for external schemas.</p>
+      </div>
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-amber">DML</span>
+          <span class="text-sm font-semibold">Data Manipulation Language</span>
+        </div>
+        <p class="text-sm text-slate-400 mb-4">Used to <strong class="text-slate-200">retrieve and update</strong> data. Can be embedded in host languages (COBOL, C) or used standalone.</p>
+        <div class="flex gap-2 flex-wrap">
+          <span class="badge badge-green">SELECT</span>
+          <span class="badge badge-cyan">INSERT</span>
+          <span class="badge badge-amber">UPDATE</span>
+          <span class="badge" style="background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.25)">DELETE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DML levels callout -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="callout-key">
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">HIGH-LEVEL DML (Non-procedural)</p>
+        <p class="text-sm text-slate-400">Specifies <em>what</em> data to retrieve, not <em>how</em>. Set-oriented. Also called <strong class="text-slate-200">declarative</strong> language. Example: <strong class="text-cyan-400">SQL</strong>.</p>
+      </div>
+      <div class="callout-key">
+        <p class="text-xs font-bold text-cyan-400 mono mb-2">LOW-LEVEL DML (Procedural)</p>
+        <p class="text-sm text-slate-400">Record-at-a-time. Specifies <em>how</em> to retrieve data. Must be embedded in a programming language.</p>
+      </div>
+    </div>
+
+    <!-- Interfaces -->
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="monitor" class="w-4 h-4 text-amber-400"></i> DBMS Interfaces</h3>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+      <div class="card p-4 text-center">
+        <i data-lucide="menu" class="w-5 h-5 mx-auto mb-2 text-cyan-400"></i>
+        <p class="text-sm font-semibold">Menu-based</p>
+        <p class="text-xs text-slate-500">Web browsing dropdowns</p>
+      </div>
+      <div class="card p-4 text-center">
+        <i data-lucide="file-input" class="w-5 h-5 mx-auto mb-2 text-green-400"></i>
+        <p class="text-sm font-semibold">Forms-based</p>
+        <p class="text-xs text-slate-500">For naïve users</p>
+      </div>
+      <div class="card p-4 text-center">
+        <i data-lucide="mouse-pointer-click" class="w-5 h-5 mx-auto mb-2 text-amber-400"></i>
+        <p class="text-sm font-semibold">Graphics-based</p>
+        <p class="text-xs text-slate-500">Point & click, drag & drop</p>
+      </div>
+      <div class="card p-4 text-center">
+        <i data-lucide="message-square" class="w-5 h-5 mx-auto mb-2 text-purple-400"></i>
+        <p class="text-sm font-semibold">Natural Language</p>
+        <p class="text-xs text-slate-500">Written English queries</p>
+      </div>
+      <div class="card p-4 text-center">
+        <i data-lucide="mic" class="w-5 h-5 mx-auto mb-2 text-red-400"></i>
+        <p class="text-sm font-semibold">Speech</p>
+        <p class="text-xs text-slate-500">Voice input/output</p>
+      </div>
+      <div class="card p-4 text-center">
+        <i data-lucide="settings" class="w-5 h-5 mx-auto mb-2 text-slate-400"></i>
+        <p class="text-sm font-semibold">DBA Interface</p>
+        <p class="text-xs text-slate-500">Account management</p>
+      </div>
+    </div>
+
+    <!-- Main DBMS Modules -->
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="puzzle" class="w-4 h-4 text-amber-400"></i> Main DBMS Modules</h3>
+    <div class="card p-6 mb-4">
+      <div class="grid md:grid-cols-2 gap-4 text-sm">
+        <div class="space-y-3">
+          <div class="flex gap-3 items-start">
+            <div class="w-6 h-6 rounded bg-cyan-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="code" class="w-3 h-3 text-cyan-400"></i></div>
+            <div><p class="font-medium">DDL Compiler</p><p class="text-xs text-slate-500">Processes DDL statements; updates the system catalog.</p></div>
+          </div>
+          <div class="flex gap-3 items-start">
+            <div class="w-6 h-6 rounded bg-green-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="terminal" class="w-3 h-3 text-green-400"></i></div>
+            <div><p class="font-medium">DML Compiler</p><p class="text-xs text-slate-500">Compiles DML statements embedded in host programs.</p></div>
+          </div>
+          <div class="flex gap-3 items-start">
+            <div class="w-6 h-6 rounded bg-amber-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="search" class="w-3 h-3 text-amber-400"></i></div>
+            <div><p class="font-medium">Query Compiler</p><p class="text-xs text-slate-500">Handles ad-hoc (interactive) queries from casual users.</p></div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex gap-3 items-start">
+            <div class="w-6 h-6 rounded bg-purple-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="zap" class="w-3 h-3 text-purple-400"></i></div>
+            <div><p class="font-medium">Run-time Database Processor</p><p class="text-xs text-slate-500">Executes privileged commands and compiled transactions.</p></div>
+          </div>
+          <div class="flex gap-3 items-start">
+            <div class="w-6 h-6 rounded bg-red-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="hard-drive" class="w-3 h-3 text-red-400"></i></div>
+            <div><p class="font-medium">Stored Data Manager</p><p class="text-xs text-slate-500">Controls access to DBMS information on disk.</p></div>
+          </div>
+          <div class="flex gap-3 items-start">
+            <div class="w-6 h-6 rounded bg-slate-400/15 flex items-center justify-center flex-shrink-0 mt-0.5"><i data-lucide="shield-check" class="w-3 h-3 text-slate-400"></i></div>
+            <div><p class="font-medium">Concurrency/Backup/Recovery</p><p class="text-xs text-slate-500">Ensures ACID properties and fault tolerance.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logic Walkthrough: Query Processing Flow -->
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="workflow" class="w-4 h-4 text-amber-400"></i> Algorithm: How a Query is Processed</h3>
+    <div class="card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-sm text-slate-400">Step-by-step walkthrough of query processing in a DBMS:</p>
+        <span id="walk-counter" class="text-xs mono text-slate-500">Step 1 / 5</span>
+      </div>
+
+      <!-- Steps -->
+      <div id="walk-step-1" class="walk-step active">
+        <div class="callout-key mb-3">
+          <p class="text-xs mono text-cyan-400 mb-1">STEP 1 — User Submits Query</p>
+          <p class="text-sm text-slate-300">A casual user types an interactive query, OR an application program contains embedded DML commands.</p>
+        </div>
+        <pre><span class="cm">-- User types this interactive query:</span>
+<span class="kw">SELECT</span> e.ENAME, e.EXP
+<span class="kw">FROM</span>   EMP e
+<span class="kw">WHERE</span>  e.EXP <span class="op">></span> <span class="val">5</span>;</pre>
+      </div>
+
+      <div id="walk-step-2" class="walk-step">
+        <div class="callout-key mb-3">
+          <p class="text-xs mono text-cyan-400 mb-1">STEP 2 — Query / DML Compiler</p>
+          <p class="text-sm text-slate-300">The <strong class="text-slate-200">Query Compiler</strong> parses the SQL, checks against the <strong class="text-slate-200">System Catalog/Data Dictionary</strong> to verify table/column existence and user permissions.</p>
+        </div>
+        <pre><span class="cm">-- Compiler checks System Catalog:</span>
+<span class="cm">-- Does table "EMP" exist? ✓</span>
+<span class="cm">-- Does column "EXP" exist? ✓</span>
+<span class="cm">-- Does user have SELECT permission? ✓</span>
+<span class="cm">-- Generates query execution plan...</span></pre>
+      </div>
+
+      <div id="walk-step-3" class="walk-step">
+        <div class="callout-key mb-3">
+          <p class="text-xs mono text-cyan-400 mb-1">STEP 3 — Run-time Database Processor</p>
+          <p class="text-sm text-slate-300">The compiled query is passed to the <strong class="text-slate-200">Runtime DB Processor</strong> for execution. It coordinates with the Stored Data Manager.</p>
+        </div>
+        <pre><span class="cm">-- Runtime processor receives optimized plan:</span>
+<span class="cm">-- Plan: Use B+-tree index on EXP column</span>
+<span class="cm">-- Scan index for EXP > 5</span>
+<span class="cm">-- Retrieve matching tuples...</span></pre>
+      </div>
+
+      <div id="walk-step-4" class="walk-step">
+        <div class="callout-key mb-3">
+          <p class="text-xs mono text-cyan-400 mb-1">STEP 4 — Stored Data Manager</p>
+          <p class="text-sm text-slate-300">The <strong class="text-slate-200">Stored Data Manager</strong> accesses the physical database via OS I/O operations, using the Internal Schema's index structures.</p>
+        </div>
+        <pre><span class="cm">-- Stored Data Manager executes disk I/O:</span>
+<span class="cm">-- Read index blocks from disk</span>
+<span class="cm">-- Fetch data pages for matching records</span>
+<span class="cm">-- Buffer management (cache hot pages)</span></pre>
+      </div>
+
+      <div id="walk-step-5" class="walk-step">
+        <div class="callout-key mb-3">
+          <p class="text-xs mono text-cyan-400 mb-1">STEP 5 — Results Returned</p>
+          <p class="text-sm text-slate-300">Retrieved tuples are formatted according to the <strong class="text-slate-200">External Schema</strong> (user's view) and returned as the query result.</p>
+        </div>
+        <pre><span class="cm">-- Result returned to user:</span>
+<span class="val">ENAME</span>   | <span class="val">EXP</span>
+--------|-----
+Alice   | <span class="str">7</span>
+Bob     | <span class="str">10</span>
+Charlie | <span class="str">6</span></pre>
+      </div>
+
+      <!-- Walkthrough controls -->
+      <div class="flex items-center gap-3 mt-5">
+        <button onclick="walkPrev()" id="walk-prev" class="reveal-btn" disabled>
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Prev
+        </button>
+        <div class="flex gap-1.5">
+          <div id="w-dot-1" class="w-2 h-2 rounded-full bg-cyan-400"></div>
+          <div id="w-dot-2" class="w-2 h-2 rounded-full bg-slate-600"></div>
+          <div id="w-dot-3" class="w-2 h-2 rounded-full bg-slate-600"></div>
+          <div id="w-dot-4" class="w-2 h-2 rounded-full bg-slate-600"></div>
+          <div id="w-dot-5" class="w-2 h-2 rounded-full bg-slate-600"></div>
+        </div>
+        <button onclick="walkNext()" id="walk-next" class="reveal-btn">
+          Next <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================
+       SECTION 4: DBMS ARCHITECTURE
+       ============================ -->
+  <section id="dbms-architecture">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-8 rounded-lg bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="network" class="w-4 h-4 text-cyan-400"></i>
+      </div>
+      <div>
+        <p class="section-label">Section 04</p>
+        <h2 class="text-2xl font-bold">DBMS Architecture</h2>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <!-- Centralized -->
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="server" class="w-4 h-4 text-slate-400"></i>
+          <p class="font-semibold">Centralized DBMS</p>
+        </div>
+        <p class="text-sm text-slate-400 mb-3">Everything in a <strong class="text-slate-200">single system</strong> — DBMS software, hardware, applications, and user interfaces all combined.</p>
+        <div class="text-xs mono bg-slate-900 rounded p-3 text-slate-500">
+          [PC / Mainframe]<br>
+          └── DBMS<br>
+          └── App Programs<br>
+          └── UI Software
+        </div>
+      </div>
+
+      <!-- Two-tier -->
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="split-square-horizontal" class="w-4 h-4 text-cyan-400"></i>
+          <p class="font-semibold text-cyan-400">2-Tier Client-Server</p>
+        </div>
+        <p class="text-sm text-slate-400 mb-3">Client runs UI and application. Server runs the DBMS. Connected via <strong class="text-slate-200">ODBC</strong> (Open DB Connectivity) API.</p>
+        <div class="text-xs mono bg-slate-900 rounded p-3 text-slate-500">
+          [Client]<br>
+          └── UI + App logic<br>
+          ── ODBC/Network ──<br>
+          [DBMS Server]
+        </div>
+      </div>
+
+      <!-- Three-tier -->
+      <div class="card p-5" style="border-color:rgba(34,211,238,.2)">
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="layers" class="w-4 h-4 text-green-400"></i>
+          <p class="font-semibold text-green-400">3-Tier Client-Server</p>
+        </div>
+        <p class="text-sm text-slate-400 mb-3">Most common for <strong class="text-slate-200">web applications</strong>. Intermediate <em>Application Server</em> stores business logic between client and DB.</p>
+        <div class="text-xs mono bg-slate-900 rounded p-3 text-slate-500">
+          [Client] GUI/Web<br>
+          ── HTTP ──<br>
+          [App Server] Logic<br>
+          ── SQL ──<br>
+          [DBMS Server]
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-tip mb-8">
+      <p class="text-xs font-bold text-amber-400 mono mb-2">💡 THREE-TIER SECURITY FEATURE</p>
+      <p class="text-sm text-slate-300">The three-tier architecture adds security by <strong class="text-amber-300">encrypting data at the server</strong> before transmission and <strong class="text-amber-300">decrypting at the client</strong>. The app server acts as a firewall between users and the raw database.</p>
+    </div>
+
+    <!-- DB Classification table -->
+    <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-cyan-400"></i> Database Classification</h3>
+    <div class="card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-800">
+            <th class="text-left p-4 text-cyan-400 font-semibold mono text-xs">CRITERION</th>
+            <th class="text-left p-4 text-cyan-400 font-semibold mono text-xs">TYPES</th>
+          </tr>
+        </thead>
+        <tbody class="text-slate-400">
+          <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
+            <td class="p-4 font-medium text-slate-300">Data Model</td>
+            <td class="p-4">Relational (Oracle, DB2), Object-OO (ObjectStore), Network (DBTG), Hierarchical (IMS)</td>
+          </tr>
+          <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
+            <td class="p-4 font-medium text-slate-300">Number of Users</td>
+            <td class="p-4">Single-user (PCs), Multi-user (enterprise)</td>
+          </tr>
+          <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
+            <td class="p-4 font-medium text-slate-300">Number of Sites</td>
+            <td class="p-4">Centralized, Distributed (R*), Federated (homogeneous/heterogeneous)</td>
+          </tr>
+          <tr class="hover:bg-slate-800/50 transition-colors">
+            <td class="p-4 font-medium text-slate-300">Access Methods</td>
+            <td class="p-4">General purpose DBMS, Special purpose DBMS</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- ============================
+       SECTION 5: PRACTICE QUIZ
+       ============================ -->
+  <section id="practice">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-8 h-8 rounded-lg bg-green-400/10 border border-green-400/20 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="brain" class="w-4 h-4 text-green-400"></i>
+      </div>
+      <div>
+        <p class="section-label" style="color:var(--accent2)">Section 05</p>
+        <h2 class="text-2xl font-bold">Interactive Practice Suite</h2>
+      </div>
+    </div>
+
+    <!-- Score tracker -->
+    <div class="card p-4 mb-6 flex items-center justify-between flex-wrap gap-3">
+      <div class="flex items-center gap-3">
+        <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i>
+        <span class="text-sm text-slate-400">Score: <span id="score-display" class="text-white font-bold">0</span> / <span id="total-display">5</span></span>
+      </div>
+      <div class="flex-1 min-w-32 max-w-48">
+        <div id="quiz-progress-bar">
+          <div id="quiz-progress-fill"></div>
+        </div>
+      </div>
+      <button onclick="resetQuiz()" class="reveal-btn text-xs">
+        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Reset
+      </button>
+    </div>
+
+    <!-- Questions -->
+    <div class="space-y-6" id="quiz-container">
+
+      <!-- Q1 -->
+      <div class="card p-6" id="q1">
+        <div class="flex items-start gap-3 mb-5">
+          <span class="badge badge-cyan mono flex-shrink-0">Q1</span>
+          <div>
+            <p class="font-semibold mb-1">Which category of data model is closest to how <em>users perceive</em> data and uses concepts like entities and relationships?</p>
+            <p class="text-xs text-slate-500">Select the best answer.</p>
+          </div>
+        </div>
+        <div class="space-y-2 mb-4" id="q1-options">
+          <button class="quiz-option" onclick="checkAnswer(1,'a','b')">A. Physical (Low-Level) Data Model</button>
+          <button class="quiz-option" onclick="checkAnswer(1,'b','b')">B. Conceptual (High-Level) Data Model</button>
+          <button class="quiz-option" onclick="checkAnswer(1,'c','b')">C. Implementation Data Model</button>
+          <button class="quiz-option" onclick="checkAnswer(1,'d','b')">D. Relational Data Model</button>
+        </div>
+        <div id="q1-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! Conceptual models like ER are designed to be human-friendly — close to how people think about real-world data.</div>
+        <div id="q1-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Not quite. Physical models deal with storage; Implementation models bridge the two. The answer is <strong>B — Conceptual</strong>.</div>
+        <div class="flex justify-end mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q1-exp')">
+            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
+          </button>
+        </div>
+        <div id="q1-exp" class="explanation">
+          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
+          <p class="text-slate-300 mb-2">The slide explicitly defines three categories: <strong>Conceptual</strong> (high-level, semantic), <strong>Physical</strong> (low-level, internal), and <strong>Implementation</strong> (representational).</p>
+          <p class="text-slate-400 mb-2">The key phrase in the question is <em>"closest to how users perceive data"</em> — this is the definition of a <strong class="text-cyan-300">Conceptual / Semantic model</strong>. The ER model is the prime example.</p>
+          <p class="text-slate-500 text-xs mono">Note: Relational model (D) is actually an Implementation/Representational model, not conceptual.</p>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="card p-6" id="q2">
+        <div class="flex items-start gap-3 mb-5">
+          <span class="badge badge-cyan mono flex-shrink-0">Q2</span>
+          <div>
+            <p class="font-semibold mb-1">In the Three-Schema Architecture, which schema is responsible for describing <em>physical storage structures and access paths</em>?</p>
+            <p class="text-xs text-slate-500">Select the best answer.</p>
+          </div>
+        </div>
+        <div class="space-y-2 mb-4" id="q2-options">
+          <button class="quiz-option" onclick="checkAnswer(2,'a','a')">A. Internal Schema</button>
+          <button class="quiz-option" onclick="checkAnswer(2,'b','a')">B. Conceptual Schema</button>
+          <button class="quiz-option" onclick="checkAnswer(2,'c','a')">C. External Schema</button>
+          <button class="quiz-option" onclick="checkAnswer(2,'d','a')">D. Schema Diagram</button>
+        </div>
+        <div id="q2-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! The Internal Schema deals with physical reality — B+-trees, indexes, block sizes.</div>
+        <div id="q2-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Incorrect. The answer is <strong>A — Internal Schema</strong>. Conceptual = logical structure; External = user views.</div>
+        <div class="flex justify-end mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q2-exp')">
+            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
+          </button>
+        </div>
+        <div id="q2-exp" class="explanation">
+          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
+          <p class="text-slate-300 mb-2">Remember the three levels with this mental model:</p>
+          <ul class="text-slate-400 text-sm space-y-1 mb-3 ml-4">
+            <li>• <strong class="text-cyan-300">External</strong> = what users see (customized views)</li>
+            <li>• <strong class="text-green-300">Conceptual</strong> = what data means (logical structure)</li>
+            <li>• <strong class="text-amber-300">Internal</strong> = how data is stored (physical reality)</li>
+          </ul>
+          <p class="text-slate-400">The question mentions "physical storage structures and access paths" → that's the <strong class="text-amber-300">Internal Schema</strong>. Examples include B+-tree indexes, cluster indexes, and block sizes.</p>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="card p-6" id="q3">
+        <div class="flex items-start gap-3 mb-5">
+          <span class="badge badge-cyan mono flex-shrink-0">Q3</span>
+          <div>
+            <p class="font-semibold mb-1">What type of data independence allows you to change the <em>internal schema</em> without affecting the conceptual schema?</p>
+            <p class="text-xs text-slate-500">Select the best answer.</p>
+          </div>
+        </div>
+        <div class="space-y-2 mb-4" id="q3-options">
+          <button class="quiz-option" onclick="checkAnswer(3,'a','b')">A. Logical Data Independence</button>
+          <button class="quiz-option" onclick="checkAnswer(3,'b','b')">B. Physical Data Independence</button>
+          <button class="quiz-option" onclick="checkAnswer(3,'c','b')">C. Program-Data Independence</button>
+          <button class="quiz-option" onclick="checkAnswer(3,'d','b')">D. Schema Transparency</button>
+        </div>
+        <div id="q3-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! Physical Data Independence means changes to how data is stored don't ripple up to the logical level.</div>
+        <div id="q3-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Incorrect. Logical independence = changing conceptual without affecting external. The answer is <strong>B — Physical Data Independence</strong>.</div>
+        <div class="flex justify-end mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q3-exp')">
+            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
+          </button>
+        </div>
+        <div id="q3-exp" class="explanation">
+          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
+          <p class="text-slate-300 mb-3">There are two types of data independence. Use the following memory trick:</p>
+          <div class="grid grid-cols-2 gap-3 text-sm mb-3">
+            <div class="bg-slate-900 rounded p-3">
+              <p class="text-amber-300 font-semibold mb-1">Physical</p>
+              <p class="text-slate-400">Internal → Conceptual<br>Change storage, not logic</p>
+            </div>
+            <div class="bg-slate-900 rounded p-3">
+              <p class="text-green-300 font-semibold mb-1">Logical</p>
+              <p class="text-slate-400">Conceptual → External<br>Change logic, not views</p>
+            </div>
+          </div>
+          <p class="text-slate-400 text-sm">The question says "change internal schema without affecting conceptual" — that's <strong>Physical Data Independence</strong> (boundary is between internal and conceptual levels).</p>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="card p-6" id="q4">
+        <div class="flex items-start gap-3 mb-5">
+          <span class="badge badge-cyan mono flex-shrink-0">Q4</span>
+          <div>
+            <p class="font-semibold mb-1">A web application has three layers: (1) a browser client with a GUI, (2) an application server running business logic, and (3) a database server. Which DBMS architecture does this represent?</p>
+            <p class="text-xs text-slate-500">Select the best answer.</p>
+          </div>
+        </div>
+        <div class="space-y-2 mb-4" id="q4-options">
+          <button class="quiz-option" onclick="checkAnswer(4,'a','c')">A. Centralized Architecture</button>
+          <button class="quiz-option" onclick="checkAnswer(4,'b','c')">B. Two-Tier Client-Server Architecture</button>
+          <button class="quiz-option" onclick="checkAnswer(4,'c','c')">C. Three-Tier Client-Server Architecture</button>
+          <button class="quiz-option" onclick="checkAnswer(4,'d','c')">D. Federated DBMS Architecture</button>
+        </div>
+        <div id="q4-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! Three layers (client / app server / DB server) = Three-Tier architecture — the standard for modern web apps.</div>
+        <div id="q4-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Incorrect. Three distinct layers with a middle application server = <strong>C — Three-Tier Client-Server</strong>.</div>
+        <div class="flex justify-end mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q4-exp')">
+            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
+          </button>
+        </div>
+        <div id="q4-exp" class="explanation">
+          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
+          <p class="text-slate-300 mb-3">Count the distinct layers in the scenario:</p>
+          <ul class="text-slate-400 text-sm space-y-1 mb-3 ml-4">
+            <li>• Layer 1: Browser/Client with GUI ← client tier</li>
+            <li>• Layer 2: Application Server with business logic ← middle tier</li>
+            <li>• Layer 3: Database Server ← data tier</li>
+          </ul>
+          <p class="text-slate-400 text-sm">3 layers = Three-Tier architecture. The key differentiator from two-tier is the <strong class="text-cyan-300">intermediate Application Server</strong> that holds business rules. This also adds security through encryption between tiers.</p>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="card p-6" id="q5">
+        <div class="flex items-start gap-3 mb-5">
+          <span class="badge badge-cyan mono flex-shrink-0">Q5</span>
+          <div>
+            <p class="font-semibold mb-1">A database designer adds a new column <code class="text-cyan-400 bg-slate-800 px-1 rounded text-xs">BirthDate</code> to the EMPLOYEE conceptual schema. The external schemas used by HR and Payroll applications should remain unchanged. What concept enables this?</p>
+            <p class="text-xs text-slate-500">Select the best answer.</p>
+          </div>
+        </div>
+        <div class="space-y-2 mb-4" id="q5-options">
+          <button class="quiz-option" onclick="checkAnswer(5,'a','a')">A. Logical Data Independence</button>
+          <button class="quiz-option" onclick="checkAnswer(5,'b','a')">B. Physical Data Independence</button>
+          <button class="quiz-option" onclick="checkAnswer(5,'c','a')">C. Three-Tier Architecture</button>
+          <button class="quiz-option" onclick="checkAnswer(5,'d','a')">D. External-Conceptual Mapping</button>
+        </div>
+        <div id="q5-feedback-correct" class="feedback-box feedback-correct"><i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>Correct! Logical Data Independence means conceptual schema changes don't force external schema or application changes.</div>
+        <div id="q5-feedback-wrong" class="feedback-box feedback-wrong"><i data-lucide="x-circle" class="w-4 h-4 inline mr-2"></i>Not quite. <strong>A — Logical Data Independence</strong> is the ability to change the conceptual schema without affecting external schemas. (D is a mechanism, not the independence property itself.)</div>
+        <div class="flex justify-end mt-3">
+          <button class="reveal-btn" onclick="toggleExplanation('q5-exp')">
+            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Reveal Explanation
+          </button>
+        </div>
+        <div id="q5-exp" class="explanation">
+          <p class="font-semibold text-cyan-400 mb-2">How to solve this:</p>
+          <p class="text-slate-300 mb-3">The scenario says: <em>conceptual schema changes</em> (add BirthDate column), but <em>external schemas stay unchanged</em>. This is precisely the definition of <strong class="text-green-300">Logical Data Independence</strong>.</p>
+          <p class="text-slate-400 mb-3 text-sm">Why not D? External-Conceptual Mapping is the <em>mechanism</em> that enables this (the DBMS updates only the mappings, not the schemas themselves), but the <em>property</em> being described is Logical Data Independence.</p>
+          <div class="bg-slate-900 rounded p-3 text-xs mono text-slate-500">
+            External HR view  ← unchanged<br>
+            External Pay view ← unchanged<br>
+            — — — Logical boundary — — —<br>
+            Conceptual: EMPLOYEE + BirthDate  ← changed<br>
+            — — — Physical boundary — — —<br>
+            Internal schema  ← also updates
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end quiz-container -->
+
+    <!-- Score summary -->
+    <div id="quiz-summary" class="card p-6 mt-6 text-center hidden">
+      <i data-lucide="award" class="w-10 h-10 mx-auto mb-3 text-amber-400"></i>
+      <p class="text-xl font-bold mb-1">Quiz Complete!</p>
+      <p class="text-slate-400 mb-4">You scored <span id="final-score" class="text-white font-bold text-2xl"></span> out of 5</p>
+      <p id="score-message" class="text-sm text-slate-400 mb-5"></p>
+      <button onclick="resetQuiz()" class="reveal-btn mx-auto">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Try Again
+      </button>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="border-t border-slate-800 mt-12 py-8">
+  <div class="max-w-5xl mx-auto px-4 text-center">
+    <p class="text-xs mono text-slate-600">CSGE602070 — Basis Data · Week 2 · Database Concept and Architecture</p>
+    <p class="text-xs text-slate-700 mt-1">Based on Elmasri/Navathe "Database Systems" 6th Ed. · Universitas Indonesia</p>
+  </div>
+</footer>
+
+<script>
+  // ============ TABS ============
+  function switchTab(group, tab, btn) {
+    document.querySelectorAll(`#${group}-diagram, #${group}-explain, #${group}-example`).forEach(el => {
+      el.classList.remove('active');
+    });
+    const targetId = `${group}-${tab}`;
+    const target = document.getElementById(targetId);
+    if (target) target.classList.add('active');
+
+    // Update tab buttons
+    if (btn) {
+      const btns = btn.closest('.card').querySelectorAll('.tab-btn');
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  }
+
+  // ============ WALKTHROUGH ============
+  let walkStep = 1;
+  const walkTotal = 5;
+
+  function updateWalkthrough() {
+    for (let i = 1; i <= walkTotal; i++) {
+      const el = document.getElementById(`walk-step-${i}`);
+      const dot = document.getElementById(`w-dot-${i}`);
+      if (i === walkStep) {
+        el.classList.add('active');
+        dot.style.background = '#22d3ee';
+      } else {
+        el.classList.remove('active');
+        dot.style.background = '#475569';
+      }
+    }
+    document.getElementById('walk-counter').textContent = `Step ${walkStep} / ${walkTotal}`;
+    document.getElementById('walk-prev').disabled = walkStep === 1;
+    document.getElementById('walk-next').disabled = walkStep === walkTotal;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function walkNext() {
+    if (walkStep < walkTotal) { walkStep++; updateWalkthrough(); }
+  }
+  function walkPrev() {
+    if (walkStep > 1) { walkStep--; updateWalkthrough(); }
+  }
+
+  // ============ QUIZ ============
+  let score = 0;
+  let answered = new Set();
+
+  function checkAnswer(qNum, selected, correct) {
+    if (answered.has(qNum)) return;
+    answered.add(qNum);
+
+    const opts = document.querySelectorAll(`#q${qNum}-options .quiz-option`);
+    const letters = ['a','b','c','d'];
+
+    opts.forEach((btn, i) => {
+      btn.disabled = true;
+      const letter = letters[i];
+      if (letter === correct) {
+        btn.classList.add('correct');
+      } else if (letter === selected && selected !== correct) {
+        btn.classList.add('wrong');
+      } else {
+        btn.classList.add('dimmed');
+      }
+    });
+
+    const isCorrect = selected === correct;
+    if (isCorrect) {
+      score++;
+      document.getElementById(`q${qNum}-feedback-correct`).style.display = 'flex';
+      document.getElementById(`q${qNum}-feedback-correct`).style.alignItems = 'center';
+    } else {
+      document.getElementById(`q${qNum}-feedback-wrong`).style.display = 'flex';
+      document.getElementById(`q${qNum}-feedback-wrong`).style.alignItems = 'center';
+    }
+
+    // Update score display
+    document.getElementById('score-display').textContent = score;
+    const pct = (answered.size / 5) * 100;
+    document.getElementById('quiz-progress-fill').style.width = pct + '%';
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Show summary if all answered
+    if (answered.size === 5) {
+      setTimeout(() => {
+        const summary = document.getElementById('quiz-summary');
+        summary.classList.remove('hidden');
+        document.getElementById('final-score').textContent = score;
+        const msgs = [
+          "Keep reviewing the material! 📖",
+          "Getting there — focus on schema architecture! 💪",
+          "Good effort! Review data independence concepts. 🔍",
+          "Nice work! A few more reviews and you'll nail it! ⭐",
+          "Excellent! You've mastered this material! 🏆",
+        ];
+        document.getElementById('score-message').textContent = msgs[score] || msgs[4];
+        summary.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }, 600);
+    }
+  }
+
+  function toggleExplanation(id) {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function resetQuiz() {
+    score = 0;
+    answered = new Set();
+    document.getElementById('score-display').textContent = '0';
+    document.getElementById('quiz-progress-fill').style.width = '0%';
+    document.getElementById('quiz-summary').classList.add('hidden');
+
+    for (let q = 1; q <= 5; q++) {
+      // Re-enable options
+      document.querySelectorAll(`#q${q}-options .quiz-option`).forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('correct', 'wrong', 'dimmed');
+      });
+      // Hide feedback
+      const fc = document.getElementById(`q${q}-feedback-correct`);
+      const fw = document.getElementById(`q${q}-feedback-wrong`);
+      if (fc) fc.style.display = 'none';
+      if (fw) fw.style.display = 'none';
+      // Hide explanations
+      const exp = document.getElementById(`q${q}-exp`);
+      if (exp) exp.style.display = 'none';
+    }
+  }
+
+  // Initialize icons on load
+  window.addEventListener('load', function() {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  });
+</script>
+</body>
+</html>

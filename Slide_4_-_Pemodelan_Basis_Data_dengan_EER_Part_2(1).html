@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EER Part 2 — Basis Data | CSF2600700</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #22c55e;
+    --accent2: #16a34a;
+    --accent-dim: rgba(34,197,94,0.12);
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --heading: #f8fafc;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --info: #38bdf8;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(34,197,94,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,197,94,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0b0f1a 0%, #0d1f12 50%, #0b0f1a 100%);
+    border-bottom: 1px solid var(--border);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after {
+    content:'EER';
+    position:absolute;
+    right:-40px; bottom:-60px;
+    font-family:'Syne',sans-serif;
+    font-size:220px;
+    font-weight:800;
+    color: rgba(34,197,94,0.04);
+    pointer-events:none;
+    line-height:1;
+    user-select:none;
+  }
+
+  /* NAV PILLS */
+  .nav-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'Instrument Sans', sans-serif;
+    white-space:nowrap;
+  }
+  .nav-pill:hover, .nav-pill.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* SECTION CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    position:relative;
+    z-index:1;
+  }
+  .card-accent {
+    border-left: 3px solid var(--accent);
+  }
+
+  /* HEADINGS */
+  h1,h2,h3 { font-family: 'Syne', sans-serif; color: var(--heading); }
+  h2 { font-size: 1.5rem; font-weight: 700; }
+  h3 { font-size: 1.1rem; font-weight: 600; }
+
+  /* KEY TERM BOX */
+  .key-term {
+    background: var(--accent-dim);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .key-term .term-label {
+    font-family:'Syne',sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  /* PITFALL BOX */
+  .pitfall {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .pitfall .term-label { color: var(--danger); }
+
+  /* INFO BOX */
+  .info-box {
+    background: rgba(56,189,248,0.07);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .warn-box {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+
+  /* COMPARE TABLE */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
+
+  /* CODE BLOCK */
+  pre {
+    background: #080d14;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    overflow-x:auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .kw { color: #c084fc; }
+  .ty { color: #38bdf8; }
+  .cm { color: #475569; font-style:italic; }
+  .str { color: #86efac; }
+  .fn { color: #fbbf24; }
+  .num { color: #fb923c; }
+
+  /* DIAGRAM BOX */
+  .diagram-box {
+    background: #080d14;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+  }
+
+  /* WALKTHROUGH */
+  .walkthrough-step {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    border-left: 3px solid var(--border);
+    transition: border-color .2s;
+    cursor:pointer;
+  }
+  .walkthrough-step.active {
+    border-left-color: var(--accent);
+  }
+  .step-num {
+    font-family:'Syne',sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color: var(--muted);
+    margin-bottom:4px;
+  }
+  .step-detail {
+    display:none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .step-detail.open { display:block; }
+
+  /* QUIZ */
+  .quiz-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .quiz-card .q-num {
+    font-family:'Syne',sans-serif;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  .option-btn {
+    display:block;
+    width:100%;
+    text-align:left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 16px;
+    color: var(--text);
+    font-size: 14px;
+    font-family:'Instrument Sans',sans-serif;
+    cursor:pointer;
+    transition: all .18s;
+    margin-bottom:8px;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .option-btn.correct {
+    border-color: var(--accent) !important;
+    background: rgba(34,197,94,0.15) !important;
+    color: #86efac !important;
+  }
+  .option-btn.wrong {
+    border-color: var(--danger) !important;
+    background: rgba(239,68,68,0.12) !important;
+    color: #fca5a5 !important;
+  }
+  .feedback-box {
+    margin-top:12px;
+    border-radius:8px;
+    padding:12px 16px;
+    font-size:14px;
+    display:none;
+  }
+  .feedback-box.show { display:block; }
+  .feedback-box.correct { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color:#86efac; }
+  .feedback-box.wrong { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color:#fca5a5; }
+  .reveal-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: var(--muted);
+    font-size: 13px;
+    font-family:'Instrument Sans',sans-serif;
+    cursor:pointer;
+    transition: all .2s;
+    margin-top:12px;
+  }
+  .reveal-btn:hover { border-color: var(--info); color: var(--info); }
+  .explanation {
+    display:none;
+    margin-top:12px;
+    background: rgba(56,189,248,0.06);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 8px;
+    padding:16px;
+    font-size:13.5px;
+    color:var(--text);
+    line-height:1.65;
+  }
+  .explanation.open { display:block; }
+
+  /* BADGE */
+  .badge {
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:var(--accent-dim);
+    border:1px solid rgba(34,197,94,0.25);
+    color:var(--accent);
+    font-size:11px;
+    font-family:'Syne',sans-serif;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:3px 10px;
+    border-radius:9999px;
+  }
+
+  /* DIVIDER */
+  .section-divider {
+    border:none;
+    border-top:1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* SCROLL SMOOTH */
+  html { scroll-behavior: smooth; }
+
+  /* TAG */
+  .tag {
+    display:inline-block;
+    background: rgba(56,189,248,0.08);
+    border: 1px solid rgba(56,189,248,0.18);
+    border-radius:6px;
+    padding:2px 8px;
+    font-size:12px;
+    color: var(--info);
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  /* PROGRESS BAR */
+  #quiz-progress-bar {
+    transition: width .4s ease;
+  }
+
+  /* DIAGRAM SVG */
+  .eer-node { fill:#1a2235; stroke:#22c55e; stroke-width:1.5; }
+  .eer-entity { fill:#0f1c2e; stroke:#22c55e; stroke-width:2; rx:2; }
+  .eer-rel { fill:#0f1c2e; stroke:#38bdf8; stroke-width:1.5; }
+  .eer-attr { fill:#0f1c2e; stroke:#a78bfa; stroke-width:1.5; }
+  .eer-text { fill:#e2e8f0; font-family:'JetBrains Mono',monospace; font-size:11px; }
+  .eer-line { stroke:#4b5563; stroke-width:1.5; }
+  .eer-double { stroke:#22c55e; stroke-width:2; }
+  .union-circ { fill:#0f1c2e; stroke:#f59e0b; stroke-width:2; }
+  .union-text { fill:#f59e0b; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HERO ═══════════════════════ -->
+<header class="hero px-6 py-14 md:px-16 md:py-20">
+  <div class="max-w-5xl mx-auto relative z-10">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="badge"><i data-lucide="database" style="width:11px;height:11px;"></i> CSF2600700</span>
+      <span class="badge" style="background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.25);color:#38bdf8;">Basis Data</span>
+    </div>
+    <h1 style="font-size:clamp(1.8rem,5vw,3.2rem); font-weight:800; line-height:1.15; letter-spacing:-.02em;" class="mb-4">
+      Pemodelan Basis Data<br/><span style="color:var(--accent);">dengan EER</span>
+    </h1>
+    <p style="color:var(--muted); font-size:1rem; max-width:500px;">
+      Slide 4 · Part 2 — Hierarchy, Lattice, Categories, Higher Degree Relationship, dan Kapan Menggunakan EER
+    </p>
+    <!-- TOPIC PILLS NAV -->
+    <nav class="flex flex-wrap gap-2 mt-8">
+      <button class="nav-pill" onclick="scrollTo('sec-concepts')">Conceptual Deep Dive</button>
+      <button class="nav-pill" onclick="scrollTo('sec-viz')">Visualisasi & Logic</button>
+      <button class="nav-pill" onclick="scrollTo('sec-quiz')">Practice Suite</button>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-5 md:px-10 py-12 relative z-10">
+
+<!-- ═══════════════════════ PROGRESS TRACKER ═══════════════════════ -->
+<div class="card mb-8" style="padding:20px 28px;">
+  <div class="flex items-center justify-between mb-3">
+    <span style="font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--muted); letter-spacing:.08em; text-transform:uppercase;">Quiz Progress</span>
+    <span id="quiz-score-label" style="font-family:'Syne',sans-serif; font-size:13px; color:var(--accent);">0 / 5 answered</span>
+  </div>
+  <div style="background:var(--surface2); border-radius:9999px; height:6px; overflow:hidden;">
+    <div id="quiz-progress-bar" style="background:var(--accent); height:100%; border-radius:9999px; width:0%;"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 1 — CONCEPTUAL DEEP DIVE
+══════════════════════════════════════════════════════ -->
+<section id="sec-concepts">
+  <div class="flex items-center gap-3 mb-6">
+    <div style="width:36px;height:36px;background:var(--accent-dim);border:1px solid rgba(34,197,94,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+      <i data-lucide="brain" style="width:18px;height:18px;color:var(--accent);"></i>
+    </div>
+    <h2>Conceptual Deep Dive</h2>
+  </div>
+
+  <!-- ── 4. Hierarchy dan Lattice ── -->
+  <div class="card card-accent mb-6">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="tag">4</span>
+      <h3>Hierarchy &amp; Lattice</h3>
+    </div>
+
+    <div class="compare-grid mb-5">
+      <!-- Hierarchy -->
+      <div class="key-term">
+        <div class="term-label">📐 Hierarchy</div>
+        <p style="font-size:14px;">Satu <strong>subclass</strong> hanya memiliki <strong>satu superclass</strong> saja (single parent). Subclass hanya berpartisipasi pada satu class/subclass relationship.</p>
+        <p style="font-size:13px; color:var(--muted); margin-top:8px;">Contoh: <span class="tag">VEHICLE</span> → <span class="tag">TRUCK</span>, <span class="tag">CAR</span></p>
+      </div>
+      <!-- Lattice -->
+      <div class="key-term" style="border-color:rgba(56,189,248,0.25);background:rgba(56,189,248,0.06);">
+        <div class="term-label" style="color:var(--info);">🕸️ Lattice</div>
+        <p style="font-size:14px;">Satu <strong>subclass</strong> dapat memiliki <strong>lebih dari satu superclass</strong> (multiple inheritance). Subclass berpartisipasi pada lebih dari satu class/subclass relationship.</p>
+        <p style="font-size:13px; color:var(--muted); margin-top:8px;">Contoh: <span class="tag">ENGINEERING_MANAGER</span> harus jadi <span class="tag">ENGINEER</span> &amp; <span class="tag">MANAGER</span></p>
+      </div>
+    </div>
+
+    <div class="pitfall">
+      <div class="term-label">⚠️ Common Pitfall</div>
+      <p style="font-size:14px;">Pada <strong>Lattice</strong>, meskipun ENGINEERING_MANAGER mewarisi atribut dari banyak superclass, <strong>atribut dari superclass tertinggi (EMPLOYEE) hanya diwariskan 1 kali</strong> — tidak duplikat. Ini berbeda dengan beberapa bahasa OOP yang menghasilkan "diamond problem".</p>
+    </div>
+
+    <div class="mt-4 info-box">
+      <div class="term-label" style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--info);margin-bottom:4px;">🔍 Mental Model</div>
+      <p style="font-size:14px;">Bayangkan Hierarchy seperti <strong>pohon keluarga biasa</strong> (satu anak, satu orang tua biologis). Lattice seperti <strong>anak angkat</strong> yang secara sah memiliki hak waris dari dua keluarga berbeda.</p>
+    </div>
+  </div>
+
+  <!-- ── 5. Categories ── -->
+  <div class="card card-accent mb-6">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="tag">5</span>
+      <h3>Pemodelan dengan Categories (Union Type)</h3>
+    </div>
+
+    <p style="font-size:14px; margin-bottom:16px;">Sebuah <strong>category</strong> (disebut juga <em>union type</em>) adalah subclass yang memiliki <strong>satu relationship dengan beberapa superclass berbeda</strong>, namun anggotanya hanya berasal dari <strong>salah satu</strong> superclass tersebut.</p>
+
+    <div class="compare-grid mb-5">
+      <div class="key-term">
+        <div class="term-label">🔗 Lattice (Shared Subclass)</div>
+        <p style="font-size:14px;"><code>ENGINEERING_MANAGER</code> harus ada di <strong>semua</strong> superclass-nya: MANAGER, ENGINEER, dan SALARIED_EMPLOYEE sekaligus.</p>
+        <p style="font-size:13px; color:var(--muted); margin-top:6px;">→ <strong>Mewarisi semua atribut</strong> dari semua superclass</p>
+      </div>
+      <div class="key-term" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.06);">
+        <div class="term-label" style="color:var(--warn);">🔀 Category (Union)</div>
+        <p style="font-size:14px;"><code>OWNER</code> harus ada pada <strong>salah satu</strong> dari COMPANY, BANK, atau PERSON — bukan ketiganya.</p>
+        <p style="font-size:13px; color:var(--muted); margin-top:6px;">→ <strong>Mewarisi atribut tertentu saja</strong> tergantung superclass-nya</p>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+      <div class="key-term" style="border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.05);">
+        <div class="term-label" style="color:var(--warn);">Partial Category</div>
+        <p style="font-size:13.5px;">Member dari category <strong>boleh ada atau tidak</strong> dalam relationship. Ditandai dengan garis tunggal (⊂). Contoh: <span class="tag">ACCOUNT_HOLDER</span></p>
+      </div>
+      <div class="key-term">
+        <div class="term-label">Total Category</div>
+        <p style="font-size:13.5px;">Member <strong>wajib</strong> termasuk dalam salah satu superclass. Ditandai dengan garis ganda (⊆). Contoh: <span class="tag">PROPERTY</span> harus BUILDING atau LOT.</p>
+      </div>
+    </div>
+
+    <div class="pitfall mt-4">
+      <div class="term-label">⚠️ Common Pitfall</div>
+      <p style="font-size:14px;">Banyak yang bingung antara <strong>Category vs Lattice</strong>. Ingat: simbol <code>U</code> dalam lingkaran pada diagram = Category (union). Tanpa lingkaran U = Lattice / generalization biasa.</p>
+    </div>
+  </div>
+
+  <!-- ── 6. Higher Degree Relationship ── -->
+  <div class="card card-accent mb-6">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="tag">6</span>
+      <h3>Higher Degree Relationship</h3>
+    </div>
+    <p style="font-size:14px; margin-bottom:14px;">Relationship yang menghubungkan <strong>lebih dari 2 entity types</strong>. Relationship ternary (degree 3) menghubungkan 3 entity sekaligus dan <strong>berbeda makna</strong> dari 3 binary relationship terpisah.</p>
+
+    <div class="compare-grid mb-4">
+      <div class="key-term">
+        <div class="term-label">✅ Ternary Relationship</div>
+        <p style="font-size:13.5px;">SUPPLIER–SUPPLY–PROJECT–PART dalam <strong>satu relationship</strong>. Makna: Supplier X mensuplai Part Y ke Project Z dalam satu transaksi.</p>
+      </div>
+      <div class="pitfall">
+        <div class="term-label">❌ Tiga Binary Relationships</div>
+        <p style="font-size:13.5px;">CAN_SUPPLY, USES, SUPPLIES sebagai 3 relasi terpisah. Maknanya berbeda — tidak bisa menggambarkan triple constraint yang sama.</p>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <h3 style="font-size:15px; margin-bottom:10px;">Cara Menyederhanakan Higher Degree Relationship:</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div class="info-box">
+          <div class="term-label" style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--info);margin-bottom:4px;">Opsi 1 — Weak Entity</div>
+          <p style="font-size:13.5px;">Representasikan ternary relationship sebagai <strong>weak entity type</strong> yang berhubungan ke owner entity types melalui binary (identifying) relationships.</p>
+        </div>
+        <div class="info-box">
+          <div class="term-label" style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--info);margin-bottom:4px;">Opsi 2 — Identifying Relationship</div>
+          <p style="font-size:13.5px;">Gunakan <strong>ternary relationship type</strong> yang langsung menjadi identifying relationship dengan weak entity dan dua owner entity types.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pitfall">
+      <div class="term-label">⚠️ Common Pitfall</div>
+      <p style="font-size:14px;">Jangan sembarangan mengganti ternary relationship dengan tiga binary relationship! Ini mengubah semantik (makna) dari model. Ternary relationship menyatakan constraint yang lebih ketat antara ketiga entitas secara bersamaan.</p>
+    </div>
+  </div>
+
+  <!-- ── 7. Kapan EER ── -->
+  <div class="card card-accent mb-2">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="tag">7</span>
+      <h3>Kapan Kita Menggunakan EER?</h3>
+    </div>
+
+    <div class="warn-box mb-4">
+      <div class="term-label" style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--warn);margin-bottom:4px;">🎯 Prinsip Utama</div>
+      <p style="font-size:14px;">Tujuan pemodelan konseptual adalah menghasilkan model yang <strong>sederhana dan mudah dimengerti</strong>. EER hanya digunakan jika benar-benar memberikan keuntungan nyata.</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+      <div class="key-term">
+        <div class="term-label">✅ Gunakan EER Jika...</div>
+        <ul style="font-size:13.5px; list-style:none; padding:0;">
+          <li style="padding:4px 0; border-bottom:1px solid rgba(34,197,94,0.1);">• Domain secara alami bersifat <strong>object-oriented</strong></li>
+          <li style="padding:4px 0; border-bottom:1px solid rgba(34,197,94,0.1);">• Attribute inheritance dapat <strong>mereduksi nilai NULL</strong></li>
+          <li style="padding:4px 0;">• Subclass perlu memodelkan subset entity yang punya <strong>relationship unik sendiri</strong></li>
+        </ul>
+      </div>
+      <div class="pitfall">
+        <div class="term-label">❌ Hindari EER Jika...</div>
+        <ul style="font-size:13.5px; list-style:none; padding:0;">
+          <li style="padding:4px 0; border-bottom:1px solid rgba(239,68,68,0.1);">• Relasi class/subclass tidak diperlukan secara domain</li>
+          <li style="padding:4px 0; border-bottom:1px solid rgba(239,68,68,0.1);">• Model ER biasa sudah cukup sederhana dan jelas</li>
+          <li style="padding:4px 0;">• Kompleksitas EER justru mempersulit pemahaman tim</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 2 — VISUALIZATION & LOGIC
+══════════════════════════════════════════════════════ -->
+<section id="sec-viz">
+  <div class="flex items-center gap-3 mb-6">
+    <div style="width:36px;height:36px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+      <i data-lucide="git-branch" style="width:18px;height:18px;color:var(--info);"></i>
+    </div>
+    <h2>Visualisasi &amp; Logic</h2>
+  </div>
+
+  <!-- DIAGRAM 1: Hierarchy vs Lattice -->
+  <div class="card mb-6">
+    <h3 class="mb-4">Diagram: Hierarchy vs Lattice</h3>
+    <div class="diagram-box mb-4" style="flex-direction:column; align-items:center; gap:24px;">
+      <svg width="680" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;">
+        <!-- Label -->
+        <text x="160" y="20" class="eer-text" style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;fill:#22c55e;text-anchor:middle;">HIERARCHY</text>
+        <text x="500" y="20" class="eer-text" style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;fill:#38bdf8;text-anchor:middle;">LATTICE</text>
+
+        <!-- HIERARCHY: VEHICLE -->
+        <rect x="110" y="35" width="100" height="32" rx="4" class="eer-node" style="fill:#0f1c2e;stroke:#22c55e;stroke-width:2;"/>
+        <text x="160" y="56" class="eer-text" style="text-anchor:middle;">VEHICLE</text>
+        <!-- d circle -->
+        <circle cx="160" cy="90" r="12" style="fill:#0f1c2e;stroke:#22c55e;stroke-width:1.5;"/>
+        <text x="160" y="95" class="eer-text" style="text-anchor:middle;fill:#22c55e;font-size:12px;">d</text>
+        <line x1="160" y1="67" x2="160" y2="78" class="eer-line"/>
+        <!-- lines to subclasses -->
+        <line x1="130" y1="102" x2="90" y2="130" class="eer-line"/>
+        <line x1="190" y1="102" x2="230" y2="130" class="eer-line"/>
+        <!-- CAR -->
+        <rect x="50" y="130" width="80" height="30" rx="4" class="eer-node" style="fill:#0f1c2e;stroke:#22c55e;stroke-width:2;"/>
+        <text x="90" y="150" class="eer-text" style="text-anchor:middle;">CAR</text>
+        <!-- TRUCK -->
+        <rect x="190" y="130" width="80" height="30" rx="4" class="eer-node" style="fill:#0f1c2e;stroke:#22c55e;stroke-width:2;"/>
+        <text x="230" y="150" class="eer-text" style="text-anchor:middle;">TRUCK</text>
+
+        <!-- SINGLE PARENT label -->
+        <text x="160" y="200" class="eer-text" style="text-anchor:middle;fill:#64748b;font-size:11px;">satu superclass (VEHICLE)</text>
+
+        <!-- DIVIDER -->
+        <line x1="340" y1="0" x2="340" y2="320" style="stroke:#1e2d45;stroke-width:1;stroke-dasharray:4,4;"/>
+
+        <!-- LATTICE: EMPLOYEE at top -->
+        <rect x="450" y="35" width="100" height="32" rx="4" style="fill:#0f1c2e;stroke:#38bdf8;stroke-width:2;"/>
+        <text x="500" y="56" class="eer-text" style="text-anchor:middle;">EMPLOYEE</text>
+        <!-- Lines down -->
+        <line x1="470" y1="67" x2="420" y2="110" class="eer-line"/>
+        <line x1="500" y1="67" x2="500" y2="110" class="eer-line"/>
+        <line x1="530" y1="67" x2="560" y2="110" class="eer-line"/>
+        <!-- ENGINEER -->
+        <rect x="375" y="110" width="90" height="30" rx="4" style="fill:#0f1c2e;stroke:#38bdf8;stroke-width:2;"/>
+        <text x="420" y="130" class="eer-text" style="text-anchor:middle;">ENGINEER</text>
+        <!-- MANAGER -->
+        <rect x="455" y="110" width="90" height="30" rx="4" style="fill:#0f1c2e;stroke:#38bdf8;stroke-width:2;"/>
+        <text x="500" y="130" class="eer-text" style="text-anchor:middle;">MANAGER</text>
+        <!-- SALARIED -->
+        <rect x="520" y="110" width="110" height="30" rx="4" style="fill:#0f1c2e;stroke:#38bdf8;stroke-width:2;"/>
+        <text x="575" y="130" class="eer-text" style="text-anchor:middle;">SALARIED_EMP</text>
+        <!-- Lines to ENG_MGR -->
+        <line x1="420" y1="140" x2="490" y2="190" class="eer-line" style="stroke:#38bdf8;"/>
+        <line x1="500" y1="140" x2="500" y2="190" class="eer-line" style="stroke:#38bdf8;"/>
+        <line x1="575" y1="140" x2="510" y2="190" class="eer-line" style="stroke:#38bdf8;"/>
+        <!-- ENGINEERING_MANAGER -->
+        <rect x="420" y="190" width="160" height="34" rx="4" style="fill:#0c1e30;stroke:#38bdf8;stroke-width:2;"/>
+        <text x="500" y="212" class="eer-text" style="text-anchor:middle;fill:#38bdf8;font-size:11px;">ENGINEERING_MANAGER</text>
+
+        <!-- multiple inheritance label -->
+        <text x="500" y="255" class="eer-text" style="text-anchor:middle;fill:#64748b;font-size:11px;">3 superclass (multiple inheritance)</text>
+        <text x="500" y="270" class="eer-text" style="text-anchor:middle;fill:#38bdf8;font-size:11px;">↑ atribut EMPLOYEE hanya diwariskan 1×</text>
+      </svg>
+    </div>
+    <p style="font-size:13px; color:var(--muted); text-align:center;">Hierarchy = satu parent · Lattice = multiple parents, tapi ancestor tertinggi tidak duplikat</p>
+  </div>
+
+  <!-- DIAGRAM 2: Category (Union Type) -->
+  <div class="card mb-6">
+    <h3 class="mb-4">Diagram: Union Type / Category — OWNER</h3>
+    <div class="diagram-box mb-3">
+      <svg width="420" viewBox="0 0 420 310" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;">
+        <!-- BANK -->
+        <rect x="10" y="10" width="90" height="30" rx="4" style="fill:#0f1c2e;stroke:#22c55e;stroke-width:2;"/>
+        <text x="55" y="30" class="eer-text" style="text-anchor:middle;">BANK</text>
+        <!-- PERSON -->
+        <rect x="160" y="10" width="90" height="30" rx="4" style="fill:#0f1c2e;stroke:#22c55e;stroke-width:2;"/>
+        <text x="205" y="30" class="eer-text" style="text-anchor:middle;">PERSON</text>
+        <!-- COMPANY -->
+        <rect x="310" y="10" width="100" height="30" rx="4" style="fill:#0f1c2e;stroke:#22c55e;stroke-width:2;"/>
+        <text x="360" y="30" class="eer-text" style="text-anchor:middle;">COMPANY</text>
+        <!-- Lines to union circle -->
+        <line x1="55" y1="40" x2="175" y2="110" class="eer-line"/>
+        <line x1="205" y1="40" x2="205" y2="100" class="eer-line"/>
+        <line x1="360" y1="40" x2="235" y2="110" class="eer-line"/>
+        <!-- Union circle -->
+        <circle cx="205" cy="120" r="18" class="union-circ"/>
+        <text x="205" y="126" class="union-text" style="text-anchor:middle;">U</text>
+        <!-- Line to OWNER (double = total, single = partial) -->
+        <line x1="205" y1="138" x2="205" y2="175" class="eer-line" style="stroke:#f59e0b;"/>
+        <line x1="207" y1="138" x2="207" y2="175" class="eer-line" style="stroke:#f59e0b;"/>
+        <!-- OWNER -->
+        <rect x="155" y="175" width="100" height="32" rx="4" style="fill:#0f1c2e;stroke:#f59e0b;stroke-width:2;"/>
+        <text x="205" y="196" class="eer-text" style="text-anchor:middle;fill:#fbbf24;">OWNER</text>
+        <!-- annotation -->
+        <text x="245" y="145" class="eer-text" style="font-size:10px;fill:#f59e0b;">⟵ ganda = total</text>
+        <text x="205" y="240" class="eer-text" style="text-anchor:middle;font-size:11px;fill:#64748b;">OWNER ada di salah satu superclass saja</text>
+        <text x="205" y="258" class="eer-text" style="text-anchor:middle;font-size:11px;fill:#64748b;">(BANK atau PERSON atau COMPANY)</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- CODE WALKTHROUGH: Ternary vs Binary -->
+  <div class="card mb-6">
+    <h3 class="mb-1">Logic Walkthrough: Ternary vs Binary Relationship</h3>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Klik setiap langkah untuk memahami perbedaan semantik antara ternary dan tiga binary relationship.</p>
+
+    <pre><code><span class="cm">-- ✅ TERNARY: Satu relationship menangkap triple constraint</span>
+<span class="kw">SELECT</span> s.sname, p.part_no, pj.proj_name, sp.quantity
+<span class="kw">FROM</span>   <span class="ty">SUPPLIER</span> s
+<span class="kw">JOIN</span>   <span class="ty">SUPPLY</span> sp   <span class="kw">ON</span> s.sid = sp.supplier_id
+<span class="kw">JOIN</span>   <span class="ty">PART</span> p      <span class="kw">ON</span> p.part_no = sp.part_no
+<span class="kw">JOIN</span>   <span class="ty">PROJECT</span> pj  <span class="kw">ON</span> pj.pid = sp.project_id;
+
+<span class="cm">-- ❌ BINARY: Tidak bisa garantikan Supplier X memang suplai Part Y ke Project Z</span>
+<span class="kw">SELECT</span> <span class="str">*</span> <span class="kw">FROM</span> <span class="ty">SUPPLIES</span>   <span class="cm">-- Supplier → Project</span>
+<span class="kw">SELECT</span> <span class="str">*</span> <span class="kw">FROM</span> <span class="ty">CAN_SUPPLY</span> <span class="cm">-- Supplier → Part</span>
+<span class="kw">SELECT</span> <span class="str">*</span> <span class="kw">FROM</span> <span class="ty">USES</span>       <span class="cm">-- Project → Part</span>
+<span class="cm">-- ⬆ Tiga tabel terpisah = tidak ada jaminan triple constraint</span></code></pre>
+
+    <div class="mt-4" style="display:flex; flex-direction:column; gap:10px;">
+      <div class="walkthrough-step active" onclick="toggleStep(this)">
+        <div class="step-num">Langkah 1 — Identifikasi Jumlah Entity</div>
+        <p style="font-size:14px;">Hitung berapa entity type yang terlibat. Jika 3 entity terlibat dalam <strong>satu transaksi/kejadian bersamaan</strong>, pertimbangkan ternary relationship.</p>
+        <div class="step-detail open">
+          <p>Pada contoh: SUPPLIER, PART, PROJECT terlibat bersamaan dalam satu aksi "supply". Ini sinyal kuat bahwa <strong>ternary lebih tepat</strong> daripada tiga binary terpisah.</p>
+        </div>
+      </div>
+      <div class="walkthrough-step" onclick="toggleStep(this)">
+        <div class="step-num">Langkah 2 — Uji Ketergantungan</div>
+        <p style="font-size:14px;">Apakah mengetahui dua entity sudah cukup, atau butuh ketiganya sekaligus?</p>
+        <div class="step-detail">
+          <p>Jika: "Apakah Supplier A bisa mensuplai Part B?" berbeda maknanya dengan "Apakah Supplier A mensuplai Part B ke Project C?" maka triple constraint diperlukan → gunakan <strong>ternary</strong>. Tiga binary tidak bisa menjawab pertanyaan ini dengan benar.</p>
+        </div>
+      </div>
+      <div class="walkthrough-step" onclick="toggleStep(this)">
+        <div class="step-num">Langkah 3 — Pilih Representasi</div>
+        <p style="font-size:14px;">Setelah konfirmasi perlu ternary, pilih antara: weak entity type atau identifying relationship type.</p>
+        <div class="step-detail">
+          <p>Gunakan <strong>Weak Entity</strong> jika relationship memiliki banyak atribut sendiri (seperti Quantity, Date). Gunakan <strong>Identifying Relationship</strong> jika relationship itu sendiri adalah entitas yang perlu dilacak (seperti INTERVIEW yang menghasilkan JOB_OFFER).</p>
+        </div>
+      </div>
+      <div class="walkthrough-step" onclick="toggleStep(this)">
+        <div class="step-num">Langkah 4 — Validasi Cardinality</div>
+        <p style="font-size:14px;">Cek ratio (1:N:M atau N:M:P) untuk memastikan desain sudah tepat.</p>
+        <div class="step-detail">
+          <p>Pada SUPPLY (ternary): SUPPLIER 1–N ke SUPPLY, PROJECT 1–N ke SUPPLY, PART 1–N ke SUPPLY. Artinya satu instance SUPPLY mengacu pada tepat satu SUPPLIER, satu PROJECT, satu PART — tapi satu SUPPLIER bisa punya banyak SUPPLY records.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 3 — INTERACTIVE PRACTICE SUITE
+══════════════════════════════════════════════════════ -->
+<section id="sec-quiz">
+  <div class="flex items-center gap-3 mb-6">
+    <div style="width:36px;height:36px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+      <i data-lucide="zap" style="width:18px;height:18px;color:var(--warn);"></i>
+    </div>
+    <h2>Interactive Practice Suite</h2>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:20px;">
+
+    <!-- Q1 -->
+    <div class="quiz-card" id="q1">
+      <div class="q-num">Soal 1 / 5</div>
+      <p style="font-size:15px; font-weight:600; margin-bottom:14px;">Apa perbedaan utama antara <strong>Hierarchy</strong> dan <strong>Lattice</strong> dalam EER?</p>
+      <button class="option-btn" onclick="answer(this,'q1',false)">A. Hierarchy menggunakan simbol 'U', Lattice menggunakan lingkaran 'd'</button>
+      <button class="option-btn" onclick="answer(this,'q1',true)">B. Pada Hierarchy satu subclass hanya punya satu superclass, sedangkan Lattice memungkinkan multiple superclass</button>
+      <button class="option-btn" onclick="answer(this,'q1',false)">C. Hierarchy hanya untuk entitas manusia, Lattice untuk entitas benda</button>
+      <button class="option-btn" onclick="answer(this,'q1',false)">D. Lattice tidak mendukung inheritance sama sekali</button>
+      <div class="feedback-box" id="fb-q1"></div>
+      <button class="reveal-btn" onclick="revealExplanation('exp-q1',this)">
+        <i data-lucide="eye" style="width:13px;height:13px;display:inline;vertical-align:middle;"></i> Reveal Explanation
+      </button>
+      <div class="explanation" id="exp-q1">
+        <strong style="color:var(--info);">Metodologi:</strong> Hierarchy = tree structure (satu parent). Lattice = graph structure (multiple parents). Kata kunci: "hanya satu superclass" → Hierarchy. "lebih dari satu superclass" → Lattice (mengandung konsep <em>multiple inheritance</em>). Contoh konkret dari slide: ENGINEERING_MANAGER harus jadi ENGINEER dan MANAGER dan SALARIED_EMPLOYEE sekaligus → itu Lattice.
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card" id="q2">
+      <div class="q-num">Soal 2 / 5</div>
+      <p style="font-size:15px; font-weight:600; margin-bottom:14px;">Seorang mahasiswa adalah GRADUATE_STUDENT sekaligus TEACHING_ASSISTANT. Fenomena ini dalam EER disebut...</p>
+      <button class="option-btn" onclick="answer(this,'q2',false)">A. Partial Category</button>
+      <button class="option-btn" onclick="answer(this,'q2',false)">B. Total Specialization</button>
+      <button class="option-btn" onclick="answer(this,'q2',true)">C. Multiple Inheritance dalam Lattice</button>
+      <button class="option-btn" onclick="answer(this,'q2',false)">D. Union Type dengan simbol U</button>
+      <div class="feedback-box" id="fb-q2"></div>
+      <button class="reveal-btn" onclick="revealExplanation('exp-q2',this)">
+        <i data-lucide="eye" style="width:13px;height:13px;display:inline;vertical-align:middle;"></i> Reveal Explanation
+      </button>
+      <div class="explanation" id="exp-q2">
+        <strong style="color:var(--info);">Metodologi:</strong> Kunci soal: satu entity ada di <em>beberapa</em> subclass sekaligus. Dari slide contoh Lattice (2): graduate student sekaligus teaching assistant. Ini adalah <strong>multiple inheritance dalam struktur Lattice</strong> — bukan Category karena entity ada di lebih dari satu subclass, bukan salah satu. Category (Union) justru memastikan entity hanya dari salah satu superclass.
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card" id="q3">
+      <div class="q-num">Soal 3 / 5</div>
+      <p style="font-size:15px; font-weight:600; margin-bottom:14px;">Entitas OWNER bisa berupa PERSON, COMPANY, atau BANK — tetapi tidak bisa ketiganya sekaligus. Konsep EER yang tepat untuk ini adalah...</p>
+      <button class="option-btn" onclick="answer(this,'q3',false)">A. Lattice dengan multiple inheritance</button>
+      <button class="option-btn" onclick="answer(this,'q3',true)">B. Category (Union Type) dengan simbol U dalam lingkaran</button>
+      <button class="option-btn" onclick="answer(this,'q3',false)">C. Hierarchy dengan disjoint specialization</button>
+      <button class="option-btn" onclick="answer(this,'q3',false)">D. Generalization dengan overlapping constraint</button>
+      <div class="feedback-box" id="fb-q3"></div>
+      <button class="reveal-btn" onclick="revealExplanation('exp-q3',this)">
+        <i data-lucide="eye" style="width:13px;height:13px;display:inline;vertical-align:middle;"></i> Reveal Explanation
+      </button>
+      <div class="explanation" id="exp-q3">
+        <strong style="color:var(--info);">Metodologi:</strong> Kata kunci: "bisa berupa A, B, atau C — tapi tidak ketiganya sekaligus" = Category/Union Type. Perbedaan dari Lattice: di Category, entity hanya berasal dari <em>salah satu</em> superclass (union of superclasses). Di diagram, ditandai dengan lingkaran berisi huruf "U". OWNER mewarisi atribut <em>hanya</em> dari superclass asalnya (misal: jika PERSON, hanya dapat atribut PERSON).
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card" id="q4">
+      <div class="q-num">Soal 4 / 5</div>
+      <p style="font-size:15px; font-weight:600; margin-bottom:14px;">Mengapa ternary relationship type <strong>SUPPLY(SUPPLIER, PART, PROJECT)</strong> TIDAK bisa digantikan oleh tiga binary relationship terpisah (CAN_SUPPLY, USES, SUPPLIES)?</p>
+      <button class="option-btn" onclick="answer(this,'q4',false)">A. Karena ternary relationship lebih efisien dalam penyimpanan data</button>
+      <button class="option-btn" onclick="answer(this,'q4',false)">B. Karena binary relationship tidak mendukung atribut relationship</button>
+      <button class="option-btn" onclick="answer(this,'q4',true)">C. Karena kedua representasi memiliki makna (semantik) yang berbeda — triple constraint tidak bisa dijamin oleh tiga binary terpisah</button>
+      <button class="option-btn" onclick="answer(this,'q4',false)">D. Karena EER tidak mengizinkan lebih dari satu binary relationship antar entitas yang sama</button>
+      <div class="feedback-box" id="fb-q4"></div>
+      <button class="reveal-btn" onclick="revealExplanation('exp-q4',this)">
+        <i data-lucide="eye" style="width:13px;height:13px;display:inline;vertical-align:middle;"></i> Reveal Explanation
+      </button>
+      <div class="explanation" id="exp-q4">
+        <strong style="color:var(--info);">Metodologi:</strong> Ternary SUPPLY menyatakan: "Supplier X mensuplai Part Y <em>ke</em> Project Z dalam satu transaksi". Tiga binary terpisah hanya bisa menyatakan: "X bisa mensuplai Y (secara umum)" dan "X mensuplai ke Z (secara umum)" — tanpa menjamin bahwa X benar-benar mensuplai Y spesifik ke Z spesifik dalam satu kejadian. Ini adalah perbedaan <strong>semantik</strong>, bukan hanya teknis.
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-card" id="q5">
+      <div class="q-num">Soal 5 / 5</div>
+      <p style="font-size:15px; font-weight:600; margin-bottom:14px;">Kapan penggunaan model EER paling tepat dibandingkan model ER biasa?</p>
+      <button class="option-btn" onclick="answer(this,'q5',false)">A. Selalu — EER selalu lebih baik dari ER</button>
+      <button class="option-btn" onclick="answer(this,'q5',false)">B. Ketika jumlah entitas dalam database lebih dari 10</button>
+      <button class="option-btn" onclick="answer(this,'q5',true)">C. Ketika domain bersifat object-oriented dan attribute inheritance dapat mereduksi null, atau ketika ada subclass dengan relationship uniknya sendiri</button>
+      <button class="option-btn" onclick="answer(this,'q5',false)">D. Ketika tim pengembang sudah familiar dengan bahasa pemrograman OOP</button>
+      <div class="feedback-box" id="fb-q5"></div>
+      <button class="reveal-btn" onclick="revealExplanation('exp-q5',this)">
+        <i data-lucide="eye" style="width:13px;height:13px;display:inline;vertical-align:middle;"></i> Reveal Explanation
+      </button>
+      <div class="explanation" id="exp-q5">
+        <strong style="color:var(--info);">Metodologi:</strong> Prinsip dari slide: tujuan pemodelan konseptual adalah menghasilkan model yang sederhana. EER hanya digunakan jika memberikan keuntungan nyata. Dua kondisi tepat: (1) attribute inheritance mereduksi nilai NULL — artinya dengan subclass, field yang tidak relevan tidak perlu di-null-kan; (2) subclass punya relationship unik yang tidak dimiliki subclass lain dalam superclass yang sama. Jika tidak ada kondisi ini, ER biasa lebih baik.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SCORE SUMMARY -->
+  <div id="score-summary" class="card mt-8" style="display:none; text-align:center; padding:32px;">
+    <div style="font-family:'Syne',sans-serif; font-size:2.5rem; font-weight:800; color:var(--accent);" id="final-score">0/5</div>
+    <p style="color:var(--muted); margin-top:6px;" id="final-msg">Selesai!</p>
+    <button onclick="resetQuiz()" style="margin-top:16px; background:var(--accent-dim); border:1px solid rgba(34,197,94,0.3); color:var(--accent); border-radius:8px; padding:10px 24px; font-family:'Syne',sans-serif; font-weight:700; cursor:pointer; font-size:14px;">
+      🔄 Ulangi Quiz
+    </button>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
+<!-- FOOTER -->
+<footer style="text-align:center; padding:20px 0 40px; color:var(--muted); font-size:13px;">
+  <p>CSF2600700 · Basis Data · Slide 4 Part 2 — EER Modeling</p>
+  <p style="margin-top:4px;">Based on <em>Database System</em>, 6th ed., Elmasri/Navathe (2011), Chapter 4</p>
+  <p style="margin-top:4px; color:rgba(34,197,94,0.4);">Universitas Indonesia · Fakultas Ilmu Komputer</p>
+</footer>
+
+</main>
+
+<script>
+  // Init Lucide
+  lucide.createIcons();
+
+  // SCROLL TO SECTION
+  function scrollTo(id) {
+    document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // WALKTHROUGH TOGGLE
+  function toggleStep(el) {
+    const detail = el.querySelector('.step-detail');
+    const isOpen = detail.classList.contains('open');
+    // close all
+    document.querySelectorAll('.step-detail').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.walkthrough-step').forEach(s => s.classList.remove('active'));
+    if (!isOpen) {
+      detail.classList.add('open');
+      el.classList.add('active');
+    }
+  }
+
+  // QUIZ STATE
+  let answered = {};
+  let correctCount = 0;
+
+  function answer(btn, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+
+    const card = document.getElementById(qid);
+    const allBtns = card.querySelectorAll('.option-btn');
+    const fb = document.getElementById('fb-' + qid);
+
+    allBtns.forEach(b => {
+      b.disabled = true;
+      if (b === btn) {
+        b.classList.add(isCorrect ? 'correct' : 'wrong');
+      }
+    });
+
+    if (isCorrect) {
+      correctCount++;
+      fb.className = 'feedback-box show correct';
+      fb.innerHTML = '✅ <strong>Benar!</strong> Jawaban kamu tepat.';
+    } else {
+      fb.className = 'feedback-box show wrong';
+      fb.innerHTML = '❌ <strong>Salah.</strong> Klik "Reveal Explanation" untuk memahami metodologi penyelesaiannya.';
+    }
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = 5;
+    const done = Object.keys(answered).length;
+    const pct = (done / total) * 100;
+
+    document.getElementById('quiz-progress-bar').style.width = pct + '%';
+    document.getElementById('quiz-score-label').textContent = done + ' / ' + total + ' answered';
+
+    if (done === total) {
+      setTimeout(showSummary, 600);
+    }
+  }
+
+  function showSummary() {
+    const summary = document.getElementById('score-summary');
+    summary.style.display = 'block';
+    document.getElementById('final-score').textContent = correctCount + '/5';
+    const msgs = [
+      'Perlu lebih banyak belajar lagi! 💪',
+      'Ada beberapa konsep yang perlu diulang 📖',
+      'Cukup baik, tapi bisa lebih baik! 🎯',
+      'Bagus! Hampir sempurna 🌟',
+      'Luar biasa! Kamu menguasai materi EER! 🏆'
+    ];
+    document.getElementById('final-msg').textContent = msgs[Math.min(correctCount, 4)];
+    summary.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function resetQuiz() {
+    answered = {};
+    correctCount = 0;
+    document.getElementById('quiz-progress-bar').style.width = '0%';
+    document.getElementById('quiz-score-label').textContent = '0 / 5 answered';
+    document.getElementById('score-summary').style.display = 'none';
+
+    document.querySelectorAll('.option-btn').forEach(b => {
+      b.disabled = false;
+      b.classList.remove('correct','wrong');
+    });
+    document.querySelectorAll('.feedback-box').forEach(f => {
+      f.className = 'feedback-box';
+      f.innerHTML = '';
+    });
+    document.querySelectorAll('.explanation').forEach(e => {
+      e.classList.remove('open');
+    });
+    document.querySelectorAll('.reveal-btn').forEach(b => {
+      b.textContent = '';
+      // rebuild inner html
+      b.innerHTML = '<i data-lucide="eye" style="width:13px;height:13px;display:inline;vertical-align:middle;"></i> Reveal Explanation';
+    });
+    lucide.createIcons();
+    document.getElementById('sec-quiz').scrollIntoView({behavior:'smooth'});
+  }
+
+  function revealExplanation(expId, btn) {
+    const exp = document.getElementById(expId);
+    const isOpen = exp.classList.contains('open');
+    exp.classList.toggle('open');
+    btn.innerHTML = isOpen
+      ? '<i data-lucide="eye" style="width:13px;height:13px;display:inline;vertical-align:middle;"></i> Reveal Explanation'
+      : '<i data-lucide="eye-off" style="width:13px;height:13px;display:inline;vertical-align:middle;"></i> Hide Explanation';
+    lucide.createIcons();
+  }
+
+  // Highlight nav pill on scroll
+  const sections = ['sec-concepts','sec-viz','sec-quiz'];
+  const pills = document.querySelectorAll('.nav-pill');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 120) current = id;
+    });
+    pills.forEach(p => {
+      p.classList.remove('active');
+      if (p.getAttribute('onclick') && p.getAttribute('onclick').includes(current)) {
+        p.classList.add('active');
+      }
+    });
+  });
+</script>
+</body>
+</html>

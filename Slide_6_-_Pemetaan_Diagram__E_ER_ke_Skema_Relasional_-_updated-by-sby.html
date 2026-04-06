@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pemetaan Diagram (E)ER ke Skema Relasional</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #0f1628;
+    --bg-card: #131c2e;
+    --bg-card-hover: #1a2540;
+    --accent-green: #00e5a0;
+    --accent-blue: #3b82f6;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --text-primary: #e8edf5;
+    --text-secondary: #94a3b8;
+    --border: rgba(255,255,255,0.07);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'Space Mono', monospace; }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Hero gradient */
+  .hero-bg {
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,229,160,0.12), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(59,130,246,0.08), transparent),
+                var(--bg-primary);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: rgba(0,229,160,0.2); box-shadow: 0 0 30px rgba(0,229,160,0.05); }
+
+  /* Callout boxes */
+  .callout-green {
+    background: rgba(0,229,160,0.06);
+    border-left: 3px solid var(--accent-green);
+    border-radius: 0 12px 12px 0;
+  }
+  .callout-amber {
+    background: rgba(245,158,11,0.06);
+    border-left: 3px solid var(--accent-amber);
+    border-radius: 0 12px 12px 0;
+  }
+  .callout-rose {
+    background: rgba(244,63,94,0.06);
+    border-left: 3px solid var(--accent-rose);
+    border-radius: 0 12px 12px 0;
+  }
+  .callout-blue {
+    background: rgba(59,130,246,0.06);
+    border-left: 3px solid var(--accent-blue);
+    border-radius: 0 12px 12px 0;
+  }
+
+  /* Code blocks */
+  .code-block {
+    background: #080d18;
+    border: 1px solid rgba(0,229,160,0.15);
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+  .code-block pre { padding: 1.25rem 1.5rem; font-size: 0.8rem; line-height: 1.8; }
+  .kw { color: #7dd3fc; }
+  .kw2 { color: #a78bfa; }
+  .str { color: #86efac; }
+  .attr { color: #fbbf24; }
+  .cm { color: #475569; font-style: italic; }
+  .pk { color: var(--accent-green); font-weight: 700; }
+  .fk { color: #f472b6; }
+
+  /* Navigation */
+  .nav-pill {
+    background: rgba(0,229,160,0.1);
+    border: 1px solid rgba(0,229,160,0.2);
+    color: var(--accent-green);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    font-family: 'Space Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .nav-pill:hover { background: rgba(0,229,160,0.2); }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .badge-green { background: rgba(0,229,160,0.15); color: var(--accent-green); }
+  .badge-blue { background: rgba(59,130,246,0.15); color: #93c5fd; }
+  .badge-amber { background: rgba(245,158,11,0.15); color: #fcd34d; }
+  .badge-rose { background: rgba(244,63,94,0.15); color: #fda4af; }
+
+  /* Step indicator */
+  .step-num {
+    width: 32px; height: 32px;
+    background: rgba(0,229,160,0.15);
+    border: 1.5px solid var(--accent-green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent-green);
+    flex-shrink: 0;
+  }
+
+  /* Table */
+  .schema-table {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border: 2px solid rgba(0,229,160,0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+  }
+  .schema-table .tname {
+    width: 100%;
+    background: rgba(0,229,160,0.12);
+    color: var(--accent-green);
+    font-weight: 700;
+    padding: 6px 12px;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid rgba(0,229,160,0.2);
+  }
+  .schema-table .col {
+    padding: 5px 12px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  .schema-table .col.pk-col { color: var(--accent-green); border-bottom: 2px solid var(--accent-green); }
+  .schema-table .col.fk-col { color: #f472b6; }
+
+  /* Quiz option */
+  .quiz-option {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .quiz-option:hover { border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.04); }
+  .quiz-option.correct { border-color: var(--accent-green); background: rgba(0,229,160,0.1); }
+  .quiz-option.incorrect { border-color: var(--accent-rose); background: rgba(244,63,94,0.08); }
+  .quiz-option.disabled { pointer-events: none; opacity: 0.7; }
+
+  .option-letter {
+    width: 28px; height: 28px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .quiz-option.correct .option-letter { border-color: var(--accent-green); color: var(--accent-green); background: rgba(0,229,160,0.15); }
+  .quiz-option.incorrect .option-letter { border-color: var(--accent-rose); color: var(--accent-rose); background: rgba(244,63,94,0.1); }
+
+  /* Feedback */
+  .feedback-correct { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.25); border-radius: 10px; padding: 12px 16px; color: #6ee7b7; }
+  .feedback-incorrect { background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.25); border-radius: 10px; padding: 12px 16px; color: #fda4af; }
+
+  /* Reveal explanation */
+  .reveal-btn {
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.25);
+    color: #93c5fd;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+  .reveal-btn:hover { background: rgba(59,130,246,0.18); }
+
+  .explanation-box {
+    background: rgba(59,130,246,0.05);
+    border: 1px solid rgba(59,130,246,0.15);
+    border-radius: 10px;
+    padding: 16px;
+    display: none;
+  }
+  .explanation-box.open { display: block; }
+
+  /* TOC */
+  .toc-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toc-link:hover { color: var(--accent-green); }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); }
+
+  /* Grid bg */
+  .grid-bg {
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* Walkthrough */
+  .walkthrough-step { display: none; }
+  .walkthrough-step.active { display: block; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: rgba(0,229,160,0.3); border-radius: 3px; }
+
+  /* Fade in */
+  @keyframes fadeIn { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.5s ease forwards; }
+
+  /* Glow */
+  .glow-green { text-shadow: 0 0 20px rgba(0,229,160,0.4); }
+
+  /* Section anchor offset */
+  section { scroll-margin-top: 80px; }
+</style>
+</head>
+<body class="grid-bg">
+
+<!-- STICKY NAV -->
+<nav style="background: rgba(10,14,26,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;">
+  <div style="max-width:1100px; margin:0 auto; padding: 14px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div style="width:8px;height:8px;background:var(--accent-green);border-radius:50%;box-shadow:0 0 8px var(--accent-green);"></div>
+      <span style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; color:var(--accent-green);">BASIS DATA</span>
+      <span style="color:var(--text-secondary); font-size:0.8rem; font-family:'Space Mono',monospace;">/ Slide 6</span>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <a href="#deep-dive" class="nav-pill">Konsep</a>
+      <a href="#algorithm" class="nav-pill">Algoritma</a>
+      <a href="#practice" class="nav-pill">Latihan</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero-bg" style="padding: 80px 24px 60px; text-align:center; position:relative;">
+  <div style="max-width:800px; margin:0 auto; position:relative; z-index:1;">
+    <div class="badge badge-green" style="margin-bottom:20px;">CSGE602070 · Basis Data · Topik 6</div>
+    <h1 style="font-size:clamp(2rem,5vw,3.2rem); font-weight:800; line-height:1.15; margin-bottom:16px; color:var(--text-primary);">
+      Pemetaan Diagram <span style="color:var(--accent-green); glow-green">(E)ER</span><br/>ke Skema Relasional
+    </h1>
+    <p style="color:var(--text-secondary); font-size:1.05rem; max-width:580px; margin:0 auto 32px;">
+      Halaman interaktif untuk memahami bagaimana diagram Entity-Relationship (ER) dan Enhanced ER (EER) dipetakan ke dalam skema basis data relasional.
+    </p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <a href="#deep-dive" style="background:var(--accent-green); color:#060d18; font-weight:700; font-family:'Syne',sans-serif; padding:12px 28px; border-radius:10px; text-decoration:none; font-size:0.9rem; transition:opacity 0.2s;" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">Mulai Belajar →</a>
+      <a href="#practice" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-primary); font-weight:600; font-family:'Syne',sans-serif; padding:12px 28px; border-radius:10px; text-decoration:none; font-size:0.9rem; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Quiz Interaktif</a>
+    </div>
+  </div>
+  <!-- Decorative circles -->
+  <div style="position:absolute; top:20px; left:5%; width:300px; height:300px; border-radius:50%; border:1px solid rgba(0,229,160,0.06); pointer-events:none;"></div>
+  <div style="position:absolute; bottom:-50px; right:5%; width:200px; height:200px; border-radius:50%; border:1px solid rgba(59,130,246,0.06); pointer-events:none;"></div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main style="max-width:1100px; margin:0 auto; padding:48px 24px 80px;">
+
+  <!-- TOC -->
+  <div class="card" style="padding:24px; margin-bottom:40px;">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+      <i data-lucide="list" style="color:var(--accent-green); width:18px;height:18px;"></i>
+      <h2 style="font-size:0.95rem; font-weight:700; color:var(--text-secondary); letter-spacing:0.1em;">DAFTAR ISI</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:10px;">
+      <a href="#deep-dive" class="toc-link"><i data-lucide="brain" style="width:15px;height:15px;color:var(--accent-green);"></i>1. Conceptual Deep Dive</a>
+      <a href="#algorithm" class="toc-link"><i data-lucide="git-branch" style="width:15px;height:15px;color:var(--accent-blue);"></i>2. Algoritma & Visualisasi</a>
+      <a href="#eer" class="toc-link"><i data-lucide="layers" style="width:15px;height:15px;color:var(--accent-amber);"></i>3. Pemetaan Model EER</a>
+      <a href="#practice" class="toc-link"><i data-lucide="zap" style="width:15px;height:15px;color:var(--accent-rose);"></i>4. Interactive Practice Suite</a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SECTION 1: CONCEPTUAL DEEP DIVE -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="deep-dive" style="margin-bottom:60px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:28px;">
+      <div style="width:40px;height:40px;background:rgba(0,229,160,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <i data-lucide="brain" style="color:var(--accent-green);width:20px;height:20px;"></i>
+      </div>
+      <div>
+        <div class="badge badge-green" style="margin-bottom:4px;">SECTION 01</div>
+        <h2 style="font-size:1.6rem; font-weight:800;">Conceptual Deep Dive</h2>
+      </div>
+    </div>
+
+    <!-- Intro -->
+    <div class="card" style="padding:28px; margin-bottom:24px;">
+      <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:12px; color:var(--text-primary);">Apa itu Pemetaan (E)ER ke Skema Relasional?</h3>
+      <p style="color:var(--text-secondary); font-size:0.95rem; margin-bottom:16px;">
+        Pemetaan adalah proses transformasi desain konseptual (diagram ER/EER) menjadi skema yang dapat diimplementasikan di sistem basis data relasional. Bayangkan ER diagram sebagai <em style="color:var(--text-primary);">"cetak biru arsitektur"</em> dan skema relasional sebagai <em style="color:var(--text-primary);">"denah teknis konstruksi"</em> — keduanya merepresentasikan hal yang sama, namun di level abstraksi yang berbeda.
+      </p>
+      <div class="callout-green" style="padding:14px 18px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <i data-lucide="lightbulb" style="color:var(--accent-green);width:16px;height:16px;flex-shrink:0;"></i>
+          <span style="font-weight:700; font-size:0.88rem; color:var(--accent-green);">Mental Model</span>
+        </div>
+        <p style="font-size:0.88rem; color:var(--text-secondary); margin:0;">
+          <strong style="color:var(--text-primary);">Entity type</strong> → Tabel (Relation) | <strong style="color:var(--text-primary);">Attribute</strong> → Kolom | <strong style="color:var(--text-primary);">Key attribute</strong> → Primary Key | <strong style="color:var(--text-primary);">Relationship</strong> → Foreign Key atau Tabel baru
+        </p>
+      </div>
+    </div>
+
+    <!-- Key Terms Grid -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; margin-bottom:24px;">
+      
+      <div class="card" style="padding:20px;">
+        <div class="badge badge-green" style="margin-bottom:10px;">KEY TERM</div>
+        <h4 style="font-weight:700; font-size:0.95rem; margin-bottom:6px;">Regular Entity Type</h4>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Entity yang memiliki key attribute sendiri dan keberadaannya tidak bergantung pada entity lain. Dipetakan langsung menjadi satu relasi (tabel). Contoh: <span class="mono" style="color:var(--accent-green);">EMPLOYEE</span>, <span class="mono" style="color:var(--accent-green);">DEPARTMENT</span>, <span class="mono" style="color:var(--accent-green);">PROJECT</span>.</p>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <div class="badge badge-amber" style="margin-bottom:10px;">KEY TERM</div>
+        <h4 style="font-weight:700; font-size:0.95rem; margin-bottom:6px;">Weak Entity Type</h4>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Entity yang tidak memiliki key attribute sendiri dan bergantung pada <em>owner entity</em>. Partial key-nya dikombinasikan dengan primary key pemilik untuk membentuk composite key. Contoh: <span class="mono" style="color:var(--accent-amber);">DEPENDENT</span> bergantung pada <span class="mono" style="color:var(--accent-green);">EMPLOYEE</span>.</p>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <div class="badge badge-blue" style="margin-bottom:10px;">KEY TERM</div>
+        <h4 style="font-weight:700; font-size:0.95rem; margin-bottom:6px;">Foreign Key (FK)</h4>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Atribut yang merupakan salinan primary key dari relasi lain, digunakan untuk merepresentasikan hubungan antar entitas. Menjamin <em>referential integrity</em> — setiap nilai FK harus ada di tabel yang dirujuk.</p>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <div class="badge badge-rose" style="margin-bottom:10px;">KEY TERM</div>
+        <h4 style="font-weight:700; font-size:0.95rem; margin-bottom:6px;">Surrogate Key</h4>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Primary key buatan (artificial) yang dibuat khusus saat entitas-entitas dalam union type memiliki key yang berbeda-beda. Memungkinkan unifikasi referensi dari berbagai superclass ke satu subclass. Contoh: <span class="mono" style="color:var(--accent-rose);">Owner_id</span> pada <span class="mono" style="color:var(--accent-rose);">OWNER</span>.</p>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <div class="badge badge-green" style="margin-bottom:10px;">KEY TERM</div>
+        <h4 style="font-weight:700; font-size:0.95rem; margin-bottom:6px;">Multivalued Attribute</h4>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Atribut yang dapat memiliki banyak nilai untuk satu entity. Dipetakan ke relasi baru dengan primary key gabungan dari PK pemilik + nilai atribut tersebut. Contoh: <span class="mono" style="color:var(--accent-green);">Locations</span> pada <span class="mono" style="color:var(--accent-green);">DEPARTMENT</span> → <span class="mono" style="color:var(--accent-green);">DEPT_LOCATIONS</span>.</p>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <div class="badge badge-amber" style="margin-bottom:10px;">KEY TERM</div>
+        <h4 style="font-weight:700; font-size:0.95rem; margin-bottom:6px;">Derived Attribute</h4>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Atribut yang nilainya diturunkan dari atribut lain (contoh: <span class="mono" style="color:var(--accent-amber);">Number_of_employees</span> dihitung dari jumlah baris). Bisa disimpan (trade-off performa vs. storage) atau tidak disimpan (dihitung on-demand).</p>
+      </div>
+    </div>
+
+    <!-- Common Pitfalls -->
+    <div class="callout-rose" style="padding:18px 20px; margin-bottom:24px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <i data-lucide="alert-triangle" style="color:var(--accent-rose);width:17px;height:17px;flex-shrink:0;"></i>
+        <span style="font-weight:700; font-size:0.95rem; color:var(--accent-rose);">⚠ Common Pitfalls</span>
+      </div>
+      <ul style="margin:0; padding-left:20px; color:var(--text-secondary); font-size:0.88rem; display:flex; flex-direction:column; gap:8px;">
+        <li><strong style="color:var(--text-primary);">M:N tanpa relasi baru</strong> — Jika M:N dipetakan seperti 1:N (hanya menambah FK di salah satu sisi), akan terjadi redundansi data masif dan anomali update/delete.</li>
+        <li><strong style="color:var(--text-primary);">Salah penempatan FK pada 1:N</strong> — FK harus selalu ada di sisi "N", bukan sisi "1". Menaruh FK di sisi "1" menyebabkan kolom berulang atau multivalued di satu baris.</li>
+        <li><strong style="color:var(--text-primary);">Urutan pemetaan diabaikan</strong> — Langkah 1–7 bisa diubah urutan dan hasilnya tetap sama, ASALKAN semua dependensi sudah ada. Namun demi keterbacaan, urutan standar sangat disarankan.</li>
+        <li><strong style="color:var(--text-primary);">Lupa partial key pada Weak Entity</strong> — Weak entity wajib menggabungkan PK owner + partial key-nya sebagai composite primary key. Menggunakan partial key saja akan menyebabkan duplikasi data.</li>
+        <li><strong style="color:var(--text-primary);">Opsi EER dipilih salah</strong> — Opsi 2 (hanya subclass) hanya valid untuk Total participation. Jika ada partial participation, entitas yang tidak masuk subclass manapun tidak akan punya representasi di tabel.</li>
+      </ul>
+    </div>
+
+    <!-- Referential Integrity Visual -->
+    <div class="card" style="padding:24px; margin-bottom:0;">
+      <h3 style="font-size:1rem; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="link" style="color:var(--accent-blue);width:17px;height:17px;"></i>
+        Contoh Skema Relasional COMPANY (Hasil Akhir)
+      </h3>
+      <div style="display:flex; flex-direction:column; gap:12px; overflow-x:auto;">
+        <!-- EMPLOYEE -->
+        <div>
+          <div class="schema-table" style="display:inline-flex; flex-wrap:nowrap; min-width:max-content;">
+            <div class="tname">EMPLOYEE</div>
+            <div class="col pk-col">Fname</div><div class="col pk-col">Minit</div><div class="col pk-col">Lname</div>
+            <div class="col pk-col" style="text-decoration:underline;">Ssn</div>
+            <div class="col">Bdate</div><div class="col">Address</div><div class="col">Sex</div><div class="col">Salary</div>
+            <div class="col fk-col">Super_ssn →</div>
+            <div class="col fk-col">Dno →</div>
+          </div>
+        </div>
+        <!-- DEPARTMENT -->
+        <div>
+          <div class="schema-table" style="display:inline-flex; flex-wrap:nowrap; min-width:max-content;">
+            <div class="tname">DEPARTMENT</div>
+            <div class="col">Dname</div>
+            <div class="col pk-col" style="text-decoration:underline;">Dnumber</div>
+            <div class="col fk-col">Mgr_ssn →</div>
+            <div class="col">Mgr_start_date</div>
+          </div>
+        </div>
+        <!-- DEPT_LOCATIONS -->
+        <div>
+          <div class="schema-table" style="display:inline-flex; flex-wrap:nowrap; min-width:max-content;">
+            <div class="tname">DEPT_LOCATIONS</div>
+            <div class="col pk-col fk-col" style="text-decoration:underline;">Dnumber →</div>
+            <div class="col pk-col" style="text-decoration:underline;">Dlocation</div>
+          </div>
+        </div>
+        <!-- PROJECT -->
+        <div>
+          <div class="schema-table" style="display:inline-flex; flex-wrap:nowrap; min-width:max-content;">
+            <div class="tname">PROJECT</div>
+            <div class="col">Pname</div>
+            <div class="col pk-col" style="text-decoration:underline;">Pnumber</div>
+            <div class="col">Plocation</div>
+            <div class="col fk-col">Dnum →</div>
+          </div>
+        </div>
+        <!-- WORKS_ON -->
+        <div>
+          <div class="schema-table" style="display:inline-flex; flex-wrap:nowrap; min-width:max-content;">
+            <div class="tname">WORKS_ON</div>
+            <div class="col pk-col fk-col" style="text-decoration:underline;">Essn →</div>
+            <div class="col pk-col fk-col" style="text-decoration:underline;">Pno →</div>
+            <div class="col">Hours</div>
+          </div>
+        </div>
+        <!-- DEPENDENT -->
+        <div>
+          <div class="schema-table" style="display:inline-flex; flex-wrap:nowrap; min-width:max-content;">
+            <div class="tname">DEPENDENT</div>
+            <div class="col pk-col fk-col" style="text-decoration:underline;">Essn →</div>
+            <div class="col pk-col" style="text-decoration:underline;">Dependent_name</div>
+            <div class="col">Sex</div><div class="col">Bdate</div><div class="col">Relationship</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:20px; margin-top:8px; font-size:0.75rem; font-family:'Space Mono',monospace;">
+          <span style="color:var(--accent-green);">■ Primary Key (PK)</span>
+          <span style="color:#f472b6;">■ Foreign Key (FK →)</span>
+          <span style="color:var(--text-secondary);">■ Attribute biasa</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SECTION 2: ALGORITHM & LOGIC -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="algorithm" style="margin-bottom:60px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:28px;">
+      <div style="width:40px;height:40px;background:rgba(59,130,246,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <i data-lucide="git-branch" style="color:var(--accent-blue);width:20px;height:20px;"></i>
+      </div>
+      <div>
+        <div class="badge badge-blue" style="margin-bottom:4px;">SECTION 02</div>
+        <h2 style="font-size:1.6rem; font-weight:800;">Algoritma & Visualisasi Pemetaan ER</h2>
+      </div>
+    </div>
+
+    <!-- Walkthrough Interface -->
+    <div class="card" style="padding:28px; margin-bottom:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <h3 style="font-size:1rem; font-weight:700;">Step-by-Step Walkthrough</h3>
+        <div style="display:flex; gap:10px;">
+          <button onclick="prevStep()" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-secondary);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:0.8rem;font-family:'Space Mono',monospace;" id="prevBtn">← Prev</button>
+          <button onclick="nextStep()" style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--accent-green);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:0.8rem;font-family:'Space Mono',monospace;" id="nextBtn">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step Progress -->
+      <div style="display:flex; gap:4px; margin-bottom:24px; flex-wrap:wrap;" id="stepDots"></div>
+
+      <!-- Steps -->
+      <div id="walkthroughContent">
+
+        <div class="walkthrough-step active" data-step="0">
+          <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:16px;">
+            <div class="step-num">1</div>
+            <div>
+              <h4 style="font-weight:700; margin-bottom:4px; font-size:1rem;">Pemetaan Regular Entity Types</h4>
+              <p style="color:var(--text-secondary); font-size:0.88rem; margin:0;">Setiap regular entity type di-mapping ke satu relasi. Semua simple attribute menjadi kolom. Key attribute menjadi primary key.</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <pre><code><span class="cm">-- Langkah 1: Regular Entity → Relasi</span>
+<span class="cm">-- EMPLOYEE (SSN, FName, MInit, LName, BDate, Address, Sex, Salary)</span>
+<span class="kw">CREATE TABLE</span> <span class="attr">EMPLOYEE</span> (
+  <span class="pk">Ssn</span>       <span class="kw2">CHAR(9)</span>      <span class="kw">PRIMARY KEY</span>,  <span class="cm">-- key attribute</span>
+  FName     <span class="kw2">VARCHAR(15)</span>,
+  MInit     <span class="kw2">CHAR(1)</span>,
+  LName     <span class="kw2">VARCHAR(15)</span>,
+  BDate     <span class="kw2">DATE</span>,
+  Address   <span class="kw2">VARCHAR(50)</span>,
+  Sex       <span class="kw2">CHAR(1)</span>,
+  Salary    <span class="kw2">DECIMAL(10,2)</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="attr">DEPARTMENT</span> (
+  Dname     <span class="kw2">VARCHAR(20)</span>,
+  <span class="pk">Dnumber</span>   <span class="kw2">INT</span>          <span class="kw">PRIMARY KEY</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="attr">PROJECT</span> (
+  Pname     <span class="kw2">VARCHAR(20)</span>,
+  <span class="pk">Pnumber</span>   <span class="kw2">INT</span>          <span class="kw">PRIMARY KEY</span>,
+  Plocation <span class="kw2">VARCHAR(20)</span>
+);</code></pre>
+          </div>
+          <div class="callout-green" style="padding:12px 16px; margin-top:12px;">
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">💡 <strong style="color:var(--text-primary);">Prinsip:</strong> Composite attribute dipecah menjadi kolom terpisah. Derived attribute opsional (tidak disimpan atau disimpan sebagai kolom biasa).</p>
+          </div>
+        </div>
+
+        <div class="walkthrough-step" data-step="1">
+          <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:16px;">
+            <div class="step-num">2</div>
+            <div>
+              <h4 style="font-weight:700; margin-bottom:4px; font-size:1rem;">Pemetaan Weak Entity Types</h4>
+              <p style="color:var(--text-secondary); font-size:0.88rem; margin:0;">Buat relasi baru, salin PK dari owner entity, gabungkan dengan partial key sebagai composite PK. Tambahkan FK constraint ke owner.</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <pre><code><span class="cm">-- Langkah 2: Weak Entity → Relasi dengan Composite PK</span>
+<span class="cm">-- DEPENDENT bergantung pada EMPLOYEE</span>
+<span class="cm">-- Partial key: Dependent_name</span>
+<span class="kw">CREATE TABLE</span> <span class="attr">DEPENDENT</span> (
+  <span class="fk">Essn</span>           <span class="kw2">CHAR(9)</span>,       <span class="cm">-- disalin dari EMPLOYEE.Ssn</span>
+  <span class="pk">Dependent_name</span> <span class="kw2">VARCHAR(15)</span>,   <span class="cm">-- partial key</span>
+  Sex            <span class="kw2">CHAR(1)</span>,
+  Bdate          <span class="kw2">DATE</span>,
+  Relationship   <span class="kw2">VARCHAR(10)</span>,
+
+  <span class="cm">-- Composite PK: owner_key + partial_key</span>
+  <span class="kw">PRIMARY KEY</span> (<span class="pk">Essn</span>, <span class="pk">Dependent_name</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="fk">Essn</span>) <span class="kw">REFERENCES</span> <span class="attr">EMPLOYEE</span>(<span class="pk">Ssn</span>)
+  <span class="cm">-- ↑ Referential integrity constraint</span>
+);</code></pre>
+          </div>
+          <div class="callout-amber" style="padding:12px 16px; margin-top:12px;">
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">⚠ <strong style="color:var(--text-primary);">Ingat:</strong> Partial key saja tidak cukup sebagai primary key karena bisa duplikat lintas owner yang berbeda. Contoh: dua employee bisa punya dependent bernama "Ahmad".</p>
+          </div>
+        </div>
+
+        <div class="walkthrough-step" data-step="2">
+          <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:16px;">
+            <div class="step-num">3</div>
+            <div>
+              <h4 style="font-weight:700; margin-bottom:4px; font-size:1rem;">Pemetaan Binary 1:1 Relationship Types</h4>
+              <p style="color:var(--text-secondary); font-size:0.88rem; margin:0;">Tiga pendekatan tersedia. Pendekatan foreign key adalah yang paling umum: masukkan PK dari salah satu relasi ke relasi lainnya (pilih sisi dengan total participation).</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <pre><code><span class="cm">-- Binary 1:1: MANAGES (EMPLOYEE –1:1– DEPARTMENT)</span>
+<span class="cm">-- Pendekatan 1: Foreign Key (paling umum)</span>
+<span class="cm">-- DEPARTMENT berpartisipasi total → tambah FK di DEPARTMENT</span>
+<span class="kw">ALTER TABLE</span> <span class="attr">DEPARTMENT</span>
+  <span class="kw">ADD COLUMN</span> <span class="fk">Mgr_ssn</span>        <span class="kw2">CHAR(9)</span>,
+  <span class="kw">ADD COLUMN</span> Mgr_start_date  <span class="kw2">DATE</span>,
+  <span class="kw">ADD FOREIGN KEY</span> (<span class="fk">Mgr_ssn</span>)  <span class="kw">REFERENCES</span> <span class="attr">EMPLOYEE</span>(<span class="pk">Ssn</span>);
+
+<span class="cm">-- Pendekatan 2: Gabungkan kedua entity + relationship menjadi satu tabel</span>
+<span class="cm">-- Cocok jika keduanya total participation</span>
+
+<span class="cm">-- Pendekatan 3: Cross-reference (buat tabel baru berisi kedua PK)</span>
+<span class="cm">-- Lebih fleksibel, cocok untuk partial participation</span></code></pre>
+          </div>
+          <div class="callout-blue" style="padding:12px 16px; margin-top:12px;">
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">💡 <strong style="color:var(--text-primary);">Tips:</strong> Relationship attribute (seperti <code style="color:var(--accent-green);">Mgr_start_date</code>) ikut disimpan di relasi yang menerima foreign key.</p>
+          </div>
+        </div>
+
+        <div class="walkthrough-step" data-step="3">
+          <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:16px;">
+            <div class="step-num">4</div>
+            <div>
+              <h4 style="font-weight:700; margin-bottom:4px; font-size:1rem;">Pemetaan Binary 1:N Relationship Types</h4>
+              <p style="color:var(--text-secondary); font-size:0.88rem; margin:0;">Salin PK dari sisi "1" ke relasi sisi "N" sebagai foreign key. Tambahkan relationship attribute jika ada.</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <pre><code><span class="cm">-- 1:N Examples dari COMPANY ER Diagram:</span>
+
+<span class="cm">-- WORKS_FOR: DEPARTMENT(1) –– N:EMPLOYEE</span>
+<span class="cm">-- → FK Dno di EMPLOYEE (sisi N) → DEPARTMENT.Dnumber</span>
+<span class="kw">ALTER TABLE</span> <span class="attr">EMPLOYEE</span>
+  <span class="kw">ADD COLUMN</span> <span class="fk">Dno</span> <span class="kw2">INT</span>,
+  <span class="kw">ADD FOREIGN KEY</span> (<span class="fk">Dno</span>) <span class="kw">REFERENCES</span> <span class="attr">DEPARTMENT</span>(<span class="pk">Dnumber</span>);
+
+<span class="cm">-- SUPERVISION: EMPLOYEE(1 Supervisor) –– N:EMPLOYEE(Supervisee)</span>
+<span class="cm">-- → Recursive relationship, FK ke tabel diri sendiri</span>
+<span class="kw">ALTER TABLE</span> <span class="attr">EMPLOYEE</span>
+  <span class="kw">ADD COLUMN</span> <span class="fk">Super_ssn</span> <span class="kw2">CHAR(9)</span>,
+  <span class="kw">ADD FOREIGN KEY</span> (<span class="fk">Super_ssn</span>) <span class="kw">REFERENCES</span> <span class="attr">EMPLOYEE</span>(<span class="pk">Ssn</span>);
+
+<span class="cm">-- CONTROLS: DEPARTMENT(1) –– N:PROJECT</span>
+<span class="kw">ALTER TABLE</span> <span class="attr">PROJECT</span>
+  <span class="kw">ADD COLUMN</span> <span class="fk">Dnum</span> <span class="kw2">INT</span>,
+  <span class="kw">ADD FOREIGN KEY</span> (<span class="fk">Dnum</span>) <span class="kw">REFERENCES</span> <span class="attr">DEPARTMENT</span>(<span class="pk">Dnumber</span>);</code></pre>
+          </div>
+        </div>
+
+        <div class="walkthrough-step" data-step="4">
+          <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:16px;">
+            <div class="step-num">5</div>
+            <div>
+              <h4 style="font-weight:700; margin-bottom:4px; font-size:1rem;">Pemetaan Binary M:N Relationship Types</h4>
+              <p style="color:var(--text-secondary); font-size:0.88rem; margin:0;">Buat relasi baru (junction table). Salin PK dari kedua entity dan gabungkan sebagai composite PK. Tambahkan relationship attribute jika ada.</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <pre><code><span class="cm">-- WORKS_ON: EMPLOYEE(M) –– N:PROJECT</span>
+<span class="cm">-- → Buat tabel baru WORKS_ON</span>
+<span class="kw">CREATE TABLE</span> <span class="attr">WORKS_ON</span> (
+  <span class="fk">Essn</span>  <span class="kw2">CHAR(9)</span>,   <span class="cm">-- FK → EMPLOYEE.Ssn</span>
+  <span class="fk">Pno</span>   <span class="kw2">INT</span>,       <span class="cm">-- FK → PROJECT.Pnumber</span>
+  Hours <span class="kw2">DECIMAL(4,1)</span>, <span class="cm">-- relationship attribute</span>
+
+  <span class="kw">PRIMARY KEY</span> (<span class="pk">Essn</span>, <span class="pk">Pno</span>), <span class="cm">-- composite PK</span>
+  <span class="kw">FOREIGN KEY</span> (<span class="fk">Essn</span>) <span class="kw">REFERENCES</span> <span class="attr">EMPLOYEE</span>(<span class="pk">Ssn</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="fk">Pno</span>)  <span class="kw">REFERENCES</span> <span class="attr">PROJECT</span>(<span class="pk">Pnumber</span>)
+);
+
+<span class="cm">/* Kenapa tidak bisa seperti 1:N?
+   Jika ditaruh FK Pno di EMPLOYEE:
+   - Employee A bekerja di Project 1, 2, 3
+   - Perlu 3 baris di EMPLOYEE → duplikasi data (anomali!)
+   - Atau kolom multi-nilai → melanggar 1NF */</span></code></pre>
+          </div>
+          <div class="callout-rose" style="padding:12px 16px; margin-top:12px;">
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">🚨 <strong style="color:var(--text-primary);">Critical:</strong> M:N <strong>selalu</strong> menghasilkan tabel baru. Tidak ada cara lain yang tidak menyebabkan redundansi atau pelanggaran normal form.</p>
+          </div>
+        </div>
+
+        <div class="walkthrough-step" data-step="5">
+          <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:16px;">
+            <div class="step-num">6</div>
+            <div>
+              <h4 style="font-weight:700; margin-bottom:4px; font-size:1rem;">Pemetaan Multivalued Attribute</h4>
+              <p style="color:var(--text-secondary); font-size:0.88rem; margin:0;">Buat relasi baru, gabungkan PK owner + nilai atribut sebagai composite PK. Mirip dengan M:N tapi arahnya dari atribut, bukan relationship.</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <pre><code><span class="cm">-- DEPARTMENT.Locations adalah multivalued attribute</span>
+<span class="cm">-- → Buat tabel DEPT_LOCATIONS</span>
+<span class="kw">CREATE TABLE</span> <span class="attr">DEPT_LOCATIONS</span> (
+  <span class="fk">Dnumber</span>   <span class="kw2">INT</span>,            <span class="cm">-- FK → DEPARTMENT.Dnumber</span>
+  Dlocation <span class="kw2">VARCHAR(20)</span>,    <span class="cm">-- nilai multivalued attribute</span>
+
+  <span class="kw">PRIMARY KEY</span> (<span class="pk">Dnumber</span>, <span class="pk">Dlocation</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="fk">Dnumber</span>) <span class="kw">REFERENCES</span> <span class="attr">DEPARTMENT</span>(<span class="pk">Dnumber</span>)
+);
+
+<span class="cm">-- Contoh data:
+-- Dnumber | Dlocation
+-- --------+-----------
+-- 1       | Houston
+-- 1       | Stafford   ← satu dept bisa banyak lokasi
+-- 2       | Bellaire
+-- 2       | Sugarland
+-- 2       | Houston    ← OK! Composite PK mencegah duplikat</span></code></pre>
+          </div>
+        </div>
+
+        <div class="walkthrough-step" data-step="6">
+          <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:16px;">
+            <div class="step-num">7</div>
+            <div>
+              <h4 style="font-weight:700; margin-bottom:4px; font-size:1rem;">Pemetaan N-ary (Higher Degree) Relationship Types</h4>
+              <p style="color:var(--text-secondary); font-size:0.88rem; margin:0;">Seperti M:N, buat relasi baru yang menyalin PK dari semua entitas yang terlibat. Gabungkan sebagai composite PK (atau pilih sebagian tergantung semantik).</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <pre><code><span class="cm">-- SUPPLY: ternary relationship</span>
+<span class="cm">-- SUPPLIER – SUPPLY – PROJECT, dengan PART juga terlibat</span>
+<span class="kw">CREATE TABLE</span> <span class="attr">SUPPLY</span> (
+  <span class="fk">Sname</span>     <span class="kw2">VARCHAR(20)</span>,  <span class="cm">-- FK → SUPPLIER.Sname</span>
+  <span class="fk">Proj_name</span> <span class="kw2">VARCHAR(20)</span>,  <span class="cm">-- FK → PROJECT.Proj_name</span>
+  <span class="fk">Part_no</span>   <span class="kw2">INT</span>,          <span class="cm">-- FK → PART.Part_no</span>
+  Quantity  <span class="kw2">INT</span>,          <span class="cm">-- relationship attribute</span>
+
+  <span class="kw">PRIMARY KEY</span> (<span class="pk">Sname</span>, <span class="pk">Proj_name</span>, <span class="pk">Part_no</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="fk">Sname</span>)     <span class="kw">REFERENCES</span> <span class="attr">SUPPLIER</span>(<span class="pk">Sname</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="fk">Proj_name</span>) <span class="kw">REFERENCES</span> <span class="attr">PROJECT</span>(<span class="pk">Proj_name</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="fk">Part_no</span>)   <span class="kw">REFERENCES</span> <span class="attr">PART</span>(<span class="pk">Part_no</span>)
+);</code></pre>
+          </div>
+        </div>
+
+      </div><!-- end walkthroughContent -->
+      
+      <!-- Step indicator text -->
+      <div style="margin-top:16px; text-align:center; font-family:'Space Mono',monospace; font-size:0.78rem; color:var(--text-secondary);" id="stepText">Langkah 1 dari 7</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SECTION 3: EER MAPPING -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="eer" style="margin-bottom:60px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:28px;">
+      <div style="width:40px;height:40px;background:rgba(245,158,11,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <i data-lucide="layers" style="color:var(--accent-amber);width:20px;height:20px;"></i>
+      </div>
+      <div>
+        <div class="badge badge-amber" style="margin-bottom:4px;">SECTION 03</div>
+        <h2 style="font-size:1.6rem; font-weight:800;">Pemetaan Model EER ke Skema Relasional</h2>
+      </div>
+    </div>
+
+    <!-- 4 Options Comparison -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:16px; margin-bottom:24px;">
+      
+      <div class="card" style="padding:20px; border-top:3px solid var(--accent-green);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <div class="step-num" style="background:rgba(0,229,160,0.15);border-color:var(--accent-green);">1</div>
+          <h4 style="font-weight:700; font-size:0.9rem;">Banyak Relasi: Superclass + Subclasses</h4>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:10px;">Buat relasi untuk superclass DAN setiap subclass. Subclass menyimpan PK superclass + atribut spesifiknya.</p>
+        <div class="badge badge-green">Semua constraint: ✓</div>
+        <div class="code-block" style="margin-top:10px;">
+          <pre style="font-size:0.73rem; padding:10px 12px;"><code><span class="cm">-- Superclass</span>
+<span class="kw">EMPLOYEE</span>(<span class="pk">Ssn</span>, Name, ...)
+
+<span class="cm">-- Subclasses</span>
+<span class="kw">SECRETARY</span>(<span class="fk">Ssn</span>→, Typing_speed)
+<span class="kw">TECHNICIAN</span>(<span class="fk">Ssn</span>→, Tgrade)
+<span class="kw">ENGINEER</span>(<span class="fk">Ssn</span>→, Eng_type)</code></pre>
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px; border-top:3px solid var(--accent-amber);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <div class="step-num" style="background:rgba(245,158,11,0.15);border-color:var(--accent-amber);color:var(--accent-amber);">2</div>
+          <h4 style="font-weight:700; font-size:0.9rem;">Banyak Relasi: Hanya Subclasses</h4>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:10px;">Setiap subclass menyalin atribut superclass. Tidak ada tabel superclass.</p>
+        <div class="badge badge-amber">Hanya Total Disjoint/Overlap</div>
+        <div class="code-block" style="margin-top:10px;">
+          <pre style="font-size:0.73rem; padding:10px 12px;"><code><span class="cm">-- Atribut superclass digabung</span>
+<span class="kw">CAR</span>(<span class="pk">Vehicle_id</span>, Price,
+    License_plate_no,
+    Max_speed, No_of_passengers)
+<span class="kw">TRUCK</span>(<span class="pk">Vehicle_id</span>, Price,
+     License_plate_no,
+     No_of_axles, Tonnage)</code></pre>
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px; border-top:3px solid var(--accent-blue);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <div class="step-num" style="background:rgba(59,130,246,0.15);border-color:var(--accent-blue);color:var(--accent-blue);">3</div>
+          <h4 style="font-weight:700; font-size:0.9rem;">Satu Relasi + Satu Type Attribute</h4>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:10px;">Semua entity (super+sub) digabung dalam satu tabel. Kolom type attribute menandai subtype.</p>
+        <div class="badge badge-blue">Total/Parsial Disjoint</div>
+        <div class="code-block" style="margin-top:10px;">
+          <pre style="font-size:0.73rem; padding:10px 12px;"><code><span class="kw">EMPLOYEE</span>(
+  <span class="pk">Ssn</span>, Name, ...,
+  <span class="attr">Job_type</span>, <span class="cm">← type attribute</span>
+  Typing_speed,
+  Tgrade,
+  Eng_type
+)</code></pre>
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px; border-top:3px solid var(--accent-rose);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <div class="step-num" style="background:rgba(244,63,94,0.15);border-color:var(--accent-rose);color:var(--accent-rose);">4</div>
+          <h4 style="font-weight:700; font-size:0.9rem;">Satu Relasi + Banyak Type Attribute</h4>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:10px;">Seperti opsi 3, tapi untuk overlap: tiap subclass punya flag boolean sendiri.</p>
+        <div class="badge badge-rose">Semua constraint (esp. overlap)</div>
+        <div class="code-block" style="margin-top:10px;">
+          <pre style="font-size:0.73rem; padding:10px 12px;"><code><span class="kw">PART</span>(
+  <span class="pk">Part_no</span>, Description,
+  <span class="attr">Mflag</span>,  <span class="cm">← boolean flag</span>
+  Drawing_no, Batch_no, ...,
+  <span class="attr">Pflag</span>,  <span class="cm">← boolean flag</span>
+  Supplier_name, List_price
+)</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="card" style="padding:24px;">
+      <h3 style="font-size:1rem; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="table-2" style="color:var(--accent-amber);width:17px;height:17px;"></i>
+        Perbandingan Opsi Pemetaan Spesialisasi/Generalisasi
+      </h3>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.83rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left; padding:10px 14px; color:var(--text-secondary); font-weight:600; white-space:nowrap;">Opsi</th>
+              <th style="text-align:left; padding:10px 14px; color:var(--text-secondary); font-weight:600;">Kapan Digunakan</th>
+              <th style="text-align:left; padding:10px 14px; color:var(--text-secondary); font-weight:600;">Kelebihan</th>
+              <th style="text-align:left; padding:10px 14px; color:var(--text-secondary); font-weight:600;">Kekurangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:10px 14px; color:var(--accent-green); font-family:'Space Mono',monospace; white-space:nowrap;">Opsi 1</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Semua constraint</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Tidak ada NULL values, struktur bersih</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">JOIN diperlukan untuk data lengkap</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:10px 14px; color:var(--accent-amber); font-family:'Space Mono',monospace; white-space:nowrap;">Opsi 2</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Total disjoint/overlap saja</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Query ke subclass lebih cepat</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Duplikasi atribut superclass</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:10px 14px; color:var(--accent-blue); font-family:'Space Mono',monospace; white-space:nowrap;">Opsi 3</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Total/parsial disjoint</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Satu tabel, query simple</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Banyak NULL untuk atribut subclass lain</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px; color:var(--accent-rose); font-family:'Space Mono',monospace; white-space:nowrap;">Opsi 4</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Overlap constraint</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Mendukung entity di banyak subclass</td>
+              <td style="padding:10px 14px; color:var(--text-secondary);">Banyak NULL dan flag boolean</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SECTION 4: INTERACTIVE PRACTICE SUITE -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section id="practice">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:28px;">
+      <div style="width:40px;height:40px;background:rgba(244,63,94,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <i data-lucide="zap" style="color:var(--accent-rose);width:20px;height:20px;"></i>
+      </div>
+      <div>
+        <div class="badge badge-rose" style="margin-bottom:4px;">SECTION 04</div>
+        <h2 style="font-size:1.6rem; font-weight:800;">Interactive Practice Suite</h2>
+      </div>
+    </div>
+
+    <!-- Score tracker -->
+    <div class="card" style="padding:20px; margin-bottom:28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <i data-lucide="trophy" style="color:var(--accent-amber);width:22px;height:22px;"></i>
+        <span style="font-weight:700;">Skor Anda:</span>
+        <span id="scoreDisplay" style="font-family:'Space Mono',monospace; font-size:1.1rem; color:var(--accent-green);">0 / 5</span>
+      </div>
+      <button onclick="resetAll()" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-secondary);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:0.8rem;font-family:'Space Mono',monospace;">↺ Reset Quiz</button>
+    </div>
+
+    <!-- QUESTION 1 -->
+    <div class="card" style="padding:28px; margin-bottom:20px;" id="q1">
+      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:18px;">
+        <div style="background:rgba(244,63,94,0.15);border:1.5px solid var(--accent-rose);border-radius:8px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent-rose);flex-shrink:0;">Q1</div>
+        <p style="font-size:0.95rem; font-weight:500; margin:0;">
+          Pada diagram ER COMPANY, relasi <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;color:var(--accent-green);">WORKS_ON</code> antara EMPLOYEE dan PROJECT memiliki kardinalitas M:N. Bagaimana cara pemetaan yang tepat ke skema relasional?
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;" id="q1opts">
+        <div class="quiz-option" onclick="checkAnswer(1,'A','B')">
+          <div class="option-letter">A</div>
+          <span style="font-size:0.88rem;">Tambahkan FK <code style="color:#f472b6;">Pno</code> di tabel EMPLOYEE yang menunjuk ke PROJECT</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(1,'B','B')">
+          <div class="option-letter">B</div>
+          <span style="font-size:0.88rem;">Buat tabel baru <code style="color:var(--accent-green);">WORKS_ON(Essn, Pno, Hours)</code> dengan composite PK (Essn, Pno)</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(1,'C','B')">
+          <div class="option-letter">C</div>
+          <span style="font-size:0.88rem;">Tambahkan FK <code style="color:#f472b6;">Essn</code> di tabel PROJECT yang menunjuk ke EMPLOYEE</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(1,'D','B')">
+          <div class="option-letter">D</div>
+          <span style="font-size:0.88rem;">Gabungkan EMPLOYEE dan PROJECT menjadi satu tabel besar</span>
+        </div>
+      </div>
+      <div id="q1feedback" style="margin-top:14px; display:none;"></div>
+      <button class="reveal-btn" style="margin-top:12px;" onclick="toggleExplanation('q1exp')">
+        <i data-lucide="book-open" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q1exp" style="margin-top:10px;">
+        <h4 style="font-size:0.88rem; font-weight:700; color:#93c5fd; margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong style="color:var(--text-primary);">Langkah 5 Algoritma Pemetaan</strong> — Binary M:N Relationship Types.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;">Pilihan A dan C salah karena: jika satu employee bisa bekerja di banyak project, maka FK tunggal di salah satu tabel tidak bisa merepresentasikan kondisi ini tanpa duplikasi baris (melanggar 1NF).</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;">Pilihan D salah karena entitas EMPLOYEE dan PROJECT adalah dua entity type yang berbeda dan harus tetap terpisah.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary);">✅ <strong style="color:var(--text-primary);">Pilihan B benar:</strong> Tabel junction <code style="color:var(--accent-green);">WORKS_ON</code> dengan composite PK (Essn, Pno) memastikan setiap pasangan (employee, project) hanya ada sekali, dan atribut relationship <code style="color:var(--accent-amber);">Hours</code> bisa disimpan.</p>
+      </div>
+    </div>
+
+    <!-- QUESTION 2 -->
+    <div class="card" style="padding:28px; margin-bottom:20px;" id="q2">
+      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:18px;">
+        <div style="background:rgba(244,63,94,0.15);border:1.5px solid var(--accent-rose);border-radius:8px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent-rose);flex-shrink:0;">Q2</div>
+        <p style="font-size:0.95rem; font-weight:500; margin:0;">
+          Entitas <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;color:var(--accent-amber);">DEPENDENT</code> adalah weak entity yang bergantung pada <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;color:var(--accent-green);">EMPLOYEE</code>. Partial key DEPENDENT adalah <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;">Dependent_name</code>. Apa primary key dari relasi DEPENDENT setelah dipetakan?
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;" id="q2opts">
+        <div class="quiz-option" onclick="checkAnswer(2,'A','C')">
+          <div class="option-letter">A</div>
+          <span style="font-size:0.88rem;">Hanya <code>Dependent_name</code></span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(2,'B','C')">
+          <div class="option-letter">B</div>
+          <span style="font-size:0.88rem;">Hanya <code>Essn</code> (FK dari EMPLOYEE)</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(2,'C','C')">
+          <div class="option-letter">C</div>
+          <span style="font-size:0.88rem;">Composite key <code style="color:var(--accent-green);">(Essn, Dependent_name)</code></span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(2,'D','C')">
+          <div class="option-letter">D</div>
+          <span style="font-size:0.88rem;">Auto-increment surrogate key baru</span>
+        </div>
+      </div>
+      <div id="q2feedback" style="margin-top:14px; display:none;"></div>
+      <button class="reveal-btn" style="margin-top:12px;" onclick="toggleExplanation('q2exp')">
+        <i data-lucide="book-open" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q2exp" style="margin-top:10px;">
+        <h4 style="font-size:0.88rem; font-weight:700; color:#93c5fd; margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong style="color:var(--text-primary);">Langkah 2 Algoritma Pemetaan</strong> — Weak Entity Types.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>Mengapa A salah?</strong> Partial key (<code>Dependent_name</code>) bisa sama untuk dependent dari employee berbeda. Misal dua employee berbeda sama-sama punya anak bernama "Budi" → duplikasi PK.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>Mengapa B salah?</strong> Satu employee bisa punya banyak dependent → Essn saja tidak unik per baris DEPENDENT.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>Mengapa D salah?</strong> Surrogate key opsional dan tidak menggunakan prinsip pemetaan standar weak entity.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary);">✅ <strong style="color:var(--text-primary);">Pilihan C benar:</strong> Kombinasi (Essn, Dependent_name) unik — satu employee tidak mungkin punya dua dependent dengan nama yang sama.</p>
+      </div>
+    </div>
+
+    <!-- QUESTION 3 -->
+    <div class="card" style="padding:28px; margin-bottom:20px;" id="q3">
+      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:18px;">
+        <div style="background:rgba(244,63,94,0.15);border:1.5px solid var(--accent-rose);border-radius:8px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent-rose);flex-shrink:0;">Q3</div>
+        <p style="font-size:0.95rem; font-weight:500; margin:0;">
+          Dalam pemetaan EER untuk spesialisasi dengan constraint <strong>Total Overlap</strong>, opsi mana yang <strong>TIDAK VALID</strong> digunakan?
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;" id="q3opts">
+        <div class="quiz-option" onclick="checkAnswer(3,'A','A')">
+          <div class="option-letter">A</div>
+          <span style="font-size:0.88rem;">Opsi 3: Satu relasi dengan satu type attribute (disjoint assumption)</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(3,'B','A')">
+          <div class="option-letter">B</div>
+          <span style="font-size:0.88rem;">Opsi 1: Banyak relasi dengan superclass dan subclasses</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(3,'C','A')">
+          <div class="option-letter">C</div>
+          <span style="font-size:0.88rem;">Opsi 2: Banyak relasi, hanya subclasses</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(3,'D','A')">
+          <div class="option-letter">D</div>
+          <span style="font-size:0.88rem;">Opsi 4: Satu relasi dengan banyak type attribute (boolean flags)</span>
+        </div>
+      </div>
+      <div id="q3feedback" style="margin-top:14px; display:none;"></div>
+      <button class="reveal-btn" style="margin-top:12px;" onclick="toggleExplanation('q3exp')">
+        <i data-lucide="book-open" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q3exp" style="margin-top:10px;">
+        <h4 style="font-size:0.88rem; font-weight:700; color:#93c5fd; margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong style="color:var(--text-primary);">Topik: Pemetaan EER — Pilihan berdasarkan constraint</strong></p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>Total Overlap</strong> artinya: setiap entity di superclass BISA berada di lebih dari satu subclass sekaligus.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>Opsi 3</strong> menggunakan satu type attribute tunggal — ini mengasumsikan entitas hanya bisa masuk ke satu subclass (disjoint). Jika entity bisa masuk ke banyak subclass (overlap), satu kolom type tidak cukup untuk merepresentasikannya.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary);">✅ <strong style="color:var(--text-primary);">Pilihan A benar:</strong> Opsi 3 tidak valid untuk Total Overlap. Opsi 4 (boolean flags) adalah yang tepat untuk overlap.</p>
+      </div>
+    </div>
+
+    <!-- QUESTION 4 -->
+    <div class="card" style="padding:28px; margin-bottom:20px;" id="q4">
+      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:18px;">
+        <div style="background:rgba(244,63,94,0.15);border:1.5px solid var(--accent-rose);border-radius:8px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent-rose);flex-shrink:0;">Q4</div>
+        <p style="font-size:0.95rem; font-weight:500; margin:0;">
+          Atribut <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;color:var(--accent-amber);">Locations</code> pada entitas <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;">DEPARTMENT</code> adalah multivalued attribute. Apa primary key dari relasi baru <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;color:var(--accent-green);">DEPT_LOCATIONS</code>?
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;" id="q4opts">
+        <div class="quiz-option" onclick="checkAnswer(4,'A','D')">
+          <div class="option-letter">A</div>
+          <span style="font-size:0.88rem;">Hanya <code>Dlocation</code></span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(4,'B','D')">
+          <div class="option-letter">B</div>
+          <span style="font-size:0.88rem;">Hanya <code>Dnumber</code></span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(4,'C','D')">
+          <div class="option-letter">C</div>
+          <span style="font-size:0.88rem;">Auto-increment ID baru</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(4,'D','D')">
+          <div class="option-letter">D</div>
+          <span style="font-size:0.88rem;">Composite key <code style="color:var(--accent-green);">(Dnumber, Dlocation)</code></span>
+        </div>
+      </div>
+      <div id="q4feedback" style="margin-top:14px; display:none;"></div>
+      <button class="reveal-btn" style="margin-top:12px;" onclick="toggleExplanation('q4exp')">
+        <i data-lucide="book-open" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q4exp" style="margin-top:10px;">
+        <h4 style="font-size:0.88rem; font-weight:700; color:#93c5fd; margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong style="color:var(--text-primary);">Langkah 6 — Multivalued Attribute.</strong></p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>A salah:</strong> Lokasi yang sama bisa dimiliki oleh banyak department (Houston bisa ada di dept 1 dan dept 2).</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>B salah:</strong> Satu department bisa punya banyak lokasi (misal dept Research di Houston, Stafford, Houston II).</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>C tidak optimal:</strong> Auto-increment memungkinkan duplikasi (dept 1, Houston bisa muncul dua kali).</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary);">✅ <strong style="color:var(--text-primary);">D benar:</strong> (Dnumber, Dlocation) — kombinasi ini unik karena satu department tidak boleh terdaftar di lokasi yang sama dua kali.</p>
+      </div>
+    </div>
+
+    <!-- QUESTION 5 -->
+    <div class="card" style="padding:28px; margin-bottom:20px;" id="q5">
+      <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:18px;">
+        <div style="background:rgba(244,63,94,0.15);border:1.5px solid var(--accent-rose);border-radius:8px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent-rose);flex-shrink:0;">Q5</div>
+        <p style="font-size:0.95rem; font-weight:500; margin:0;">
+          Pada pemetaan Union Types (kategori), kapan <strong>surrogate key</strong> diperlukan?
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;" id="q5opts">
+        <div class="quiz-option" onclick="checkAnswer(5,'A','B')">
+          <div class="option-letter">A</div>
+          <span style="font-size:0.88rem;">Selalu diperlukan dalam setiap union type</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(5,'B','B')">
+          <div class="option-letter">B</div>
+          <span style="font-size:0.88rem;">Ketika superclass-superclass dalam union memiliki primary key yang <strong>berbeda-beda</strong></span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(5,'C','B')">
+          <div class="option-letter">C</div>
+          <span style="font-size:0.88rem;">Hanya saat jumlah superclass lebih dari 3</span>
+        </div>
+        <div class="quiz-option" onclick="checkAnswer(5,'D','B')">
+          <div class="option-letter">D</div>
+          <span style="font-size:0.88rem;">Surrogate key tidak pernah digunakan dalam pemetaan EER</span>
+        </div>
+      </div>
+      <div id="q5feedback" style="margin-top:14px; display:none;"></div>
+      <button class="reveal-btn" style="margin-top:12px;" onclick="toggleExplanation('q5exp')">
+        <i data-lucide="book-open" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px;"></i>
+        Reveal Explanation
+      </button>
+      <div class="explanation-box" id="q5exp" style="margin-top:10px;">
+        <h4 style="font-size:0.88rem; font-weight:700; color:#93c5fd; margin-bottom:8px;">📖 Metodologi Penyelesaian</h4>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong style="color:var(--text-primary);">Topik: Pemetaan Union Types (Kategori)</strong></p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;">Union type menggabungkan entitas dari berbagai superclass yang berbeda-beda. Subclass (kategori) perlu satu primary key yang konsisten.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>Contoh dari slide:</strong> OWNER bisa berupa PERSON (PK: Ssn), BANK (PK: Bname), atau COMPANY (PK: Cname). Ketiga PK berbeda tipe dan nama → tidak bisa dipakai langsung.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary); margin-bottom:8px;"><strong>Pengecualian:</strong> Jika semua superclass memiliki PK yang sama (seperti CAR dan TRUCK sama-sama pakai Vehicle_id), surrogate key tidak diperlukan.</p>
+        <p style="font-size:0.83rem; color:var(--text-secondary);">✅ <strong style="color:var(--text-primary);">B benar:</strong> Surrogate key dibutuhkan hanya ketika PK dari superclass-superclass berbeda.</p>
+      </div>
+    </div>
+
+    <!-- Final Score Banner -->
+    <div id="finalBanner" style="display:none;" class="card">
+      <div style="padding:32px; text-align:center;">
+        <div id="finalIcon" style="font-size:3rem; margin-bottom:12px;">🎯</div>
+        <h3 id="finalTitle" style="font-size:1.4rem; font-weight:800; margin-bottom:8px;"></h3>
+        <p id="finalMsg" style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:20px;"></p>
+        <button onclick="resetAll()" style="background:var(--accent-green);color:#060d18;font-weight:700;font-family:'Syne',sans-serif;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;font-size:0.9rem;">Coba Lagi</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid var(--border); padding:24px; text-align:center;">
+  <p style="color:var(--text-secondary); font-size:0.8rem; font-family:'Space Mono',monospace;">
+    CSGE602070 · Basis Data · Slide 6 · Universitas Indonesia<br/>
+    <span style="opacity:0.5;">Berdasarkan: Database System 7th Ed., Elmasri/Navathe, Chapter 9</span>
+  </p>
+</footer>
+
+<script>
+  // Init Lucide icons
+  lucide.createIcons();
+
+  // ─── WALKTHROUGH ─────────────────────────────────
+  let currentStep = 0;
+  const totalSteps = 7;
+
+  function buildDots() {
+    const container = document.getElementById('stepDots');
+    container.innerHTML = '';
+    for (let i = 0; i < totalSteps; i++) {
+      const d = document.createElement('div');
+      d.style.cssText = `width:${i===currentStep?28:8}px;height:8px;border-radius:4px;transition:all 0.3s;cursor:pointer;background:${i===currentStep?'var(--accent-green)':'rgba(255,255,255,0.12)'};`;
+      d.onclick = () => goToStep(i);
+      container.appendChild(d);
+    }
+  }
+
+  function updateStep() {
+    document.querySelectorAll('.walkthrough-step').forEach((el, i) => {
+      el.classList.toggle('active', i === currentStep);
+    });
+    document.getElementById('stepText').textContent = `Langkah ${currentStep + 1} dari ${totalSteps}`;
+    document.getElementById('prevBtn').disabled = currentStep === 0;
+    document.getElementById('prevBtn').style.opacity = currentStep === 0 ? '0.4' : '1';
+    document.getElementById('nextBtn').disabled = currentStep === totalSteps - 1;
+    document.getElementById('nextBtn').style.opacity = currentStep === totalSteps - 1 ? '0.4' : '1';
+    buildDots();
+  }
+
+  function nextStep() { if (currentStep < totalSteps - 1) { currentStep++; updateStep(); } }
+  function prevStep() { if (currentStep > 0) { currentStep--; updateStep(); } }
+  function goToStep(i) { currentStep = i; updateStep(); }
+
+  updateStep();
+
+  // ─── QUIZ ─────────────────────────────────────────
+  let score = 0;
+  let answered = {};
+
+  function checkAnswer(qNum, selected, correct) {
+    if (answered[qNum]) return;
+    answered[qNum] = true;
+
+    const opts = document.querySelectorAll(`#q${qNum}opts .quiz-option`);
+    const letters = ['A','B','C','D'];
+
+    opts.forEach((opt, i) => {
+      opt.classList.add('disabled');
+      if (letters[i] === correct) opt.classList.add('correct');
+      else if (letters[i] === selected && selected !== correct) opt.classList.add('incorrect');
+    });
+
+    const fb = document.getElementById(`q${qNum}feedback`);
+    fb.style.display = 'block';
+    if (selected === correct) {
+      score++;
+      fb.innerHTML = `<div class="feedback-correct"><strong>✓ Benar!</strong> Jawaban Anda tepat.</div>`;
+    } else {
+      fb.innerHTML = `<div class="feedback-incorrect"><strong>✗ Kurang tepat.</strong> Jawaban yang benar adalah <strong>${correct}</strong>. Lihat penjelasan di bawah.</div>`;
+    }
+
+    document.getElementById('scoreDisplay').textContent = `${score} / 5`;
+
+    if (Object.keys(answered).length === 5) {
+      showFinalBanner();
+    }
+  }
+
+  function showFinalBanner() {
+    const banner = document.getElementById('finalBanner');
+    const pct = (score / 5) * 100;
+    let icon, title, msg;
+    if (pct === 100) { icon='🏆'; title='Sempurna!'; msg='Anda menguasai semua konsep pemetaan (E)ER ke skema relasional dengan sangat baik!'; banner.style.borderColor='rgba(0,229,160,0.4)'; }
+    else if (pct >= 60) { icon='👍'; title='Bagus!'; msg='Pemahaman Anda sudah solid. Tinjau kembali soal yang salah dan baca penjelasannya.'; banner.style.borderColor='rgba(245,158,11,0.4)'; }
+    else { icon='📚'; title='Perlu Latihan Lebih'; msg='Jangan menyerah! Baca ulang materi di atas dan coba lagi.'; banner.style.borderColor='rgba(244,63,94,0.4)'; }
+    document.getElementById('finalIcon').textContent = icon;
+    document.getElementById('finalTitle').textContent = `${title} — Skor: ${score}/5`;
+    document.getElementById('finalMsg').textContent = msg;
+    banner.style.display = 'block';
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function resetAll() {
+    score = 0;
+    answered = {};
+    document.getElementById('scoreDisplay').textContent = '0 / 5';
+    document.getElementById('finalBanner').style.display = 'none';
+
+    for (let i = 1; i <= 5; i++) {
+      const opts = document.querySelectorAll(`#q${i}opts .quiz-option`);
+      opts.forEach(opt => { opt.classList.remove('correct','incorrect','disabled'); });
+      const fb = document.getElementById(`q${i}feedback`);
+      fb.style.display = 'none';
+      fb.innerHTML = '';
+      const exp = document.getElementById(`q${i}exp`);
+      exp.classList.remove('open');
+    }
+  }
+
+  function toggleExplanation(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+    lucide.createIcons();
+  }
+</script>
+</body>
+</html>
