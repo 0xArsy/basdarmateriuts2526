@@ -126,8 +126,11 @@
 
 <body class="flex h-screen w-full bg-grid">
 
+  <!-- Mobile Sidebar Overlay -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
   <!-- Sidebar -->
-  <aside class="glass-panel w-72 h-full flex flex-col flex-shrink-0 z-10 relative">
+  <aside id="sidebar" class="glass-panel w-72 h-full flex flex-col flex-shrink-0 fixed md:relative z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 left-0 top-0">
     <div class="glow"></div>
 
     <div class="p-6 pb-2 relative z-10 flex-shrink-0">
@@ -235,6 +238,11 @@
 
   <!-- Main Content Area -->
   <main class="flex-1 relative flex items-center justify-center overflow-hidden bg-[#0A0A0E]">
+    
+    <!-- Mobile Menu Button -->
+    <button onclick="toggleSidebar()" class="md:hidden absolute top-6 left-6 z-40 p-2.5 rounded-lg bg-[#111827]/80 backdrop-blur border border-white/10 text-white shadow-lg hover:bg-white/10 transition-colors">
+      <i data-lucide="menu" class="w-5 h-5"></i>
+    </button>
 
     <!-- Home Overlay (Landing Page) -->
     <div id="home-overlay"
@@ -289,7 +297,33 @@
   <script>
     if (typeof lucide !== 'undefined') { lucide.createIcons(); }
 
+    function toggleSidebar(forceClose = false) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const isMobile = window.innerWidth < 768;
+      
+      if (!isMobile && !forceClose) return; // Only toggle on mobile (forceClose handles resize scenarios if needed)
+
+      const isClosed = sidebar.classList.contains('-translate-x-full');
+      
+      if (forceClose || !isClosed) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.remove('opacity-100');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+      } else {
+        overlay.classList.remove('hidden');
+        // trigger animation
+        setTimeout(() => {
+          sidebar.classList.remove('-translate-x-full');
+          overlay.classList.remove('opacity-0');
+          overlay.classList.add('opacity-100');
+        }, 10);
+      }
+    }
+
     function loadHome() {
+      toggleSidebar(true);
       // Manage Active States
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById('nav-home').classList.add('active');
@@ -313,6 +347,7 @@
     }
 
     function loadChapter(filename, element) {
+      toggleSidebar(true);
       // Manage Active States
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       if (element) element.classList.add('active');
