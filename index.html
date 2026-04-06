@@ -139,6 +139,19 @@
       <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest px-4 mb-4">Created by: Z Arsy Alam Sin
       </p>
 
+      <!-- Global Search Bar -->
+      <div class="px-4 mb-4 relative group">
+        <div class="relative">
+          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
+          <input type="text" id="global-search" placeholder="Cari materi (SQL, ER, dll)..." 
+            class="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-[11px] text-gray-300 placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all">
+        </div>
+        <!-- Search Results Dropdown -->
+        <div id="search-results" class="hidden absolute left-4 right-4 top-full mt-2 bg-[#111827] border border-white/10 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto sidebar-scroll p-2">
+          <!-- Results injected here -->
+        </div>
+      </div>
+
       <p
         class="text-[11px] text-gray-400 mb-6 uppercase tracking-widest font-semibold flex items-center gap-2 px-4 italic">
         <i data-lucide="sparkles" class="w-3 h-3 text-blue-400"></i> Interactive Learning Portal
@@ -302,24 +315,96 @@
       const overlay = document.getElementById('sidebar-overlay');
       const isMobile = window.innerWidth < 768;
       
-      if (!isMobile && !forceClose) return; // Only toggle on mobile (forceClose handles resize scenarios if needed)
+      if (!isMobile && !forceClose) return; // Only toggle on mobile
 
       const isClosed = sidebar.classList.contains('-translate-x-full');
       
       if (forceClose || !isClosed) {
         sidebar.classList.add('-translate-x-full');
-        overlay.classList.remove('opacity-100');
-        overlay.classList.add('opacity-0');
-        setTimeout(() => overlay.classList.add('hidden'), 300);
+        if (overlay) {
+          overlay.classList.remove('opacity-100');
+          overlay.classList.add('opacity-0');
+          setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
       } else {
-        overlay.classList.remove('hidden');
-        // trigger animation
-        setTimeout(() => {
-          sidebar.classList.remove('-translate-x-full');
-          overlay.classList.remove('opacity-0');
-          overlay.classList.add('opacity-100');
-        }, 10);
+        if (overlay) {
+          overlay.classList.remove('hidden');
+          setTimeout(() => {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+          }, 10);
+        }
       }
+    }
+
+    // SEARCH LOGIC
+    const searchInput = document.getElementById('global-search');
+    const searchResults = document.getElementById('search-results');
+    
+    // Minimal database of keywords/topics mapped to files
+    const searchData = [
+      { title: "Pengenalan Basis Data", file: "Slide 1 - Introduction to Databases_.pptx.html", tags: ["dbms", "database", "data", "history", "users"] },
+      { title: "Konsep & Arsitektur", file: "Slide-02_Database-Concept-and-Architecture.html", tags: ["schema", "internal", "conceptual", "external", "independence", "ddl", "dml"] },
+      { title: "Pemodelan ER", file: "Slide_3_-_Pemodelan_Basis_Data_dengan_ER.html", tags: ["entity", "relationship", "attribute", "cardinality", "key"] },
+      { title: "Pemodelan EER Part 1", file: "Slide_4_-_Pemodelan_Basis_Data_dengan_EER_Part_1.html", tags: ["subclass", "superclass", "inheritance", "specialization", "generalization"] },
+      { title: "Pemodelan EER Part 2", file: "Slide_4_-_Pemodelan_Basis_Data_dengan_EER_Part_2(1).html", tags: ["union", "category", "shared subclass"] },
+      { title: "Model Relasional", file: "Slide_5_-_The_Relational_Data_Model_and_Relational_Database_Constraints.html", tags: ["tuple", "integrity", "primary key", "foreign key", "null"] },
+      { title: "Pemetaan (E)ER", file: "Slide_6_-_Pemetaan_Diagram__E_ER_ke_Skema_Relasional_-_updated-by-sby.html", tags: ["mapping", "conversion", "algorithm"] },
+      { title: "SQL Definition", file: "Slide_7_-_SQL_-_Data_Definition.html", tags: ["create", "table", "alter", "drop", "constraints"] },
+      { title: "Basic SQL Query", file: "Slide_8_-_Basic_SQL_Query.html", tags: ["select", "from", "where", "join", "aggregate", "group by", "having"] },
+      { title: "Cheatsheet", file: "cheatsheet.html", tags: ["summary", "uts", "rumus", "kunci"] }
+    ];
+
+    searchInput.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase().trim();
+      if (term.length < 2) {
+        searchResults.classList.add('hidden');
+        return;
+      }
+
+      const filtered = searchData.filter(item => 
+        item.title.toLowerCase().includes(term) || 
+        item.tags.some(tag => tag.includes(term))
+      );
+
+      if (filtered.length > 0) {
+        searchResults.innerHTML = filtered.map(item => `
+          <div onclick="executeSearchLink('${item.file}')" class="p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-white/10 mb-1 group">
+            <p class="text-[11px] font-bold text-gray-200 group-hover:text-blue-400">${item.title}</p>
+            <p class="text-[9px] text-gray-500">${item.tags.join(', ')}</p>
+          </div>
+        `).join('');
+        searchResults.classList.remove('hidden');
+      } else {
+        searchResults.innerHTML = '<p class="text-[10px] text-gray-500 p-2 text-center">Tidak ada hasil ditemukan</p>';
+        searchResults.classList.remove('hidden');
+      }
+    });
+
+    // Close search on click outside
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.add('hidden');
+      }
+    });
+
+    function executeSearchLink(file) {
+      const links = document.querySelectorAll('.chapter-link');
+      let targetLink = null;
+      links.forEach(link => {
+        if (link.getAttribute('onclick') && link.getAttribute('onclick').includes(file)) {
+          targetLink = link;
+        }
+      });
+      
+      if (targetLink) {
+        targetLink.click();
+      } else {
+        loadChapter(file);
+      }
+      searchResults.classList.add('hidden');
+      searchInput.value = '';
     }
 
     function loadHome() {
